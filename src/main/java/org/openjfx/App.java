@@ -33,6 +33,9 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+       // WatchData data = new WatchData();
+        //data.readData("C:\\Users\\Willi\\IdeaProjects\\watch-host\\src\\main\\java\\org\\openjfx\\testfile.csv", "leuke");
+        //data.printData();
         launch();
     }
 
