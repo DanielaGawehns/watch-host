@@ -23,6 +23,7 @@ public class WatchData {
 
     // read in data from CSV file
     public void readData(String filename, String sensorTemp){
+        clear();
         sensor = sensorTemp;
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -44,6 +45,10 @@ public class WatchData {
             }
             System.out.println("");
         }
+    }
+
+    public void clear(){
+        records.clear();
     }
 
     public List<List<String>> getRecords() {
