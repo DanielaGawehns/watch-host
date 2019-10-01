@@ -16,17 +16,28 @@ public class PrimaryController{
     private LineChart<Number, Number> sensorChart;
 
     public void fillChart(){
-        WatchData data = new WatchData();
-        data.readData("C:\\Users\\Willi\\IdeaProjects\\watch-host\\src\\main\\java\\org\\openjfx\\testfile.csv", "Sensor23");
-        List<List<String>> dataList = data.getRecords();
+        WatchData dataWatch = new WatchData();
+        dataWatch.readData("C:\\Users\\Willi\\IdeaProjects\\watch-host\\src\\main\\java\\org\\openjfx\\testfile.csv", "Sensor23");
+        List<List<String>> dataList = dataWatch.getRecords();
+
         final XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        for(int i = 0; i < dataList.size(); i++){
-            series.getData().add(new XYChart.Data<Number, Number>(Double.parseDouble(dataList.get(i).get(0)), Double.parseDouble(dataList.get(i).get(1))));
-        }
-        series.setName("Intensity");
-        sensorChart.setTitle(data.getSensor());
         sensorChart.getData().removeAll();
         sensorChart.getData().add(series);
+        for(int i = 0; i < dataList.size(); i++){
+            XYChart.Data<Number, Number> data = new XYChart.Data<>(Double.parseDouble(dataList.get(i).get(0)),Double.parseDouble(dataList.get(i).get(1)));
+            series.getData().add(data);
+            // handler for clicking on data point:
+            data.getNode().setOnMouseClicked(e ->
+                    pressNode(data));
+
+        }
+        //series.setName("Intensity");
+       // sensorChart.setTitle(dataWatch.getSensor());
+
+    }
+
+    private void pressNode(XYChart.Data<Number, Number> data){
+        System.out.println("Clicked on data: " + data.getXValue() + "," + data.getYValue());
     }
 
    /* @Override
