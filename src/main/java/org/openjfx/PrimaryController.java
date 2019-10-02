@@ -24,19 +24,18 @@ public class PrimaryController{
     private WatchData dataWatch = new WatchData();
 
     public void fillChart() {
-
-        List<List<String>> dataList = dataWatch.getRecords();
-
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
+
         sensorChart.getData().clear();
         sensorChart.getData().add(series);
-        for(int i = 0; i < dataList.size(); i++){
-            XYChart.Data<Number, Number> data = new XYChart.Data<>(Double.parseDouble(dataList.get(i).get(0)),Double.parseDouble(dataList.get(i).get(1)));
-            series.getData().add(data);
+
+        for(int i = 0; i < dataWatch.size(); i++){
+            XYChart.Data<Number, Number> temp = dataWatch.getDataPoint(i);
+            series.getData().add(dataWatch.getDataPoint(i));
 
             // handler for clicking on data point:
-            data.getNode().setOnMouseClicked(e ->
-                    pressNode(data));
+            temp.getNode().setOnMouseClicked(e ->
+                    pressNode(temp));
 
         }
         series.setName("Sensor x");

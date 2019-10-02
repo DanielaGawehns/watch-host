@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -125,8 +127,30 @@
             </Tab>
              <Tab fx:id="overview">
                  <content>
-                     <VBox alignment="CENTER">
-                     </VBox>
+                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
+                     <content>
+                        <VBox alignment="CENTER">
+                           <children>
+                              <LineChart>
+                                <xAxis>
+                                  <CategoryAxis side="BOTTOM" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis side="LEFT" />
+                                </yAxis>
+                              </LineChart>
+                              <BarChart>
+                                <xAxis>
+                                  <CategoryAxis side="BOTTOM" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis side="LEFT" />
+                                </yAxis>
+                              </BarChart>
+                           </children>
+                        </VBox>
+                     </content>
+                  </ScrollPane>
                  </content>
              </Tab>
          </tabs>
