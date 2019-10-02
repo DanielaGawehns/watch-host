@@ -56,7 +56,7 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
          <buttons>
-            <Button fx:id="button_add_data" mnemonicParsing="false" onAction="#fillChart" text="Sync" />
+            <Button fx:id="button_add_data" mnemonicParsing="false" text="Sync" />
          </buttons>
       </ButtonBar>
    </bottom>
