@@ -15,6 +15,8 @@ public class App extends Application {
 
     private static Scene scene;
 
+    // start function
+    // loads primary.fxml and sets it as root
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"));
@@ -23,6 +25,7 @@ public class App extends Application {
         stage.show();
     }
 
+    // set file fxml to root
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
