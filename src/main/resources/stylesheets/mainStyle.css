@@ -1,0 +1,20 @@
+.root{
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab-pane .tab-header-area {
+    visibility: hidden ;
+}
+
+.button{
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+.button:pressed {
+    -fx-background-color: grey;
+    -fx-text-fill: white;
+}
