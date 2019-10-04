@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
+import java.util.Random;
 
 // Controller of main screen
 public class PrimaryController{
@@ -37,25 +37,23 @@ public class PrimaryController{
     // constructor
     public void initialize() throws IOException {
         System.out.println("INITIALIZE Primary Controller");
-        for(int i = 0; i < 2; i++){
-            watches.add(new Smartwatch());
-        }
+        Random rand = new Random();
+        /*for(int i = 0; i < 2; i++){
+            watches.add(new Smartwatch(rand.nextInt(10000)));
+        }*/
+        watches.add(new Smartwatch(1));
+        watches.add(new Smartwatch(2));
     }
 
 
-    // fill sensorChart with data from watches
-    private void fillChart() {
+    // fill sensorChart with data from sensor
+    private void fillChart(String sensor) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         System.out.println("Fill Chart for watch: " + (currentWatch-1));
-        SensorData sensorData;
+        SensorData sensorData = watches.get(currentWatch - 1).getSensorData(sensor);
 
-        try{
-           sensorData = watches.get(currentWatch - 1).getSensorData("TEST");
-        }catch (Exception e){ // if data is not found
-            System.out.println("No data found for watch: " + (currentWatch-1) + " and sensor: TEMP");
-            sensorChart.setDisable(true);
-            return;
-        }
+        if(sensorData == null) // if no data found
+            throw new NullPointerException();
 
         sensorChart.setDisable(false); // turn on chart
         sensorChart.setAnimated(false); // disable animation for clearing
@@ -92,7 +90,14 @@ public class PrimaryController{
     private void watchlogoPressed(int number){
         moveToTab(0);
         currentWatch = number;
-        fillChart();
+        try {
+            fillChart("HR");
+        }catch (Exception e){ // if data is not found
+            System.out.println("No data found for watch: " + (currentWatch-1) + " and sensor: TEMP");
+            sensorChart.setDisable(true);
+            return;
+        }
+
     }
 
 
@@ -117,7 +122,7 @@ public class PrimaryController{
         for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){
             System.out.println(fileEntry.getAbsoluteFile());
             sensorData = reader.readFile(fileEntry.getAbsolutePath());
-            watches.get(sensorData.getWatchNumber()).setSensorData(sensorData, "TEMP");
+            watches.get(sensorData.getWatchNumber()).setSensorData(sensorData);
         }
 
     }

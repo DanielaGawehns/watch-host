@@ -1,26 +1,43 @@
 package org.openjfx;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // Class holding all smartwatch functionality
-public class Smartwatch {
+class Smartwatch {
 
     // list of data of sensors
     private List<SensorData> sensorDataList = new ArrayList<>();
 
+    private static final Map<String, Integer> sensorMap;
+    static{
+        sensorMap = new HashMap<>();
+        sensorMap.put("HR", 0);
+    }
+
+    // Number of sensors for a smartwatch
+    private static final int numberOfSensors = 1;
+
+    // NumberID of the watch
+    private int watchID;
+
 
     // Constructor
-    public Smartwatch() throws IOException {
+    Smartwatch(int _watchID){
         System.out.println("making smartwatch");
+        watchID = _watchID;
+        for(int i = 0; i < numberOfSensors; i++){
+            sensorDataList.add(null);
+        }
     }
 
 
     // Get data of sensor 'sensor' from sensorDataList
     // TODO: make this work
-    public SensorData getSensorData(String sensor){
-        return sensorDataList.get(0);
+    SensorData getSensorData(String sensor){
+        return sensorDataList.get(sensorMap.get("HR"));
     }
 
 
@@ -28,12 +45,13 @@ public class Smartwatch {
     // if sensor is not found then add to list
     // otherwise replace data
     // TODO: make this work
-    public void setSensorData(SensorData data, String sensor){
-        if(sensorDataList.size() <= 0){
-            sensorDataList.add(data);
-        }else{
-            sensorDataList.set(0, data);
-        }
+    void setSensorData(SensorData data){
+        sensorDataList.set(sensorMap.get(data.getSensor()), data);
+    }
+
+
+    // Function to fill sensorMap with default values
+    private void fillSensorMap(){
 
     }
 }
