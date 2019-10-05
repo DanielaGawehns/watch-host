@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 // Class holding all smartwatch functionality
-class Smartwatch {
+public class Smartwatch {
 
     // list of data of sensors
     private List<SensorData> sensorDataList = new ArrayList<>();
@@ -53,5 +53,9 @@ class Smartwatch {
     // Function to fill sensorMap with default values
     private void fillSensorMap(){
 
+    }
+
+    public int getWatchID() {
+        return watchID;
     }
 }

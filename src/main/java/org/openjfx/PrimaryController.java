@@ -2,10 +2,15 @@ package org.openjfx;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,16 +22,20 @@ import java.util.Random;
 // Controller of main screen
 public class PrimaryController{
 
-    // lineChart from primary.fxml
+    /*// lineChart from primary.fxml
     @FXML
     private LineChart<Number, Number> sensorChart;
 
     // tabPane from primary.fxml
     @FXML
-    private TabPane tabPane;
+    private TabPane tabPane;*/
+
+    // ScrollPane for filling in screen
+    @FXML
+    private ScrollPane scrollPane;
 
     // List of smartwatches connected
-    private List<Smartwatch> watches = new ArrayList<Smartwatch>();
+    private List<Smartwatch> watches = new ArrayList<>();
 
     // Reader for reading CSV files
     private CSVFileReader reader = new CSVFileReader();
@@ -46,71 +55,71 @@ public class PrimaryController{
     }
 
 
-    // fill sensorChart with data from sensor
-    private void fillChart(String sensor) {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        System.out.println("Fill Chart for watch: " + (currentWatch-1));
-        SensorData sensorData = watches.get(currentWatch - 1).getSensorData(sensor);
-
-        if(sensorData == null) // if no data found
-            throw new NullPointerException();
-
-        sensorChart.setDisable(false); // turn on chart
-        sensorChart.setAnimated(false); // disable animation for clearing
-        sensorChart.getData().clear();
-        sensorChart.setAnimated(true);
-
-        System.out.println("Added series");
-        for(int i = 0; i < sensorData.size(); i++){
-            XYChart.Data<Number, Number> temp = sensorData.getDataPoint(i);
-            System.out.println("Adding: " + sensorData.getDataPoint(i).toString());
-            series.getData().add(sensorData.getDataPoint(i)); // add datapoint to series
-
-        }
-        sensorChart.getData().add(series); // add series to chart
-        series.setName(sensorData.getSensor()); // set title of line for legend
-        sensorChart.setTitle(sensorData.getSensor()); // set title of chart
-    }
-
-
     // event for logo 1
-    public void watchlogo1Pressed(MouseEvent mouseEvent) {
+    public void watchlogo1Pressed(MouseEvent mouseEvent) throws IOException {
         watchlogoPressed(1);
     }
 
 
     // event for logo 2
-    public void watchlogo2Pressed(MouseEvent mouseEvent) {
+    public void watchlogo2Pressed(MouseEvent mouseEvent) throws IOException {
         watchlogoPressed(2);
+    }
+
+
+    private void loadFXML() throws IOException {
+        System.out.println(System.getProperty("user.dir") + "\\src\\main\\resources\\org.openjfx\\watchView.fxml");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchView.fxml"));
+        System.out.printf(loader.toString());
+
+        //Parent root = loader.load();
+
+        ScrollPane newPane = loader.load();
+
+        WatchViewController watchController = loader.getController();
+        System.out.println(watchController);
+        watchController.setWatch(watches.get(currentWatch-1));
+
+
+
+       // Region n = (Region) loader.load();
+        newPane.prefWidthProperty().bind(scrollPane.widthProperty().subtract(5));
+        //newPane.prefHeightProperty().bind(scrollPane.heightProperty().subtract(5));
+        scrollPane.setContent(newPane);
+
+        System.out.println("Filled pane");
     }
 
 
     // Moves to right tab
     // Sets currentWatch and fills the chart
-    private void watchlogoPressed(int number){
-        moveToTab(0);
+    private void watchlogoPressed(int number) throws IOException {
         currentWatch = number;
-        try {
+        System.out.println("Current watch is now: " + currentWatch);
+        moveToTab(0);
+
+        /*try {
             fillChart("HR");
         }catch (Exception e){ // if data is not found
             System.out.println("No data found for watch: " + (currentWatch-1) + " and sensor: TEMP");
             sensorChart.setDisable(true);
             return;
-        }
-
+        }*/
+        System.out.println("Moved to tab KAAS");
     }
 
 
     // switch to overview tab
     // TODO: make this nicer with separate fxml file
-    public void switchToOverview(ActionEvent actionEvent) {
+    public void switchToOverview(ActionEvent actionEvent) throws IOException {
         moveToTab(1);
     }
 
 
     // handles tab moves
-    private void moveToTab(int number){
-        tabPane.getSelectionModel().select(number);
+    private void moveToTab(int number) throws IOException {
+        //tabPane.getSelectionModel().select(number);
+        loadFXML();
     }
 
 
