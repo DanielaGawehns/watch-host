@@ -101,6 +101,6 @@
       </ScrollPane>
    </left>
    <center>
-      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <BorderPane fx:id="view" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

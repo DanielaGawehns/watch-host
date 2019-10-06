@@ -4,12 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
 public class WatchViewController {
 
     @FXML
-    private ScrollPane scroll;
+    private BorderPane scroll;
 
     @FXML
     private GridPane grid;
@@ -19,7 +20,7 @@ public class WatchViewController {
 
     private Smartwatch watch;
 
-    public void setWatch(Smartwatch _watch){
+    void setWatch(Smartwatch _watch){
         System.out.println("Setting watch...");
         watch = _watch;
 

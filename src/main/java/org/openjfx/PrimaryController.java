@@ -10,6 +10,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 
 import java.io.File;
@@ -32,7 +34,7 @@ public class PrimaryController{
 
     // ScrollPane for filling in screen
     @FXML
-    private ScrollPane scrollPane;
+    private BorderPane view;
 
     // List of smartwatches connected
     private List<Smartwatch> watches = new ArrayList<>();
@@ -67,14 +69,36 @@ public class PrimaryController{
     }
 
 
-    private void loadFXML() throws IOException {
-        System.out.println(System.getProperty("user.dir") + "\\src\\main\\resources\\org.openjfx\\watchView.fxml");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchView.fxml"));
+    private void loadOverviewFXML() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("overview.fxml"));
         System.out.printf(loader.toString());
 
         //Parent root = loader.load();
 
-        ScrollPane newPane = loader.load();
+        BorderPane newPane = loader.load();
+
+        /*OverviewController overviewController = loader.getController();
+        System.out.println(watchController);
+        watchController.setWatch(watches.get(currentWatch-1));*/
+
+
+
+        // Region n = (Region) loader.load();
+        newPane.prefWidthProperty().bind(view.widthProperty());
+        //newPane.prefHeightProperty().bind(scrollPane.heightProperty().subtract(5));
+        view.setCenter(newPane);
+    }
+
+
+    // Loading watchView FXML into view
+    private void loadWatchFXML() throws IOException {
+        System.out.println(System.getProperty("user.dir") + "\\src\\main\\resources\\org.openjfx\\watchview.fxml");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml"));
+        System.out.println(loader.toString());
+
+        //Parent root = loader.load();
+
+        BorderPane newPane = loader.load();
 
         WatchViewController watchController = loader.getController();
         System.out.println(watchController);
@@ -83,9 +107,9 @@ public class PrimaryController{
 
 
        // Region n = (Region) loader.load();
-        newPane.prefWidthProperty().bind(scrollPane.widthProperty().subtract(5));
+        newPane.prefWidthProperty().bind(view.widthProperty());
         //newPane.prefHeightProperty().bind(scrollPane.heightProperty().subtract(5));
-        scrollPane.setContent(newPane);
+        view.setCenter(newPane);
 
         System.out.println("Filled pane");
     }
@@ -96,7 +120,7 @@ public class PrimaryController{
     private void watchlogoPressed(int number) throws IOException {
         currentWatch = number;
         System.out.println("Current watch is now: " + currentWatch);
-        moveToTab(0);
+        loadWatchFXML();
 
         /*try {
             fillChart("HR");
@@ -112,14 +136,7 @@ public class PrimaryController{
     // switch to overview tab
     // TODO: make this nicer with separate fxml file
     public void switchToOverview(ActionEvent actionEvent) throws IOException {
-        moveToTab(1);
-    }
-
-
-    // handles tab moves
-    private void moveToTab(int number) throws IOException {
-        //tabPane.getSelectionModel().select(number);
-        loadFXML();
+        loadOverviewFXML();
     }
 
 
