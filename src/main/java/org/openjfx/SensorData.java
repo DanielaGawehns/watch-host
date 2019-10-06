@@ -12,10 +12,8 @@ public class SensorData {
     // data for charting
     private List<XYChart.Data<Number, Number>> records;
 
-
     // name of sensor used
     private String sensor;
-
 
     // Number of the watch this data belong to
     private int watchNumber;

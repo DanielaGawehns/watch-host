@@ -3,36 +3,20 @@ package org.openjfx;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
+
 
 // Controller of main screen
+// Controller of primary.fxml
 public class PrimaryController{
 
-    /*// lineChart from primary.fxml
-    @FXML
-    private LineChart<Number, Number> sensorChart;
-
-    // tabPane from primary.fxml
-    @FXML
-    private TabPane tabPane;*/
-
-    // ScrollPane for filling in screen
     @FXML
     private BorderPane view;
 
@@ -42,18 +26,24 @@ public class PrimaryController{
     // Reader for reading CSV files
     private CSVFileReader reader = new CSVFileReader();
 
+    // Controller for the watchView
+    private WatchViewController watchController;
+
     // which smartwatch is selected for charting
     private int currentWatch;
 
     // constructor
+    // TODO: remove adding of smartwatches
     public void initialize() throws IOException {
         System.out.println("INITIALIZE Primary Controller");
-        Random rand = new Random();
-        /*for(int i = 0; i < 2; i++){
+        /*Random rand = new Random();
+        for(int i = 0; i < 2; i++){
             watches.add(new Smartwatch(rand.nextInt(10000)));
         }*/
-        watches.add(new Smartwatch(1));
-        watches.add(new Smartwatch(2));
+        watches.add(new Smartwatch(1)); // TEMP: add watch 1
+        watches.add(new Smartwatch(2)); // TEMP: add watch 2
+        currentWatch = 1;
+        loadOverviewFXML();
     }
 
 
@@ -70,92 +60,55 @@ public class PrimaryController{
 
 
     private void loadOverviewFXML() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("overview.fxml"));
-        System.out.printf(loader.toString());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("overview.fxml")); // load fxml file
+        BorderPane newPane = loader.load(); // load file into replacement pane
 
-        //Parent root = loader.load();
-
-        BorderPane newPane = loader.load();
-
-        /*OverviewController overviewController = loader.getController();
-        System.out.println(watchController);
-        watchController.setWatch(watches.get(currentWatch-1));*/
-
-
-
-        // Region n = (Region) loader.load();
-        newPane.prefWidthProperty().bind(view.widthProperty());
-        //newPane.prefHeightProperty().bind(scrollPane.heightProperty().subtract(5));
-        view.setCenter(newPane);
+        newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
+        view.setCenter(newPane); // set newPane as center of borderPane
     }
 
 
     // Loading watchView FXML into view
     private void loadWatchFXML() throws IOException {
-        System.out.println(System.getProperty("user.dir") + "\\src\\main\\resources\\org.openjfx\\watchview.fxml");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml"));
-        System.out.println(loader.toString());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml")); // load fxml file
+        BorderPane newPane = loader.load(); // load file into replacement pane
 
-        //Parent root = loader.load();
+        watchController = loader.getController(); // set controller to controller of new file
+        watchController.setWatch(watches.get(currentWatch-1)); // send Data of the watch being viewed to the controller
 
-        BorderPane newPane = loader.load();
-
-        WatchViewController watchController = loader.getController();
-        System.out.println(watchController);
-        watchController.setWatch(watches.get(currentWatch-1));
-
-
-
-       // Region n = (Region) loader.load();
-        newPane.prefWidthProperty().bind(view.widthProperty());
-        //newPane.prefHeightProperty().bind(scrollPane.heightProperty().subtract(5));
-        view.setCenter(newPane);
-
-        System.out.println("Filled pane");
+        newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
+        view.setCenter(newPane); // set newPane as center of borderPane
     }
 
 
     // Moves to right tab
     // Sets currentWatch and fills the chart
     private void watchlogoPressed(int number) throws IOException {
-        currentWatch = number;
-        System.out.println("Current watch is now: " + currentWatch);
+        currentWatch = number; // set current watch
         loadWatchFXML();
-
-        /*try {
-            fillChart("HR");
-        }catch (Exception e){ // if data is not found
-            System.out.println("No data found for watch: " + (currentWatch-1) + " and sensor: TEMP");
-            sensorChart.setDisable(true);
-            return;
-        }*/
-        System.out.println("Moved to tab KAAS");
     }
 
 
     // switch to overview tab
-    // TODO: make this nicer with separate fxml file
     public void switchToOverview(ActionEvent actionEvent) throws IOException {
         loadOverviewFXML();
     }
 
 
     // Go to input dir and read all files
-    // TODO: replace this
     private void syncFiles(File folder) {
         SensorData sensorData;
-        System.out.println("Start reader folder: " + folder.getAbsolutePath());
-        for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){
-            System.out.println(fileEntry.getAbsoluteFile());
-            sensorData = reader.readFile(fileEntry.getAbsolutePath());
-            watches.get(sensorData.getWatchNumber()).setSensorData(sensorData);
-        }
 
+        for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all folders in map 'folder'
+            sensorData = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
+            watches.get(sensorData.getWatchNumber()).setSensorData(sensorData); // add data to the right watch
+        }
     }
 
 
     // Event for syncButton
     public void syncButtonPressed(ActionEvent actionEvent) {
-        syncFiles(new File(System.getProperty("user.dir") + "\\src\\main\\resources\\input\\"));
+        syncFiles(new File(System.getProperty("user.dir") + "\\src\\main\\resources\\input\\")); // read files in input folder
+        //watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch TODO: maybe change this to prevent double/unnecessary setWatch
     }
 }

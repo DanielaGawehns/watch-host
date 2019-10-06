@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="scroll" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.WatchViewController">
+<BorderPane fx:id="view" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.WatchViewController">
    <center>
       <ScrollPane hbarPolicy="NEVER" BorderPane.alignment="CENTER">
          <content>
@@ -20,7 +20,7 @@
                <children>
                   <VBox alignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                      <children>
-                        <LineChart fx:id="sensorChart">
+                        <LineChart fx:id="sensorChart" disable="true">
                            <xAxis>
                               <NumberAxis side="BOTTOM" />
                            </xAxis>
@@ -32,7 +32,7 @@
                         <Label alignment="CENTER" text="Label" />
                      </children>
                   </VBox>
-                  <LineChart GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                  <LineChart disable="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <xAxis>
                       <CategoryAxis side="BOTTOM" />
                     </xAxis>
@@ -40,7 +40,7 @@
                       <NumberAxis side="LEFT" />
                     </yAxis>
                   </LineChart>
-                  <LineChart GridPane.rowIndex="2">
+                  <LineChart disable="true" GridPane.rowIndex="2">
                     <xAxis>
                       <CategoryAxis side="BOTTOM" />
                     </xAxis>
