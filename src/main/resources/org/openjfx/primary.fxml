@@ -59,40 +59,77 @@
         <content>
             <BorderPane>
                <top>
-                  <HBox alignment="CENTER" prefHeight="49.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                      <children>
-                        <Label alignment="CENTER" prefHeight="32.0" prefWidth="155.0" text="Smartwatches" textAlignment="CENTER">
+                        <Label alignment="CENTER" text="Smartwatches" textAlignment="CENTER">
                            <font>
                               <Font name="System Bold" size="22.0" />
                            </font>
                         </Label>
                      </children>
+                     <BorderPane.margin>
+                        <Insets top="10.0" />
+                     </BorderPane.margin>
                   </HBox>
                </top>
                <center>
                   <VBox alignment="CENTER" BorderPane.alignment="CENTER">
                      <children>
-                        <Separator prefHeight="20.0" prefWidth="200.0" />
-                        <Button fx:id="buttonOverview" mnemonicParsing="false" onAction="#switchToOverview" prefHeight="23.0" prefWidth="199.0" text="Overview">
+                        <Separator>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin></Separator>
+                        <Button fx:id="buttonOverview" mnemonicParsing="false" onAction="#switchToOverview" text="Overview">
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
+                           <padding>
+                              <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                           </padding>
                         </Button>
-                        <Separator prefHeight="20.0" prefWidth="200.0" />
+                        <Separator>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin></Separator>
                         <ImageView fx:id="watchlogo1" depthTest="DISABLE" fitHeight="150.0" fitWidth="200.0" onMousePressed="#watchlogo1Pressed" pickOnBounds="false" preserveRatio="true" styleClass="root">
                            <image>
                               <Image url="@../../images/watchlogo.jpg" />
                            </image>
                         </ImageView>
-                        <Label text="Watch 1" />
-                        <Separator prefHeight="21.0" prefWidth="200.0" />
+                        <Label text="Watch 1">
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin></Label>
+                        <Separator>
+                           <VBox.margin>
+                              <Insets bottom="10.0" top="10.0" />
+                           </VBox.margin></Separator>
                         <ImageView fx:id="watchlogo2" fitHeight="150.0" fitWidth="200.0" onMousePressed="#watchlogo2Pressed" pickOnBounds="true" preserveRatio="true" styleClass="root">
                            <image>
                               <Image url="@../../images/watchlogo.jpg" />
                            </image>
                         </ImageView>
-                        <Label text="Watch 2" />
-                        <Separator prefWidth="200.0" />
+                        <Label text="Watch 2">
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin></Label>
+                        <Separator>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin></Separator>
+                        <Button mnemonicParsing="false" text="Add new watch..." textAlignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Separator>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                        </Separator>
                      </children>
                   </VBox>
                </center>
