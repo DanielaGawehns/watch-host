@@ -42,7 +42,7 @@ public class PrimaryController{
         }*/
         watches.add(new Smartwatch(1)); // TEMP: add watch 1
         watches.add(new Smartwatch(2)); // TEMP: add watch 2
-        currentWatch = 1;
+        currentWatch = -1;
         loadOverviewFXML();
     }
 
@@ -109,6 +109,8 @@ public class PrimaryController{
     // Event for syncButton
     public void syncButtonPressed(ActionEvent actionEvent) {
         syncFiles(new File(System.getProperty("user.dir") + "\\src\\main\\resources\\input\\")); // read files in input folder
-        //watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch TODO: maybe change this to prevent double/unnecessary setWatch
+        if(currentWatch > 0){
+            watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch
+        }
     }
 }
