@@ -22,10 +22,10 @@
                      <children>
                         <LineChart fx:id="sensorChart" disable="true">
                            <xAxis>
-                              <NumberAxis side="BOTTOM" />
+                              <NumberAxis label="Time" side="BOTTOM" />
                            </xAxis>
                            <yAxis>
-                              <NumberAxis side="LEFT" />
+                              <NumberAxis label="Heart Rate" side="LEFT" />
                            </yAxis>
                         </LineChart>
                         <Separator prefWidth="200.0" />

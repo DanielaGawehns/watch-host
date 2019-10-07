@@ -3,8 +3,15 @@ package org.openjfx;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +23,9 @@ import java.util.Objects;
 // Controller of main screen
 // Controller of primary.fxml
 public class PrimaryController{
+
+    @FXML
+    private VBox watchBar;
 
     @FXML
     private BorderPane view;
@@ -42,23 +52,13 @@ public class PrimaryController{
         }*/
         watches.add(new Smartwatch(1)); // TEMP: add watch 1
         watches.add(new Smartwatch(2)); // TEMP: add watch 2
+
         currentWatch = -1;
         loadOverviewFXML();
+        loadSideBar();
     }
 
-
-    // event for logo 1
-    public void watchlogo1Pressed(MouseEvent mouseEvent) throws IOException {
-        watchlogoPressed(1);
-    }
-
-
-    // event for logo 2
-    public void watchlogo2Pressed(MouseEvent mouseEvent) throws IOException {
-        watchlogoPressed(2);
-    }
-
-
+    // Loading overview FXML into view
     private void loadOverviewFXML() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("overview.fxml")); // load fxml file
         BorderPane newPane = loader.load(); // load file into replacement pane
@@ -68,7 +68,7 @@ public class PrimaryController{
     }
 
 
-    // Loading watchView FXML into view
+    // Loading watchview FXML into view
     private void loadWatchFXML() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml")); // load fxml file
         BorderPane newPane = loader.load(); // load file into replacement pane
@@ -111,6 +111,35 @@ public class PrimaryController{
         syncFiles(new File(System.getProperty("user.dir") + "\\src\\main\\resources\\input\\")); // read files in input folder
         if(currentWatch > 0){
             watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch
+        }
+    }
+
+
+    // Loads watch buttons into sidebar
+    private void loadSideBar(){
+        for(int i = 0; i < watches.size(); i++){
+            VBox vbox = new VBox();
+            Image image = new Image("\\images\\watchlogo.jpg");
+            ImageView imageView = new ImageView();
+            imageView.setImage(image);
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(100);
+            vbox.setSpacing(5);
+            int finalI = i + 1;
+
+            imageView.setOnMouseClicked((MouseEvent e) ->{ // If clicked
+                try {
+                    watchlogoPressed(finalI);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+            Label label = new Label("Watch " + (i+1));
+            Separator sep = new Separator();
+            vbox.getChildren().addAll(imageView, label, sep);
+            vbox.setAlignment(Pos.CENTER);
+            watchBar.getChildren().add(vbox);
         }
     }
 }

@@ -3,7 +3,6 @@ package org.openjfx;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
@@ -53,6 +52,7 @@ public class WatchViewController {
 
         for(int i = 0; i < sensorData.size(); i++){
             XYChart.Data<Number, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
+
             System.out.println("Adding: " + temp.toString());
             series.getData().add(temp); // add datapoint to series
 
@@ -61,5 +61,11 @@ public class WatchViewController {
         series.setName(sensorData.getSensor()); // set title of line for legend
         sensorChart.getData().add(series); // add series to chart
         sensorChart.setTitle(sensorData.getSensor()); // set title of chart
+
+        /*for(XYChart.Data<Number, Number> data : series.getData()){
+            Tooltip.install(data.getNode(), new Tooltip("Data: " + data.getXValue() + "," + data.getYValue()));
+
+        }*/
     }
 }
+
