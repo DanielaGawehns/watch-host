@@ -8,6 +8,8 @@ import java.util.Map;
 // Class holding all smartwatch functionality
 public class Smartwatch {
 
+    private WatchData watchData;
+
     // list of data of sensors
     private List<SensorData> sensorDataList = new ArrayList<>();
 
@@ -26,9 +28,9 @@ public class Smartwatch {
 
 
     // Constructor
-    Smartwatch(int _watchID){
+    Smartwatch(WatchData data){
         System.out.println("making smartwatch");
-        watchID = _watchID;
+        watchData = data;
         for(int i = 0; i < numberOfSensors; i++){
             sensorDataList.add(null); // add empty sensorData
         }
@@ -49,6 +51,8 @@ public class Smartwatch {
 
 
     int getWatchID() {
-        return watchID;
+        return watchData.getWatchID();
     }
+
+    int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
 }

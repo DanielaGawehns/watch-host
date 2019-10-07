@@ -5,12 +5,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
@@ -50,8 +52,12 @@ public class PrimaryController{
         for(int i = 0; i < 2; i++){
             watches.add(new Smartwatch(rand.nextInt(10000)));
         }*/
-        watches.add(new Smartwatch(1)); // TEMP: add watch 1
-        watches.add(new Smartwatch(2)); // TEMP: add watch 2
+        WatchData data1 = new WatchData(1, 45, 8000, 4123);
+        WatchData data2 = new WatchData(2, 12, 8000, 6452);
+        WatchData data3 = new WatchData(3, 89, 8000, 1235);
+        watches.add(new Smartwatch(data1)); // TEMP: add watch 1
+        watches.add(new Smartwatch(data2)); // TEMP: add watch 2
+        watches.add(new Smartwatch(data3)); // TEMP: add watch 3
 
         currentWatch = -1;
         loadOverviewFXML();
@@ -119,15 +125,17 @@ public class PrimaryController{
     private void loadSideBar(){
         for(int i = 0; i < watches.size(); i++){
             VBox vbox = new VBox();
-            Image image = new Image("\\images\\watchlogo.jpg");
-            ImageView imageView = new ImageView();
-            imageView.setImage(image);
-            imageView.setPreserveRatio(true);
-            imageView.setFitWidth(100);
-            vbox.setSpacing(5);
+            HBox hbox = new HBox();
+            Button button = new Button("Watch " + i);
+            Image image = new Image("\\images\\smartwatch.png");
+            ImageView imageView = new ImageView(image);
+            int batteryLevel = watches.get(i).getBatteryPercentage();
+            int batteryType;
             int finalI = i + 1;
 
-            imageView.setOnMouseClicked((MouseEvent e) ->{ // If clicked
+            button.setGraphic(imageView);
+
+            button.setOnAction((ActionEvent event) ->{ // If clicked
                 try {
                     watchlogoPressed(finalI);
                 } catch (IOException ex) {
@@ -135,10 +143,26 @@ public class PrimaryController{
                 }
             });
 
-            Label label = new Label("Watch " + (i+1));
+            if(batteryLevel < 20){
+                batteryType = 1;
+            }else if(batteryLevel < 60){
+                batteryType = 2;
+            }else{
+                batteryType = 3;
+            }
+
+            Image imageBattery = new Image("\\images\\battery" + batteryType + ".png");
+            ImageView imageViewBattery = new ImageView(imageBattery);
+
+            Label label = new Label(batteryLevel + "%");
             Separator sep = new Separator();
-            vbox.getChildren().addAll(imageView, label, sep);
+
+            hbox.getChildren().addAll(button, imageViewBattery, label);
+            hbox.setAlignment(Pos.CENTER);
+
+            vbox.getChildren().addAll(hbox, sep);
             vbox.setAlignment(Pos.CENTER);
+
             watchBar.getChildren().add(vbox);
         }
     }
