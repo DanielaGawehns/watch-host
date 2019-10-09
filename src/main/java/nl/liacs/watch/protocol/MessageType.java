@@ -1,8 +1,11 @@
 package nl.liacs.watch.protocol;
 
 public enum MessageType {
-    // a heartbeat to check if the connection is still open uninterrupted.
-    HEARTBEAT,
+    // a PING to check if the connection is still open uninterrupted and to
+    // check if the other side stil responds by sending a PONG.
+    PING,
+    // a PONG to respond to a PING.
+    PONG,
 
     // an incremental data update for the dashboard, used in live views.
     INCREMENT,

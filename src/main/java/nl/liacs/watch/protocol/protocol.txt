@@ -1,22 +1,24 @@
 # Universal message structure
-`<command>\t<n params><parameters...>`
+`<command (unsigned 8 bit)><n params (unsigned 8 bit)><parameters...>`
 
 ## Parameter
-`\t<type>!<value>`
+`<type (unsigned 4 bit)<value length (unsigned 16 bit)><value>`
 
 ### Parameter type
 one of:
 
-- STRING;
-- DOUBLE;
-- INTEGER.
+- 0 (binary data string);
+- 1 (double precision IEEE float);
+- 2 (32-bit integer).
 
 # Message types
 There are several message types, some bidirectional but most in one direction.
 
+Structure example is in ASCII, the conversion to the real binary format should be trivial.
+
 ## Bidirectional
 
-### PING
+### PING (0)
 This message can be send by either side in a self chosen interval.
 The other side should respond with a PONG within a maximum set amount of missed PINGs.
 Generally this is set to 3, so the other side can miss two PINGs and only then respond with a PONG to reset the miss counter.
@@ -24,7 +26,7 @@ Generally this is set to 3, so the other side can miss two PINGs and only then r
 Structure:
 `PING`
 
-### PONG
+### PONG (1)
 The message to reply with a PING, should be sent in response to a PING.
 
 Structure:
@@ -32,7 +34,7 @@ Structure:
 
 ## Watch to host
 
-### INCREMENT
+### INCREMENT (2)
 An update to the live view on the host.
 Should be send every LIVE_INTERVAL.
 
@@ -41,7 +43,7 @@ The time delta is since the previous sent INCREMENT message in milliseconds.
 Structure:
 `INCREMENT <sensor> <time delta> <data...>`
 
-### PLAYBACK
+### PLAYBACK (3)
 A data point for the full recorded session.
 
 The time delta is since the start of the recording session in milliseconds.
@@ -51,19 +53,19 @@ Structure:
 
 ## Host to watch
 
-### SENSOR_INTERVAL
+### SENSOR_INTERVAL (4)
 Set the interval for a given sensor in milliseconds.
 
 Structure:
 `SENSOR_INTERVAL <sensor> <interval>`
 
-### SENSOR_SETTING
+### SENSOR_SETTING (5)
 Set a specific sensor dependent setting for the watch.
 
 Structure:
 `SENSOR_SETTING <sensor> <setting name> <setting value>`
 
-### LIVE_INTERVAL
+### LIVE_INTERVAL (6)
 Set the interval in milliseconds for sending aggregated updates for the Host's live dashboard.
 
 Structure:
