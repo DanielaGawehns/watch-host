@@ -1,0 +1,76 @@
+# Universal message structure
+`<command>\t<n params><parameters...>`
+
+## Parameter
+`\t<type>!<value>`
+
+### Parameter type
+one of:
+
+- STRING;
+- DOUBLE;
+- INTEGER.
+
+# Message types
+There are several message types, some bidirectional but most in one direction.
+
+## Bidirectional
+
+### PING
+This message can be send by either side in a self chosen interval.
+The other side should respond with a PONG within a maximum set amount of missed PINGs.
+Generally this is set to 3, so the other side can miss two PINGs and only then respond with a PONG to reset the miss counter.
+
+Structure:
+`PING`
+
+### PONG
+The message to reply with a PING, should be sent in response to a PING.
+
+Structure:
+`PONG`
+
+## Watch to host
+
+### INCREMENT
+An update to the live view on the host.
+Should be send every LIVE_INTERVAL.
+
+The time delta is since the previous sent INCREMENT message in milliseconds.
+
+Structure:
+`INCREMENT <sensor> <time delta> <data...>`
+
+### PLAYBACK
+A data point for the full recorded session.
+
+The time delta is since the start of the recording session in milliseconds.
+
+Structure:
+`PLAYBACK <sensor> <time delta> <data...>`
+
+## Host to watch
+
+### SENSOR_INTERVAL
+Set the interval for a given sensor in milliseconds.
+
+Structure:
+`SENSOR_INTERVAL <sensor> <interval>`
+
+### SENSOR_SETTING
+Set a specific sensor dependent setting for the watch.
+
+Structure:
+`SENSOR_SETTING <sensor> <setting name> <setting value>`
+
+### LIVE_INTERVAL
+Set the interval in milliseconds for sending aggregated updates for the Host's live dashboard.
+
+Structure:
+`LIVE_INTERVAL <interval>`
+
+# Example
+Accelerometer live view update, 100ms after the previous one.
+Values are in order of x,y,z acceleration.
+
+`INCREMENT 5 STRING!accel INTEGER!100 DOUBLE!5.43894 DOUBLE!3.47392 DOUBLE!1.32419`
