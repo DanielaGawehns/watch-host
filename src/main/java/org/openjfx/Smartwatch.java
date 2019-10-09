@@ -1,5 +1,6 @@
 package org.openjfx;
 
+import javax.security.auth.Subject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +9,11 @@ import java.util.Map;
 // Class holding all smartwatch functionality
 public class Smartwatch {
 
+    // Data about watch
     private WatchData watchData;
+
+    // ID of subject
+    private SubjectData subjectData;
 
     // list of data of sensors
     private List<SensorData> sensorDataList = new ArrayList<>();
@@ -18,6 +23,9 @@ public class Smartwatch {
     static{
         sensorMap = new HashMap<>();
         sensorMap.put("HR", 0); // put HR on spot 0
+        sensorMap.put("GRAVITY", 1);
+        sensorMap.put("ACCELERO", 2);
+        sensorMap.put("STEP", 3);
     }
 
     // Number of sensors for a smartwatch
@@ -28,9 +36,10 @@ public class Smartwatch {
 
 
     // Constructor
-    Smartwatch(WatchData data){
+    Smartwatch(WatchData _data, SubjectData _subjectData){
         System.out.println("making smartwatch");
-        watchData = data;
+        watchData = _data;
+        subjectData = _subjectData;
         for(int i = 0; i < numberOfSensors; i++){
             sensorDataList.add(null); // add empty sensorData
         }
