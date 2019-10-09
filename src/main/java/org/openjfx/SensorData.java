@@ -12,17 +12,15 @@ public class SensorData {
     // data for charting
     private List<XYChart.Data<Number, Number>> records;
 
-
     // name of sensor used
     private String sensor;
-
 
     // Number of the watch this data belong to
     private int watchNumber;
 
 
     // constructor
-    public SensorData(int _watchNumber, String _sensor){
+    SensorData(int _watchNumber, String _sensor){
         records = new ArrayList<>();
         sensor = _sensor;
         watchNumber = _watchNumber;
@@ -40,13 +38,13 @@ public class SensorData {
 
 
     // returns datapoint 'index' from records
-    public XYChart.Data<Number, Number> getDataPoint(int index){
+    XYChart.Data<Number, Number> getDataPoint(int index){
         return records.get(index);
     }
 
 
     // returns size of records
-    public int size(){
+    int size(){
         return records.size();
     }
 
@@ -58,17 +56,17 @@ public class SensorData {
 
 
     // adds data point to records
-    public void add(XYChart.Data<Number, Number> data){ records.add(data); }
+    void add(XYChart.Data<Number, Number> data){ records.add(data); }
 
 
     // returns sensor
-    public String getSensor() {
+    String getSensor() {
         return sensor;
     }
 
 
     // returns the watchNumber
-    public int getWatchNumber() {
+    int getWatchNumber() {
         System.out.println("Returning watchnumber: " + watchNumber);
         return watchNumber;
     }

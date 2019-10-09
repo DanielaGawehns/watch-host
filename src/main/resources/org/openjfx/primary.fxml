@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
@@ -13,16 +9,12 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" stylesheets="@../../stylesheets/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.PrimaryController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@../../stylesheets/mainStyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.PrimaryController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -61,99 +53,52 @@
       </ButtonBar>
    </bottom>
    <left>
-      <ScrollPane hbarPolicy="NEVER" BorderPane.alignment="CENTER">
-        <content>
-            <BorderPane>
-               <top>
-                  <HBox alignment="CENTER" prefHeight="49.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <BorderPane style="-fx-background-color: #c9c9c9;">
+         <top>
+            <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets top="10.0" />
+               </BorderPane.margin>
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" text="Smartwatches" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="22.0" />
+                     </font>
+                  </Label>
+                  <Separator />
+                  <Button fx:id="buttonOverview" mnemonicParsing="false" onAction="#switchToOverview" prefHeight="45.0" prefWidth="200.0" text="Overview">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                     </padding>
+                  </Button>
+                  <Separator prefWidth="200.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Separator>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
+            </VBox>
+         </top>
+         <center>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: #c9c9c9;" BorderPane.alignment="CENTER">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0">
                      <children>
-                        <Label alignment="CENTER" prefHeight="32.0" prefWidth="155.0" text="Smartwatches" textAlignment="CENTER">
-                           <font>
-                              <Font name="System Bold" size="22.0" />
-                           </font>
-                        </Label>
+                        <VBox fx:id="watchBar" alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
-                  </HBox>
-               </top>
-               <center>
-                  <VBox alignment="CENTER" BorderPane.alignment="CENTER">
-                     <children>
-                        <Separator prefHeight="20.0" prefWidth="200.0" />
-                        <Button fx:id="buttonOverview" mnemonicParsing="false" onAction="#switchToOverview" prefHeight="23.0" prefWidth="199.0" text="Overview">
-                           <font>
-                              <Font name="System Bold" size="16.0" />
-                           </font>
-                        </Button>
-                        <Separator prefHeight="20.0" prefWidth="200.0" />
-                        <ImageView fx:id="watchlogo1" depthTest="DISABLE" fitHeight="150.0" fitWidth="200.0" onMousePressed="#watchlogo1Pressed" pickOnBounds="false" preserveRatio="true" styleClass="root">
-                           <image>
-                              <Image url="@../../images/watchlogo.jpg" />
-                           </image>
-                        </ImageView>
-                        <Label text="Watch 1" />
-                        <Separator prefHeight="21.0" prefWidth="200.0" />
-                        <ImageView fx:id="watchlogo2" fitHeight="150.0" fitWidth="200.0" onMousePressed="#watchlogo2Pressed" pickOnBounds="true" preserveRatio="true" styleClass="root">
-                           <image>
-                              <Image url="@../../images/watchlogo.jpg" />
-                           </image>
-                        </ImageView>
-                        <Label text="Watch 2" />
-                        <Separator prefWidth="200.0" />
-                     </children>
-                  </VBox>
-               </center>
-            </BorderPane>
-        </content>
-      </ScrollPane>
+                  </AnchorPane>
+              </content>
+            </ScrollPane>
+         </center>
+      </BorderPane>
    </left>
    <center>
-      <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-         <tabs>
-            <Tab fx:id="singlewatchtab">
-               <content>
-                  <VBox alignment="CENTER">
-                     <children>
-                        <LineChart fx:id="sensorChart" animated="false" disable="true" title="Sensor data">
-                          <xAxis>
-                            <NumberAxis label="Time(Seconds)" side="BOTTOM" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis label="Intensity" side="LEFT" />
-                          </yAxis>
-                        </LineChart>
-                     </children>
-                  </VBox>
-               </content>
-            </Tab>
-             <Tab fx:id="overview">
-                 <content>
-                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER">
-                     <content>
-                        <VBox alignment="CENTER">
-                           <children>
-                              <LineChart>
-                                <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </LineChart>
-                              <BarChart>
-                                <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </BarChart>
-                           </children>
-                        </VBox>
-                     </content>
-                  </ScrollPane>
-                 </content>
-             </Tab>
-         </tabs>
-      </TabPane>
+      <BorderPane fx:id="view" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
