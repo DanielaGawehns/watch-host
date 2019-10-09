@@ -5,9 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -132,13 +130,14 @@ public class PrimaryController{
         for(int i = 0; i < watches.size(); i++){
             VBox vbox = new VBox();
             HBox hbox = new HBox();
-            Button button = new Button("Watch " + i);
-            Image image = new Image("\\images\\smartwatch.png");
+            SplitMenuButton button = new SplitMenuButton();
+            Image image = new Image("/images/smartwatch.png");
             ImageView imageView = new ImageView(image);
             int batteryLevel = watches.get(i).getBatteryPercentage();
             int batteryType;
             int finalI = i + 1;
 
+            button.setText("Watch " + watches.get(i).getWatchID());
             button.setGraphic(imageView);
 
             button.setOnAction((ActionEvent event) ->{ // If clicked
@@ -148,6 +147,8 @@ public class PrimaryController{
                     ex.printStackTrace();
                 }
             });
+
+            button.getItems().addAll(new MenuItem("Options..."), new MenuItem("Disconnect"));
 
             if(batteryLevel < 20){
                 batteryType = 1;
@@ -165,6 +166,7 @@ public class PrimaryController{
 
             hbox.getChildren().addAll(button, imageViewBattery, label);
             hbox.setAlignment(Pos.CENTER);
+            hbox.setSpacing(5);
 
             vbox.getChildren().addAll(hbox, sep);
             vbox.setAlignment(Pos.CENTER);

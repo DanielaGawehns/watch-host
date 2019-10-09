@@ -15,6 +15,9 @@ public class Smartwatch {
     // ID of subject
     private SubjectData subjectData;
 
+    // Nickname for watch used in program
+    private String watchName;
+
     // list of data of sensors
     private List<SensorData> sensorDataList = new ArrayList<>();
 
@@ -40,6 +43,7 @@ public class Smartwatch {
         System.out.println("making smartwatch");
         watchData = _data;
         subjectData = _subjectData;
+        watchName = "NO NAME";
         for(int i = 0; i < numberOfSensors; i++){
             sensorDataList.add(null); // add empty sensorData
         }
@@ -64,4 +68,8 @@ public class Smartwatch {
     }
 
     int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
+
+    WatchData getWatchData() { return watchData; }
+
+    String getWatchName() { return watchName; }
 }

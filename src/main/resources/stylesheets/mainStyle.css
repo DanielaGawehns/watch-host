@@ -15,6 +15,23 @@
     -fx-text-fill: white;
 }
 
+
+.split-menu-button{
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+.split-menu-button .label {
+    -fx-background-color:  transparent;
+}
+
+.split-menu-button .arrow-button {
+   -fx-background-color: transparent;
+}
+
+
+
 .scroll-pane > .viewport {
    -fx-background-color: transparent;
 }

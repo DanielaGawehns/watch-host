@@ -5,6 +5,7 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
@@ -70,22 +71,56 @@
          <children>
             <HBox alignment="CENTER">
                <children>
-                  <ImageView fitHeight="100.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../images/watchlogo.jpg" />
+                        <Image url="@../../images/smartwatch.png" />
                      </image>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
                   </ImageView>
                   <VBox alignment="CENTER">
                      <children>
-                        <Label text="WatchNr" />
-                        <Label text="PatientNr" />
+                        <Label fx:id="watchNameLabel" text="WatchName" />
+                        <Label fx:id="watchNrLabel" text="WatchNr" />
                      </children>
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
                   </VBox>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/battery3.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets left="60.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label fx:id="batteryLevelLabel" text="BatteryLevel" />
+                        <Label fx:id="batteryRemainingLabel" text="EstimatedRemainingTime" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label text="Storage" />
+                        <ProgressBar fx:id="storageBar" prefWidth="200.0" progress="0.0" />
+                        <Label fx:id="storageLabel" text="StorageLevel" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="60.0" />
+                     </HBox.margin>
+                  </VBox>
                </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
             </HBox>
+            <Separator prefWidth="200.0" />
             <HBox>
                <children>
                   <Label text="Current measurement:">

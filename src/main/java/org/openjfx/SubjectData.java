@@ -10,7 +10,7 @@ public class SubjectData {
 
     private int age;
 
-    public SubjectData(int subjectID) {
+    SubjectData(int subjectID) {
         this.subjectID = subjectID;
     }
 
