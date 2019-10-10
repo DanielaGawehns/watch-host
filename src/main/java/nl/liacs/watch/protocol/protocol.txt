@@ -1,8 +1,12 @@
 # Universal message structure
-`<command (unsigned 8 bit)><n params (unsigned 8 bit)><parameters...>`
+| command ID | number of parameters | parameters... |
+|:---|:---|:---|
+|unsigned 8 bit|unsigned 8 bit||
 
 ## Parameter
-`<type (unsigned 4 bit)<value length (unsigned 16 bit)><value>`
+| type | length of value in bytes | value |
+|:---|:---|:---|
+|unsigned 4 bit|unsigned 16 bit||
 
 ### Parameter type
 one of:
