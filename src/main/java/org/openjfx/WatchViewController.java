@@ -1,12 +1,21 @@
 package org.openjfx;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 // Class for controlling functions from the watchView screen
 // Controlling watchview.fxml
@@ -75,18 +84,77 @@ public class WatchViewController {
         chart.setAnimated(true);
         chart.setDisable(false); // turn on chart
 
-        for(int i = 0; i < sensorData.size(); i++){
-            XYChart.Data<Number, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
-
-            System.out.println("Adding: " + temp.toString());
-            series.getData().add(temp); // add datapoint to series
-
-        }
-
         series.setName(sensorData.getSensor()); // set title of line for legend
         chart.getData().add(series); // add series to chart
         chart.setTitle(sensorData.getSensor()); // set title of chart
+
+        System.out.println("Data size is " + sensorData.size());
+        for(int i = 0; i < sensorData.size(); i++){
+            XYChart.Data<Number, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
+            temp.setNode(createDataNode());
+            System.out.println("Adding: " + temp.toString());
+            series.getData().add(temp); // add datapoint to series
+
+
+
+        }
+
+
+
+
     }
+
+
+    private static Node createDataNode() {
+        var label = new Label();
+
+        var pane = new Pane(label);
+        pane.setShape(new Circle(6.0));
+        pane.setScaleShape(false);
+        pane.setStyle("-fx-background-color: CHART_COLOR_1");
+
+        pane.setOnMouseEntered(mouseEvent -> {
+            pane.setStyle("-fx-background-color: grey");
+        });
+
+        pane.setOnMouseExited(mouseEvent -> {
+            pane.setStyle("-fx-background-color: CHART_COLOR_1");
+        });
+
+        pane.setOnMouseClicked(mouseEvent -> {
+            System.out.println("Clicked");
+            final Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            VBox dialogVbox = new VBox();
+            HBox hbox = new HBox();
+            Button buttonSet = new Button("Add pin");
+            Button buttonRemove = new Button("Remove pin");
+            TextField field = new TextField();
+            field.setPromptText("Type pin name...");
+            hbox.getChildren().addAll(buttonSet, buttonRemove);
+            dialogVbox.getChildren().addAll(new Text("This is a Dialog"), field, hbox);
+            Scene dialogScene = new Scene(dialogVbox);
+            dialog.setScene(dialogScene);
+            dialog.show();
+
+            buttonSet.setOnAction(e -> {
+                label.setText(field.getText());
+                dialog.close();
+            });
+
+            buttonRemove.setOnAction(e -> {
+                label.setText("");
+                dialog.close();
+            });
+
+
+        });
+
+        label.translateYProperty().bind(label.heightProperty().divide(-1.5));
+        System.out.println("Created pin");
+        return pane;
+    }
+
 
 
     // Sets all info fields
