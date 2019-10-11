@@ -4,16 +4,15 @@
 |unsigned 8 bit|unsigned 8 bit||
 
 ## Parameter
-| type | length of value in bytes | value |
-|:---|:---|:---|
-|unsigned 4 bit|unsigned 16 bit||
+| length of value in bytes | value |
+|:---|:---|
+|unsigned 16 bit||
 
-### Parameter type
-one of:
+### Value types
+Specified by every command, possible are:
 
-- 0 (binary data string);
-- 1 (double precision IEEE float);
-- 2 (32-bit integer).
+- Binary data string;
+- Double precision IEEE float.
 
 # Message types
 There are several message types, some bidirectional but most in one direction.
@@ -45,7 +44,7 @@ Should be send every LIVE_INTERVAL.
 The time delta is since the previous sent INCREMENT message in milliseconds.
 
 Structure:
-`INCREMENT <sensor> <time delta> <data...>`
+`INCREMENT <sensor (ascii string)> <time delta (double)> <data... (double)>`
 
 ### PLAYBACK (3)
 A data point for the full recorded session.
@@ -53,7 +52,7 @@ A data point for the full recorded session.
 The time delta is since the start of the recording session in milliseconds.
 
 Structure:
-`PLAYBACK <sensor> <time delta> <data...>`
+`PLAYBACK <sensor (ascii string)> <time delta (double)> <data... (double)>`
 
 ## Host to watch
 
@@ -61,19 +60,22 @@ Structure:
 Set the interval for a given sensor in milliseconds.
 
 Structure:
-`SENSOR_INTERVAL <sensor> <interval>`
+`SENSOR_INTERVAL <sensor (ascii string)> <interval (double)>`
 
 ### SENSOR_SETTING (5)
 Set a specific sensor dependent setting for the watch.
 
 Structure:
-`SENSOR_SETTING <sensor> <setting name> <setting value>`
+`SENSOR_SETTING <sensor (ascii string)> <setting name (ascii string)> <setting value ((binary) string)>`
+
+#### Sensor settings
+The settings available per sensor should be listed here.
 
 ### LIVE_INTERVAL (6)
-Set the interval in milliseconds for sending aggregated updates for the Host's live dashboard.
+Set the interval in milliseconds for sending aggregated updates for the host's live dashboard.
 
 Structure:
-`LIVE_INTERVAL <interval>`
+`LIVE_INTERVAL <interval (double)>`
 
 # Example
 Accelerometer live view update, 100ms after the previous one.
