@@ -34,6 +34,7 @@ support.
 Specified by every command, possible are:
 
 - Binary data string;
+- Null terminated ASCII string;
 - Double precision IEEE float.
 
 ## Message types
@@ -67,7 +68,7 @@ Should be send every LIVE_INTERVAL.
 The time delta is since the previous sent INCREMENT message in milliseconds.
 
 Structure:
-`INCREMENT <sensor (ascii string)> <time delta (double)> <data... (double)>`
+`INCREMENT <sensor (ASCII string)> <time delta (double)> <data... (double)>`
 
 #### PLAYBACK (3)
 A data point for the full recorded session.
@@ -75,7 +76,7 @@ A data point for the full recorded session.
 The time delta is since the start of the recording session in milliseconds.
 
 Structure:
-`PLAYBACK <sensor (ascii string)> <time delta (double)> <data... (double)>`
+`PLAYBACK <sensor (ASCII string)> <time delta (double)> <data... (double)>`
 
 ### Host to watch
 
@@ -83,13 +84,13 @@ Structure:
 Set the interval for a given sensor in milliseconds.
 
 Structure:
-`SENSOR_INTERVAL <sensor (ascii string)> <interval (double)>`
+`SENSOR_INTERVAL <sensor (ASCII string)> <interval (double)>`
 
 #### SENSOR_SETTING (5)
 Set a specific sensor dependent setting for the watch.
 
 Structure:
-`SENSOR_SETTING <sensor (ascii string)> <setting name (ascii string)> <setting value ((binary) string)>`
+`SENSOR_SETTING <sensor (ASCII string)> <setting name (ASCII string)> <setting value (binary string)>`
 
 ##### Sensor settings
 The settings available per sensor should be listed here.
@@ -104,4 +105,6 @@ Structure:
 Accelerometer live view update, 100ms after the previous one.
 Values are in order of x,y,z acceleration.
 
-`INCREMENT 5 STRING!accel INTEGER!100 DOUBLE!5.43894 DOUBLE!3.47392 DOUBLE!1.32419`
+`INCREMENT 5 accel 100 5.43894 3.47392 1.32419`
+
+TODO: binary example
