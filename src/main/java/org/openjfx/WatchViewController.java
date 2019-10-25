@@ -55,7 +55,7 @@ public class WatchViewController {
     private Label watchNrLabel;
 
     @FXML
-    private LineChart<Number, Number> sensorChart;
+    private LineChart<String, Number> sensorChart;
 
     // The watch of which the overview is showed
     private Smartwatch watch;
@@ -85,8 +85,8 @@ public class WatchViewController {
 
     // fill chart with data from sensor
     // TODO: Make this work with all types of charts
-    private void fillChart(LineChart<Number, Number> chart, String sensor) {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>(); // new series for adding data points
+    private void fillChart(LineChart<String, Number> chart, String sensor) {
+        XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
         System.out.println("Fill Chart for watch: " + watch.getWatchID());
         SensorData sensorData = watch.getSensorData(sensor); // get data of the right sensor
 
@@ -100,19 +100,13 @@ public class WatchViewController {
         chart.setTitle(sensorData.getSensor()); // set title of chart
 
         System.out.println("Data size is " + sensorData.size());
+
         for(int i = 0; i < sensorData.size(); i++){
-           /* XYChart.Data<Number, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
+            XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
             temp.setNode(createDataNode());
             System.out.println("Adding: " + temp.toString());
-            series.getData().add(temp); // add datapoint to series*/
-
-
-
+            series.getData().add(temp); // add datapoint to series
         }
-
-
-
-
     }
 
 

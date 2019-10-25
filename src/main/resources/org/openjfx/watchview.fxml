@@ -17,6 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.chart.CategoryAxis?>
 <BorderPane fx:id="view" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.WatchViewController">
    <center>
       <ScrollPane hbarPolicy="NEVER" BorderPane.alignment="CENTER">
@@ -25,7 +26,7 @@
                <children>
                   <LineChart fx:id="sensorChart" disable="true" title="Heart Rate">
                      <xAxis>
-                        <NumberAxis label="Time" side="BOTTOM" />
+                        <CategoryAxis label="Time" side="BOTTOM" />
                      </xAxis>
                      <yAxis>
                         <NumberAxis label="Heart Rate" side="LEFT" />

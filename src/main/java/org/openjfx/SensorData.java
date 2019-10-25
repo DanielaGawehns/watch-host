@@ -20,6 +20,9 @@ public class SensorData {
     // Number of the watch this data belong to
     private int watchNumber;
 
+    private SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat time = new SimpleDateFormat("hh:mm:ss");
+
 
     // constructor
     SensorData(int _watchNumber, String _sensor){
@@ -53,15 +56,14 @@ public class SensorData {
 
 
     // TODO: Delete
-    public void printRecords(){
-        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat time = new SimpleDateFormat("hh:mm:ss");
+    void printRecords(){
+
         for(int i = 0; i < records.size(); i++){
             DataPoint point = records.get(i);
             System.out.print(i + ": " + date.format(point.getDate()) + " , " + time.format(point.getTime()));
             List<Double> list = point.getDataList();
-            for (int j = 0; j < list.size(); j++) {
-                System.out.print(" , " + list.get(j));
+            for (Double aDouble : list) {
+                System.out.print(" , " + aDouble);
             }
             System.out.println("");
         }
@@ -152,6 +154,11 @@ public class SensorData {
         for(int i = 0; i < list.size(); i++){
             list.set(i, round(list.get(i) / division, 1));
         }
+    }
+
+    // TODO: make this work for all types of data
+    XYChart.Data<String, Number> getDataPoint(int i) {
+        return new XYChart.Data<>(time.format(records.get(i).getTime()), records.get(i).getDataList().get(0));
     }
 }
 
