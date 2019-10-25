@@ -88,6 +88,8 @@ public class PrimaryController{
 
         newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
         view.setCenter(newPane); // set newPane as center of borderPane
+        System.out.println("Switching to watchview for watch " + watches.get(currentWatch-1).getWatchID());
+        System.out.println("- name: " + watches.get(currentWatch-1).getWatchName());
     }
 
 
@@ -107,18 +109,21 @@ public class PrimaryController{
 
     // Go to input dir and read all files
     private void syncFiles(File folder) {
-        SensorData sensorData;
 
         for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all folders in map 'folder'
-            sensorData = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
-            watches.get(sensorData.getWatchNumber()).setSensorData(sensorData); // add data to the right watch
+            List<DataPoint> dataList = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
+            watches.get(reader.getWatchNumber()).addData(dataList); // add data stream to watch
         }
+
+
+       // watches.get(reader.getWatchNumber()).getSensorData("HRM").mergeDuplicates();
+        watches.get(reader.getWatchNumber()).getSensorData("HRM").printRecords();
     }
 
 
     // Event for syncButton
     public void syncButtonPressed(ActionEvent actionEvent) {
-        syncFiles(new File(System.getProperty("user.dir") + "/src/main/resources/input/")); // read files in input folder
+        syncFiles(new File(System.getProperty("user.dir") + "/src/main/resources/input/test")); // read files in input folder
         if(currentWatch > 0){
             watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch
         }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
@@ -21,36 +21,30 @@
    <center>
       <ScrollPane hbarPolicy="NEVER" BorderPane.alignment="CENTER">
          <content>
-            <GridPane fx:id="grid">
+            <GridPane fx:id="grid" vgap="5.0">
                <children>
-                  <VBox alignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-                     <children>
-                        <LineChart fx:id="sensorChart" disable="true">
-                           <xAxis>
-                              <NumberAxis label="Time" side="BOTTOM" />
-                           </xAxis>
-                           <yAxis>
-                              <NumberAxis label="Heart Rate" side="LEFT" />
-                           </yAxis>
-                        </LineChart>
-                        <Separator prefWidth="200.0" />
-                        <Label alignment="CENTER" text="Label" />
-                     </children>
-                  </VBox>
-                  <LineChart disable="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                  <LineChart fx:id="sensorChart" disable="true" title="Heart Rate">
+                     <xAxis>
+                        <NumberAxis label="Time" side="BOTTOM" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis label="Heart Rate" side="LEFT" />
+                     </yAxis>
+                  </LineChart>
+                  <LineChart disable="true" title="Accelerometer" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <xAxis>
-                      <CategoryAxis side="BOTTOM" />
+                      <NumberAxis label="Time" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis side="LEFT" />
+                      <NumberAxis label="Acceleration" side="LEFT" />
                     </yAxis>
                   </LineChart>
-                  <LineChart disable="true" GridPane.rowIndex="2">
+                  <LineChart disable="true" title="Gravity" GridPane.rowIndex="2">
                     <xAxis>
-                      <CategoryAxis side="BOTTOM" />
+                      <NumberAxis label="Time" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis side="LEFT" />
+                      <NumberAxis label="Gravity" side="LEFT" />
                     </yAxis>
                   </LineChart>
                </children>
@@ -58,10 +52,13 @@
                   <ColumnConstraints />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints maxHeight="473.0" minHeight="278.0" prefHeight="410.0" />
-                  <RowConstraints maxHeight="500.0" minHeight="150.0" prefHeight="316.0" />
-                  <RowConstraints maxHeight="385.0" minHeight="10.0" prefHeight="334.0" />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
                </rowConstraints>
+               <padding>
+                  <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+               </padding>
             </GridPane>
          </content>
       </ScrollPane>
@@ -113,6 +110,15 @@
                      </children>
                      <HBox.margin>
                         <Insets left="60.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#optionsPressed" prefHeight="25.0" prefWidth="75.0" text="Options" />
+                        <Button mnemonicParsing="false" text="Disconnect" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="40.0" />
                      </HBox.margin>
                   </VBox>
                </children>
