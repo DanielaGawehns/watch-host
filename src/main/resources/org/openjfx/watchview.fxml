@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.chart.CategoryAxis?>
 <BorderPane fx:id="view" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.WatchViewController">
    <center>
       <ScrollPane hbarPolicy="NEVER" BorderPane.alignment="CENTER">
          <content>
-            <GridPane fx:id="grid">
+            <GridPane fx:id="grid" vgap="5.0">
                <children>
-                  <VBox alignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-                     <children>
-                        <LineChart fx:id="sensorChart" disable="true">
-                           <xAxis>
-                              <NumberAxis label="Time" side="BOTTOM" />
-                           </xAxis>
-                           <yAxis>
-                              <NumberAxis label="Heart Rate" side="LEFT" />
-                           </yAxis>
-                        </LineChart>
-                        <Separator prefWidth="200.0" />
-                        <Label alignment="CENTER" text="Label" />
-                     </children>
-                  </VBox>
-                  <LineChart disable="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                  <LineChart fx:id="sensorChart" disable="true" title="Heart Rate">
+                     <xAxis>
+                        <CategoryAxis label="Time" side="BOTTOM" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis label="Heart Rate" side="LEFT" />
+                     </yAxis>
+                  </LineChart>
+                  <LineChart disable="true" title="Accelerometer" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <xAxis>
-                      <CategoryAxis side="BOTTOM" />
+                      <NumberAxis label="Time" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis side="LEFT" />
+                      <NumberAxis label="Acceleration" side="LEFT" />
                     </yAxis>
                   </LineChart>
-                  <LineChart disable="true" GridPane.rowIndex="2">
+                  <LineChart disable="true" title="Gravity" GridPane.rowIndex="2">
                     <xAxis>
-                      <CategoryAxis side="BOTTOM" />
+                      <NumberAxis label="Time" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis side="LEFT" />
+                      <NumberAxis label="Gravity" side="LEFT" />
                     </yAxis>
                   </LineChart>
                </children>
@@ -53,12 +53,92 @@
                   <ColumnConstraints />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints maxHeight="473.0" minHeight="278.0" prefHeight="410.0" />
-                  <RowConstraints maxHeight="500.0" minHeight="150.0" prefHeight="316.0" />
-                  <RowConstraints maxHeight="385.0" minHeight="10.0" prefHeight="334.0" />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
                </rowConstraints>
+               <padding>
+                  <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+               </padding>
             </GridPane>
          </content>
       </ScrollPane>
    </center>
+   <top>
+      <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER">
+               <children>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/smartwatch.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </ImageView>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label fx:id="watchNameLabel" text="WatchName" />
+                        <Label fx:id="watchNrLabel" text="WatchNr" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/battery3.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets left="60.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label fx:id="batteryLevelLabel" text="BatteryLevel" />
+                        <Label fx:id="batteryRemainingLabel" text="EstimatedRemainingTime" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label text="Storage" />
+                        <ProgressBar fx:id="storageBar" prefWidth="200.0" progress="0.0" />
+                        <Label fx:id="storageLabel" text="StorageLevel" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="60.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#optionsPressed" prefHeight="25.0" prefWidth="75.0" text="Options" />
+                        <Button mnemonicParsing="false" text="Disconnect" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="40.0" />
+                     </HBox.margin>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox>
+               <children>
+                  <Label text="Current measurement:">
+                     <HBox.margin>
+                        <Insets left="50.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
+         </children>
+      </VBox>
+   </top>
 </BorderPane>

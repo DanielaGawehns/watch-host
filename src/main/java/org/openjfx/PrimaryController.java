@@ -3,17 +3,16 @@ package org.openjfx;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,9 +54,14 @@ public class PrimaryController{
         WatchData data1 = new WatchData(1, 45, 8000, 4123);
         WatchData data2 = new WatchData(2, 12, 8000, 6452);
         WatchData data3 = new WatchData(3, 89, 8000, 1235);
-        watches.add(new Smartwatch(data1)); // TEMP: add watch 1
-        watches.add(new Smartwatch(data2)); // TEMP: add watch 2
-        watches.add(new Smartwatch(data3)); // TEMP: add watch 3
+        SubjectData subjectData1 = new SubjectData(1);
+        SubjectData subjectData2 = new SubjectData(2);
+        SubjectData subjectData3 = new SubjectData(3);
+
+
+        watches.add(new Smartwatch(data1, subjectData1)); // TEMP: add watch 1
+        watches.add(new Smartwatch(data2, subjectData2)); // TEMP: add watch 2
+        watches.add(new Smartwatch(data3, subjectData3)); // TEMP: add watch 3
 
         currentWatch = -1;
         loadOverviewFXML();
@@ -84,6 +88,8 @@ public class PrimaryController{
 
         newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
         view.setCenter(newPane); // set newPane as center of borderPane
+        System.out.println("Switching to watchview for watch " + watches.get(currentWatch-1).getWatchID());
+        System.out.println("- name: " + watches.get(currentWatch-1).getWatchName());
     }
 
 
@@ -103,18 +109,21 @@ public class PrimaryController{
 
     // Go to input dir and read all files
     private void syncFiles(File folder) {
-        SensorData sensorData;
 
         for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all folders in map 'folder'
-            sensorData = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
-            watches.get(sensorData.getWatchNumber()).setSensorData(sensorData); // add data to the right watch
+            List<DataPoint> dataList = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
+            watches.get(reader.getWatchNumber()).addData(dataList); // add data stream to watch
         }
+
+
+       // watches.get(reader.getWatchNumber()).getSensorData("HRM").mergeDuplicates();
+        watches.get(reader.getWatchNumber()).getSensorData("HRM").printRecords();
     }
 
 
     // Event for syncButton
     public void syncButtonPressed(ActionEvent actionEvent) {
-        syncFiles(new File(System.getProperty("user.dir") + "\\src\\main\\resources\\input\\")); // read files in input folder
+        syncFiles(new File(System.getProperty("user.dir") + "/src/main/resources/input/test")); // read files in input folder
         if(currentWatch > 0){
             watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch
         }
@@ -126,13 +135,14 @@ public class PrimaryController{
         for(int i = 0; i < watches.size(); i++){
             VBox vbox = new VBox();
             HBox hbox = new HBox();
-            Button button = new Button("Watch " + i);
-            Image image = new Image("\\images\\smartwatch.png");
+            SplitMenuButton button = new SplitMenuButton();
+            Image image = new Image("/images/smartwatch.png");
             ImageView imageView = new ImageView(image);
             int batteryLevel = watches.get(i).getBatteryPercentage();
             int batteryType;
             int finalI = i + 1;
 
+            button.setText("Watch " + watches.get(i).getWatchID());
             button.setGraphic(imageView);
 
             button.setOnAction((ActionEvent event) ->{ // If clicked
@@ -143,6 +153,8 @@ public class PrimaryController{
                 }
             });
 
+            button.getItems().addAll(new MenuItem("Options..."), new MenuItem("Disconnect"));
+
             if(batteryLevel < 20){
                 batteryType = 1;
             }else if(batteryLevel < 60){
@@ -151,7 +163,7 @@ public class PrimaryController{
                 batteryType = 3;
             }
 
-            Image imageBattery = new Image("\\images\\battery" + batteryType + ".png");
+            Image imageBattery = new Image("/images/battery" + batteryType + ".png");
             ImageView imageViewBattery = new ImageView(imageBattery);
 
             Label label = new Label(batteryLevel + "%");
@@ -159,11 +171,30 @@ public class PrimaryController{
 
             hbox.getChildren().addAll(button, imageViewBattery, label);
             hbox.setAlignment(Pos.CENTER);
+            hbox.setSpacing(5);
 
             vbox.getChildren().addAll(hbox, sep);
             vbox.setAlignment(Pos.CENTER);
 
             watchBar.getChildren().add(vbox);
         }
+    }
+
+    // Draws new window for adding smartwatch
+    // TODO: develop this
+    private void drawRegisterWatchScreen(){
+        final Stage dialog = new Stage();
+        VBox dialogVbox = new VBox(20);
+        dialogVbox.setAlignment(Pos.CENTER);
+        dialogVbox.getChildren().add(new Text("Register your watch here"));
+        Scene dialogScene = new Scene(dialogVbox, 300, 200);
+        dialog.setScene(dialogScene);
+        dialog.show();
+    }
+
+
+    // Event for add watch button
+    public void drawNewWatchScreen(ActionEvent actionEvent) {
+        drawRegisterWatchScreen();
     }
 }

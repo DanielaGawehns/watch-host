@@ -1,5 +1,9 @@
 package org.openjfx;
 
+import javafx.beans.binding.Binding;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
+
 import java.util.List;
 
 // Class for storing data about the watch for managing
@@ -52,5 +56,9 @@ class WatchData {
 
     public void setUsedStorage(float usedStorage) {
         this.usedStorage = usedStorage;
+    }
+
+    ObservableValue changeProperty(){
+        return Bindings.concat(watchID, batteryPercentage, maxStorage, usedStorage);
     }
 }
