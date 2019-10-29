@@ -25,6 +25,8 @@ import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
+import java.util.List;
+
 // Class for controlling functions from the watchView screen
 // Controlling watchview.fxml
 public class WatchViewController {
@@ -60,7 +62,6 @@ public class WatchViewController {
     // The watch of which the overview is showed
     private Smartwatch watch;
 
-
     private WatchOptionsController watchOptionsController;
 
     // set the watch that is shown
@@ -81,7 +82,6 @@ public class WatchViewController {
         }
         System.out.println("Done filling chart");
     }
-
 
     // fill chart with data from sensor
     // TODO: Make this work with all types of charts

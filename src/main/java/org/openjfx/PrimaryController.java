@@ -1,6 +1,7 @@
 package org.openjfx;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -8,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -30,15 +32,18 @@ public class PrimaryController{
 
     @FXML
     private BorderPane view;
+    public BorderPane getView() { return view; }
 
     // List of smartwatches connected
-    private List<Smartwatch> watches = new ArrayList<>();
+    private static List<Smartwatch> watches = new ArrayList<>();
 
     // Reader for reading CSV files
     private CSVFileReader reader = new CSVFileReader();
 
     // Controller for the watchView
     private WatchViewController watchController;
+
+    private MeasurementController measurementController;
 
     // which smartwatch is selected for charting
     private int currentWatch;
@@ -92,6 +97,16 @@ public class PrimaryController{
         System.out.println("- name: " + watches.get(currentWatch-1).getWatchName());
     }
 
+    // Loading overview FXML into view
+    private void loadMeasurementSetupFXML() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("measurement.fxml")); // load fxml file
+        BorderPane newPane = loader.load(); // load file into replacement pane
+        measurementController = loader.getController();
+        measurementController.setPrimaryController(this);
+
+        newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
+        view.setCenter(newPane); // set newPane as center of borderPane
+    }
 
     // Moves to right tab
     // Sets currentWatch and fills the chart
@@ -106,6 +121,13 @@ public class PrimaryController{
         loadOverviewFXML();
     }
 
+    // switch to measurement setup tab
+    public void switchToMeasurementSetup(ActionEvent actionEvent) throws IOException {
+        loadMeasurementSetupFXML();
+        measurementController.loadSensors();
+        measurementController.loadWatches();
+        measurementController.loadDurationField();
+    }
 
     // Go to input dir and read all files
     private void syncFiles(File folder) {
@@ -155,6 +177,23 @@ public class PrimaryController{
 
             button.getItems().addAll(new MenuItem("Options..."), new MenuItem("Disconnect"));
 
+            /*
+            MenuItem select = new MenuItem("Select");
+            MenuItem options = new MenuItem("Options...");
+            MenuItem disconnect = new MenuItem("Disconnect");
+            button.getItems().addAll(select, options, disconnect);
+
+            select.setOnAction((e)-> {
+                watchController.selectWatch(finalI);
+                System.out.println("Choice 1 selected");
+            });
+            options.setOnAction((e)-> {
+                System.out.println("Choice 2 selected");
+            });
+            disconnect.setOnAction((e)-> {
+                System.out.println("Choice 3 selected");
+            });
+*/
             if(batteryLevel < 20){
                 batteryType = 1;
             }else if(batteryLevel < 60){
@@ -197,4 +236,7 @@ public class PrimaryController{
     public void drawNewWatchScreen(ActionEvent actionEvent) {
         drawRegisterWatchScreen();
     }
+
+    // return the list of currently connected watches
+    public static List<Smartwatch> getWatches() { return PrimaryController.watches; }
 }

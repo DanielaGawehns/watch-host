@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.MeasurementController">
+    <top>
+        <GridPane hgap="10" vgap="10">
+            <Label text="Select sensors with the desired polling interval" GridPane.columnSpan="2" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                <font>
+                    <Font name="System Bold" size="16.0" />
+                </font>
+            </Label>
+            <padding> <Insets top="5" bottom="5" /> </padding>
+
+            <VBox fx:id="sensorList" GridPane.columnIndex="0" GridPane.rowIndex="1" prefWidth="220.0" alignment="TOP_CENTER" spacing="3.0"  />
+            <VBox fx:id="sensorList2" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="220.0" alignment="TOP_CENTER" spacing="3.0" />
+            <VBox fx:id="sensorList3" GridPane.columnIndex="2" GridPane.rowIndex="1" prefWidth="220.0" alignment="TOP_CENTER" spacing="3.0" />
+            <Separator GridPane.columnSpan="3" GridPane.rowIndex="2" />
+
+            <Label text="Select watches on which to perform the measurement" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.columnIndex="0" >
+                <font>
+                    <Font name="System Bold" size="14.0" />
+                </font>
+            </Label>
+            <VBox fx:id="connectedWatches" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <Separator GridPane.columnSpan="3" GridPane.rowIndex="5" />
+
+            <Label text="Enter how long the measurement must take" GridPane.columnSpan="2" GridPane.rowIndex="6" GridPane.columnIndex="0" >
+                <font>
+                    <Font name="System Bold" size="14.0" />
+                </font>
+            </Label>
+            <HBox fx:id="durationHBox" GridPane.rowIndex="7" prefWidth="200.0" prefHeight="20.0" />
+            <Button fx:id="startMeasurementButton" mnemonicParsing="false" GridPane.rowIndex="8" prefWidth="200.0" prefHeight="20.0" text="Start Measurement" onAction="#startMeasurement" style="-fx-background-color: #a9a9a9">
+                <font>
+                    <Font name="System Bold" size="12.0" />
+                </font>
+            </Button>
+        </GridPane>
+    </top>
+    <!--<center>
+        <ScrollPane>
+            <AnchorPane prefHeight="400.0" prefWidth="600.0">
+                <VBox fx:id="connectedWatches" alignment="CENTER" spacing="3"/>
+            </AnchorPane>
+        </ScrollPane>
+    </center>-->
+  <!--
+    <bottom>
+        <AnchorPane>
+            <GridPane>
+
+                </GridPane>
+                <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+                    <children>
+                        <Label prefWidth="200.0" prefHeight="20.0" text="Duration"/>
+                        <Button fx:id="startMeasurement" mnemonicParsing="false" prefWidth="200.0" prefHeight="20.0" text="Start Measurement" onAction="#startMeasurement" alignment="BOTTOM_RIGHT">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                             </font>
+                        </Button>
+                    </children>
+                    <padding>
+                        <Insets bottom="5.0" />
+                    </padding>
+                </VBox>
+            </bottom>
+        </AnchorPane>
+    </bottom>
+    -->
+</BorderPane>
+
+<!--
+<GridPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.MeasurementController" alignment="center" hgap="10" vgap="10" styleClass="@../../stylesheets/mainStyle.css">
+    <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+    <VBox fx:id="sensorList" GridPane.columnIndex="0" GridPane.rowIndex="0" prefWidth="220.0" />
+    <VBox fx:id="sensorList2" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="220.0" />
+    <VBox fx:id="sensorList3" GridPane.columnIndex="2" GridPane.rowIndex="0" prefWidth="220.0" />
+
+    <VBox fx:id="connectedWatches" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+
+    <TextField prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="2" prefHeight="20.0" text="Duration"/>
+    <Button fx:id="startMeasurement" mnemonicParsing="false" GridPane.columnIndex="0" GridPane.rowIndex="3" prefWidth="200.0" prefHeight="20.0" text="Start Measurement" onAction="#startMeasurement" />
+
+</GridPane>
+-->
