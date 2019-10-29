@@ -5,22 +5,21 @@ import java.util.List;
 
 // Class for measurements to send to watch
 class Measurement {
-    // List of sensors to measure with the corresponding polling interval
+    // List of sensors to measure with the corresponding polling interval (in milliseconds)
     private List<Pair<String, Integer>> sensors = new ArrayList<>();
 
-    // List of watches which have to perform the measurement
+    // List of watches on which to perform the measurement
     private List<Smartwatch> watches = new ArrayList<>();
 
     // Measurement duration in minutes
     private Integer duration;
 
+    // Set the list of sensors with their interval
     public void setSensors(List<Pair<String, Integer>> list) { sensors = list; }
-   /* public void addSensor(Pair<String, Integer> sen) { sensors.add(sen); }
-    public void removeSensor(Pair<String, Integer> sen) { sensors.remove(sen); }
-    public int getSensorsSize() { return sensors.size(); }
-    public Pair<String, Integer> getSensorI(int i) { return sensors.get(i); }*/
 
+    // Set the list of watches on which to perform the measurement
     public void setWatches(List<Smartwatch> list) { watches = list; }
 
+    // Set the measurement duration
     public void setDuration(Integer x) { duration = x; }
 }

@@ -43,12 +43,13 @@ public class PrimaryController{
     // Controller for the watchView
     private WatchViewController watchController;
 
+    // Controller for measurement setup screen
     private MeasurementController measurementController;
 
-    // which smartwatch is selected for charting
+    // Which smartwatch is selected for charting
     private int currentWatch;
 
-    // constructor
+    // Constructor
     // TODO: remove adding of smartwatches
     public void initialize() throws IOException {
         System.out.println("INITIALIZE Primary Controller");
@@ -73,7 +74,7 @@ public class PrimaryController{
         loadSideBar();
     }
 
-    // Loading overview FXML into view
+    // Load overview FXML into view
     private void loadOverviewFXML() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("overview.fxml")); // load fxml file
         BorderPane newPane = loader.load(); // load file into replacement pane
@@ -82,8 +83,7 @@ public class PrimaryController{
         view.setCenter(newPane); // set newPane as center of borderPane
     }
 
-
-    // Loading watchview FXML into view
+    // Load watchview FXML into view
     private void loadWatchFXML() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml")); // load fxml file
         BorderPane newPane = loader.load(); // load file into replacement pane
@@ -97,12 +97,12 @@ public class PrimaryController{
         System.out.println("- name: " + watches.get(currentWatch-1).getWatchName());
     }
 
-    // Loading overview FXML into view
+    // Load measurement FXML into view
     private void loadMeasurementSetupFXML() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("measurement.fxml")); // load fxml file
         BorderPane newPane = loader.load(); // load file into replacement pane
-        measurementController = loader.getController();
-        measurementController.setPrimaryController(this);
+        measurementController = loader.getController(); // set controller to controller of new file
+        measurementController.setPrimaryController(this); // pass current Primary class to measurementController
 
         newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
         view.setCenter(newPane); // set newPane as center of borderPane
@@ -115,13 +115,12 @@ public class PrimaryController{
         loadWatchFXML();
     }
 
-
-    // switch to overview tab
+    // Switch to overview tab
     public void switchToOverview(ActionEvent actionEvent) throws IOException {
         loadOverviewFXML();
     }
 
-    // switch to measurement setup tab
+    // Switch to measurement setup tab
     public void switchToMeasurementSetup(ActionEvent actionEvent) throws IOException {
         loadMeasurementSetupFXML();
         measurementController.loadSensors();
@@ -142,7 +141,6 @@ public class PrimaryController{
         watches.get(reader.getWatchNumber()).getSensorData("HRM").printRecords();
     }
 
-
     // Event for syncButton
     public void syncButtonPressed(ActionEvent actionEvent) {
         syncFiles(new File(System.getProperty("user.dir") + "/src/main/resources/input/test")); // read files in input folder
@@ -150,7 +148,6 @@ public class PrimaryController{
             watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch
         }
     }
-
 
     // Loads watch buttons into sidebar
     private void loadSideBar(){
@@ -177,23 +174,6 @@ public class PrimaryController{
 
             button.getItems().addAll(new MenuItem("Options..."), new MenuItem("Disconnect"));
 
-            /*
-            MenuItem select = new MenuItem("Select");
-            MenuItem options = new MenuItem("Options...");
-            MenuItem disconnect = new MenuItem("Disconnect");
-            button.getItems().addAll(select, options, disconnect);
-
-            select.setOnAction((e)-> {
-                watchController.selectWatch(finalI);
-                System.out.println("Choice 1 selected");
-            });
-            options.setOnAction((e)-> {
-                System.out.println("Choice 2 selected");
-            });
-            disconnect.setOnAction((e)-> {
-                System.out.println("Choice 3 selected");
-            });
-*/
             if(batteryLevel < 20){
                 batteryType = 1;
             }else if(batteryLevel < 60){
@@ -231,12 +211,11 @@ public class PrimaryController{
         dialog.show();
     }
 
-
     // Event for add watch button
     public void drawNewWatchScreen(ActionEvent actionEvent) {
         drawRegisterWatchScreen();
     }
 
-    // return the list of currently connected watches
+    // Return the list of currently connected watches
     public static List<Smartwatch> getWatches() { return PrimaryController.watches; }
 }
