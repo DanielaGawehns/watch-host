@@ -25,7 +25,7 @@ class Smartwatch {
     static{
         sensorMap = new HashMap<>();
         sensorMap.put("HRM", 0); // put HRM on spot 0
-        sensorMap.put("GRAVITY", 1);
+        sensorMap.put("PRESSURE", 1);
         sensorMap.put("ACCELEROMETER", 2);
     }
 
@@ -39,7 +39,7 @@ class Smartwatch {
 
 
         sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "GRAVITY"));
+        sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
         sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
     }
 

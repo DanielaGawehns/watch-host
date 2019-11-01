@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -17,7 +18,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.chart.CategoryAxis?>
 <BorderPane fx:id="view" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.WatchViewController">
    <center>
       <ScrollPane hbarPolicy="NEVER" BorderPane.alignment="CENTER">
@@ -26,18 +26,18 @@
                <children>
                   <LineChart fx:id="sensorChart" disable="true" title="Heart Rate">
                      <xAxis>
-                        <CategoryAxis label="Time" side="BOTTOM" />
+                        <CategoryAxis animated="false" label="Time" side="BOTTOM" />
                      </xAxis>
                      <yAxis>
-                        <NumberAxis label="Heart Rate" side="LEFT" />
+                        <NumberAxis animated="false" label="Heart Rate (BPM)" side="LEFT" />
                      </yAxis>
                   </LineChart>
-                  <LineChart disable="true" title="Accelerometer" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                  <LineChart fx:id="pressureChart" disable="true" title="Pressure" verticalGridLinesVisible="false" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <xAxis>
-                      <NumberAxis label="Time" side="BOTTOM" />
+                      <CategoryAxis animated="false" label="Time" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis label="Acceleration" side="LEFT" />
+                      <NumberAxis animated="false" label="Pressure (Pa)" minorTickVisible="false" side="LEFT" />
                     </yAxis>
                   </LineChart>
                   <LineChart disable="true" title="Gravity" GridPane.rowIndex="2">
