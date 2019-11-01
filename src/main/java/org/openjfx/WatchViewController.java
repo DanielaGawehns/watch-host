@@ -1,9 +1,6 @@
 package org.openjfx;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +18,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
@@ -30,6 +26,7 @@ import java.util.List;
 // Class for controlling functions from the watchView screen
 // Controlling watchview.fxml
 public class WatchViewController {
+
 
     // Root BorderPane
     @FXML
@@ -59,6 +56,9 @@ public class WatchViewController {
     @FXML
     private LineChart<String, Number> sensorChart;
 
+    @FXML
+    public LineChart<String, Number> pressureChart;
+
     // The watch of which the overview is showed
     private Smartwatch watch;
 
@@ -75,6 +75,7 @@ public class WatchViewController {
 
         try {
             fillChart(sensorChart, "HRM"); // fill Chart TODO: change parameter
+            fillChart(pressureChart, "PRESSURE");
         }catch (Exception e){ // if data is not found
             System.out.println("No data found for watch: " + " and sensor: TEMP");
             sensorChart.setDisable(true);
@@ -92,7 +93,6 @@ public class WatchViewController {
 
         chart.setAnimated(false); // disable animation for clearing
         chart.getData().clear();
-        chart.setAnimated(true);
         chart.setDisable(false); // turn on chart
 
         series.setName(sensorData.getSensor()); // set title of line for legend
@@ -120,14 +120,15 @@ public class WatchViewController {
         var pane = new Pane(label);
         pane.setShape(new Circle(4.0));
         pane.setScaleShape(false);
-        pane.setStyle("-fx-background-color: CHART_COLOR_1");
+        pane.setStyle("-fx-background-color: transparent");
 
         pane.setOnMouseEntered(mouseEvent -> {
             pane.setStyle("-fx-background-color: grey");
         });
 
+
         pane.setOnMouseExited(mouseEvent -> {
-            pane.setStyle("-fx-background-color: CHART_COLOR_1");
+            pane.setStyle("-fx-background-color: transparent");
         });
 
         pane.setOnMouseClicked(mouseEvent -> {
@@ -212,7 +213,7 @@ public class WatchViewController {
     private void showOptions() throws IOException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
-        Parent watchView = (Parent) loader.load();
+        Parent watchView = loader.load();
         Stage stage = new Stage();
         stage.setOnCloseRequest(e -> {
             watch.setWatchID(watchOptionsController.getWatchID());
@@ -236,5 +237,6 @@ public class WatchViewController {
     public void optionsPressed(ActionEvent event) throws IOException {
         showOptions();
     }
+
 }
 
