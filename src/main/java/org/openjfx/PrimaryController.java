@@ -1,19 +1,20 @@
 package org.openjfx;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -32,7 +33,6 @@ public class PrimaryController{
 
     @FXML
     private BorderPane view;
-    public BorderPane getView() { return view; }
 
     // List of smartwatches connected
     private static List<Smartwatch> watches = new ArrayList<>();
@@ -45,6 +45,9 @@ public class PrimaryController{
 
     // Controller for measurement setup screen
     private MeasurementController measurementController;
+
+    // Controller for watch register screen
+    private WatchAddController watchAddController;
 
     // Which smartwatch is selected for charting
     private int currentWatch;
@@ -73,6 +76,31 @@ public class PrimaryController{
         loadOverviewFXML();
         loadSideBar();
     }
+
+
+    public BorderPane getView() { return view; }
+
+
+    // Return the list of currently connected watches
+    static List<Smartwatch> getWatches() { return PrimaryController.watches; }
+
+
+    void addWatch(Smartwatch watch){
+        watches.add(watch);
+        loadSideBar();
+    }
+
+
+    // Checks if 'ID' is not already in use
+    boolean idNotUsed(int ID){
+        for (Smartwatch watch : watches) {
+            if (watch.getWatchID() == ID) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     // Load overview FXML into view
     private void loadOverviewFXML() throws IOException {
@@ -136,9 +164,8 @@ public class PrimaryController{
             watches.get(reader.getWatchNumber()).addData(dataList); // add data stream to watch
         }
 
-
        // watches.get(reader.getWatchNumber()).getSensorData("HRM").mergeDuplicates();
-        watches.get(reader.getWatchNumber()).getSensorData("HRM").printRecords();
+        //watches.get(reader.getWatchNumber()).getSensorData("HRM").printRecords();
     }
 
     // Event for syncButton
@@ -151,6 +178,7 @@ public class PrimaryController{
 
     // Loads watch buttons into sidebar
     private void loadSideBar(){
+        watchBar.getChildren().clear();
         for(int i = 0; i < watches.size(); i++){
             VBox vbox = new VBox();
             HBox hbox = new HBox();
@@ -199,23 +227,26 @@ public class PrimaryController{
         }
     }
 
-    // Draws new window for adding smartwatch
-    // TODO: develop this
-    private void drawRegisterWatchScreen(){
-        final Stage dialog = new Stage();
-        VBox dialogVbox = new VBox(20);
-        dialogVbox.setAlignment(Pos.CENTER);
-        dialogVbox.getChildren().add(new Text("Register your watch here"));
-        Scene dialogScene = new Scene(dialogVbox, 300, 200);
-        dialog.setScene(dialogScene);
-        dialog.show();
+
+    // Show dialog window with WatchAdd
+    private void loadWatchAdd() throws IOException {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchadd.fxml"));
+        Parent watchView = loader.load();
+
+        watchAddController = loader.getController();
+        watchAddController.setPrimaryController(this);
+
+        Stage stage = new Stage();
+
+        stage.setTitle("Register watch");
+        stage.setScene(new Scene(watchView));
+        stage.setResizable(false);
+
+        stage.show();
     }
 
-    // Event for add watch button
-    public void drawNewWatchScreen(ActionEvent actionEvent) {
-        drawRegisterWatchScreen();
+    public void drawWatchAddScreen(ActionEvent event) throws IOException {
+        loadWatchAdd();
     }
-
-    // Return the list of currently connected watches
-    public static List<Smartwatch> getWatches() { return PrimaryController.watches; }
 }

@@ -6,7 +6,7 @@ import java.util.*;
 
 
 // Class holding all smartwatch functionality
-class Smartwatch {
+public class Smartwatch {
 
     // Data about watch
     private WatchData watchData;
@@ -37,6 +37,16 @@ class Smartwatch {
         subjectData = _subjectData;
         watchName = "NO NAME";
 
+        sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
+        sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
+        sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
+    }
+
+    // Constructor
+    Smartwatch(WatchData _data){
+        System.out.println("making smartwatch");
+        watchData = _data;
+        watchName = "NO NAME";
 
         sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
         sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));

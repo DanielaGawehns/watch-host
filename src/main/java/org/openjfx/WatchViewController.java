@@ -4,15 +4,13 @@ package org.openjfx;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -27,13 +25,6 @@ import java.util.List;
 // Controlling watchview.fxml
 public class WatchViewController {
 
-
-    // Root BorderPane
-    @FXML
-    private BorderPane view;
-
-    @FXML
-    private GridPane grid;
 
     @FXML
     private ProgressBar storageBar;
@@ -59,6 +50,8 @@ public class WatchViewController {
     @FXML
     public LineChart<String, Number> pressureChart;
 
+
+
     // The watch of which the overview is showed
     private Smartwatch watch;
 
@@ -69,7 +62,9 @@ public class WatchViewController {
         System.out.println("Setting watch...");
         watch = _watch;
 
-        grid.prefWidthProperty().bind(view.widthProperty()); // bind width of grid to the width of the borderPane
+        //grid.prefWidthProperty().bind(view.widthProperty()); // bind width of grid to the width of the borderPane
+        //scrollPressure.prefWidthProperty().bind(scrollMain.widthProperty());
+        //scrollPressure.fitToWidthProperty().set(true);
 
         setInfo();
 
@@ -101,11 +96,28 @@ public class WatchViewController {
 
         System.out.println("Data size is " + sensorData.size());
 
-        for(int i = 0; i < sensorData.size(); i++){
+        /*XYChart.Data<String, Number> old = sensorData.getDataPoint(0);
+        old.setNode(createDataNode(old.getXValue(), sensor));
+        series.getData().add(old);
+        Node chartArea = chart.lookup(".chart-plot-background");
+        Bounds chartAreaBounds = chartArea.localToScene(chartArea.getBoundsInLocal());*/
+        for(int i = 0; i < sensorData.size(); i += 3){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
-            temp.setNode(createDataNode());
-            System.out.println("Adding: " + temp.toString());
+
+            temp.setNode(createDataNode(temp.getXValue(), sensor));
             series.getData().add(temp); // add datapoint to series
+            //Node node = temp.getNode();
+
+            //System.out.println("pos:" + chartAreaBounds.toString());
+            /*if(temp.getNode().getBoundsInParent().getMinX() < old.getNode().getBoundsInParent().getMinX() + 2) {
+
+                System.out.println("Adding: " + temp.toString());
+                series.getData().add(temp); // add datapoint to series
+            }else{
+                temp.setNode(null);
+                System.out.println("Node not added!");
+           }*/
+            //old = temp;
         }
     }
 
@@ -113,8 +125,7 @@ public class WatchViewController {
     // Node that is clickable
     // Prints pin above the node
     // TODO: save these pins for exporting
-    private static Node createDataNode(/*XYChart.Data<Number, Number> data*/) {
-        //Node node = data.getNode();
+    private static Node createDataNode(String time, String sensor) {
         var label = new Label();
 
         var pane = new Pane(label);
@@ -129,11 +140,12 @@ public class WatchViewController {
 
         pane.setOnMouseExited(mouseEvent -> {
             pane.setStyle("-fx-background-color: transparent");
+            label.setText("");
         });
 
         pane.setOnMouseClicked(mouseEvent -> {
-            pinWindow(label);
-
+            pinWindow(pane, label, time, sensor);
+            //label.setText(pane.getBoundsInParent().toString());
 
         });
         System.out.println("label pos: " + pane.getBoundsInParent().toString());
@@ -143,7 +155,7 @@ public class WatchViewController {
     }
 
 
-    private static void pinWindow(Label label){
+    private static void pinWindow(Pane pane, Label label, String time, String sensor){
         System.out.println("Clicked");
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -161,11 +173,20 @@ public class WatchViewController {
 
         buttonSet.setOnAction(e -> {
             label.setText(field.getText());
+            // TODO: save label to csv
+            pane.setStyle("-fx-background-color: red");
+            pane.setOnMouseExited(mouseEvent -> {
+                pane.setStyle("-fx-background-color: red");
+            });
             dialog.close();
         });
 
         buttonRemove.setOnAction(e -> {
             label.setText("");
+            pane.setStyle("-fx-background-color: transparent");
+            pane.setOnMouseExited(mouseEvent -> {
+                pane.setStyle("-fx-background-color: transparent");
+            });
             dialog.close();
         });
     }
@@ -215,7 +236,7 @@ public class WatchViewController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
         Parent watchView = loader.load();
         Stage stage = new Stage();
-        stage.setOnCloseRequest(e -> {
+        stage.setOnCloseRequest(e -> { //TODO: maybe change this
             watch.setWatchID(watchOptionsController.getWatchID());
             watch.setWatchName(watchOptionsController.getWatchName());
             System.out.println("Setting watch info: " + watch.getWatchID() + " " + watch.getWatchName());
@@ -226,12 +247,7 @@ public class WatchViewController {
         watchOptionsController = loader.getController();
         watchOptionsController.setWatchData(watch.getWatchID(), watch.getWatchName());
 
-
-
         stage.show();
-
-
-
     }
 
     public void optionsPressed(ActionEvent event) throws IOException {

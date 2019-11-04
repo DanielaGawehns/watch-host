@@ -160,6 +160,11 @@ public class SensorData {
     XYChart.Data<String, Number> getDataPoint(int i) {
         return new XYChart.Data<>(time.format(records.get(i).getTime()), records.get(i).getDataList().get(0));
     }
+
+    // TODO: implement to save pins to csv
+    DataPoint getDataPoint(String time){
+        return null;
+    }
 }
 
 

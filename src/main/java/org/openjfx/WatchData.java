@@ -1,6 +1,5 @@
 package org.openjfx;
 
-import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
@@ -9,21 +8,25 @@ import java.util.List;
 // Class for storing data about the watch for managing
 class WatchData {
 
-    private List<Measurement> measurements;
+    //private List<Measurement> measurements; // move this to Smartwatch class
 
     private int watchID;
 
-    private int batteryPercentage;
+    private int batteryPercentage = 100;
 
-    private float maxStorage;
+    private float maxStorage = 1;
 
-    private float usedStorage;
+    private float usedStorage = 1;
 
     WatchData(int _watchID, int _batteryPercentage, float _maxStorage, float _usedStorage){
         watchID = _watchID;
         batteryPercentage = _batteryPercentage;
         maxStorage = _maxStorage;
         usedStorage = _usedStorage;
+    }
+
+    WatchData(int _watchID){
+        watchID = _watchID;
     }
 
     public int getWatchID() {
@@ -58,7 +61,7 @@ class WatchData {
         this.usedStorage = usedStorage;
     }
 
-    ObservableValue changeProperty(){
+    /*ObservableValue changeProperty(){
         return Bindings.concat(watchID, batteryPercentage, maxStorage, usedStorage);
-    }
+    }*/
 }

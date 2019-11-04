@@ -1,6 +1,5 @@
 package org.openjfx;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -14,11 +13,14 @@ class DataPoint {
 
     private List<Double> dataList;
 
+    private String comment;
+
     DataPoint(String _sensorName, Date _date, Date _time, List<Double> _dataList){
         sensorName = _sensorName;
         date = _date;
         time = _time;
         dataList = _dataList;
+        comment = "";
     }
 
     String getSensorName() {
@@ -40,4 +42,6 @@ class DataPoint {
     void setDataList(List<Double> dataList) {
         this.dataList = dataList;
     }
+
+    void setComment(String _comment){ comment = _comment; }
 }
