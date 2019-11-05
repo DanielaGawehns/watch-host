@@ -1,11 +1,13 @@
 package nl.liacs.watch.protocol;
 
+import nl.liacs.watch.protocol.types.Message;
+
 public interface Connection {
-    Boolean isOpen();
+    boolean isOpen();
 
-    String receive();
+    Message receive();
 
-    void send(String message);
+    void send(Message message);
 
     void close();
 }

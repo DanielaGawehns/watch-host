@@ -1,4 +1,4 @@
-package nl.liacs.watch.protocol;
+package nl.liacs.watch.protocol.types;
 
 public enum MessageType {
     // a PING to check if the connection is still open uninterrupted and to
