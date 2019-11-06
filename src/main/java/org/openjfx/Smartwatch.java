@@ -1,26 +1,42 @@
 package org.openjfx;
 
-import javafx.collections.transformation.SortedList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
-// Class holding all smartwatch functionality
+/**
+ * Class holding all smartwatch data
+ */
 public class Smartwatch {
 
-    // Data about watch
+    /**
+     * Data about the watch {@link WatchData}
+     */
     private WatchData watchData;
 
-    // Data about subject wearing the watch TODO: Implement
+    /**
+     * Data about subject {@link SubjectData}
+     */
     private SubjectData subjectData;
 
-    // Nickname for watch used in program
+    /**
+     * Nickname for the watch specified by the user
+     */
     private String watchName;
 
-    // list of data of sensors
+    /**
+     * List of {@link SensorData} containing data of all the sensors available
+     */
     private List<SensorData> sensorDataList = new ArrayList<>();
 
-    // Map to map sensor name string to integer index for sensorDataList
+    /**
+     * Map to map sensor name string to integer index for {@link Smartwatch#sensorDataList}
+     */
     private static final Map<String, Integer> sensorMap;
     static{
         sensorMap = new HashMap<>();
@@ -30,7 +46,9 @@ public class Smartwatch {
     }
 
 
-    // Constructor
+    /**
+     * Constructor
+     */
     Smartwatch(WatchData _data, SubjectData _subjectData){
         System.out.println("making smartwatch");
         watchData = _data;
@@ -42,7 +60,10 @@ public class Smartwatch {
         sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
     }
 
-    // Constructor
+
+    /**
+     * Constructor
+     */
     Smartwatch(WatchData _data){
         System.out.println("making smartwatch");
         watchData = _data;
@@ -54,27 +75,61 @@ public class Smartwatch {
     }
 
 
-    // Get data of sensor 'sensor' from sensorDataList
+    /**
+     * Get data of sensor {@code sensor} from {@link Smartwatch#sensorDataList}
+     * @param sensor The name of the sensor
+     * @return The {@link SensorData} corresponding the the sensor name
+     */
     SensorData getSensorData(String sensor){
         return sensorDataList.get(sensorMap.get(sensor));
     }
 
 
+    /**
+     * Gets {@link WatchData#watchID} from {@link Smartwatch#watchData}
+     * @return {@link WatchData#watchID} as a integer
+     */
     int getWatchID() {
         return watchData.getWatchID();
     }
 
+
+    /**
+     * Sets {@link WatchData#watchID} from {@link Smartwatch#watchData}
+     * @param ID The value to set {@link WatchData#watchID}
+     */
     void setWatchID(int ID) { watchData.setWatchID(ID); }
 
+
+    /**
+     * Gets {@link WatchData#batteryPercentage} from {@link Smartwatch#watchData}
+     * @return {@link WatchData#batteryPercentage} as a integer
+     */
     int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
 
+
+    /**
+     * Getter for {@link Smartwatch#watchData}
+     */
     WatchData getWatchData() { return watchData; }
 
+
+    /**
+     * Getter for {@link Smartwatch#watchData}
+     */
     String getWatchName() { return watchName; }
 
+
+    /**
+     * Setter for {@link Smartwatch#watchName}
+     */
     void setWatchName(String name) { watchName = name; }
 
-    // add new data points to records
+
+    /**
+     * Adds new {@link DataPoint}(s) to the right {@link SensorData#records} in {@link Smartwatch#sensorDataList}
+     * @param dataList List of {@link DataPoint}(s) to be added. The points can be from any supported sensor.
+     */
     void addData(List<DataPoint> dataList){
         SortedSet<String> sensorDataEdited = new TreeSet<>();
         String sensor = "";
@@ -89,10 +144,6 @@ public class Smartwatch {
             sensorDataList.get(sensorMap.get(sensor)).mergeDuplicates();
             sensorDataEdited.remove(sensor);
         }
-    }
-
-    public List<SensorData> getSensorDataList() {
-        return sensorDataList;
     }
 }
 

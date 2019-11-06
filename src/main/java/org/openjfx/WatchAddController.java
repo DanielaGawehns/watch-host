@@ -2,11 +2,14 @@ package org.openjfx;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class WatchAddController {
+
+    @FXML
+    private Button buttonConnect;
 
     @FXML
     private TextField textfieldID;
@@ -26,6 +29,7 @@ public class WatchAddController {
 
     private void parseInput(){
         int watchID;
+        String watchName = textfieldName.getText(), watchIP = textfieldIP.getText();
         WatchData watchData;
         Smartwatch watch;
 
@@ -47,10 +51,18 @@ public class WatchAddController {
             Util.printErrorDialog("Watch ID: " + watchID + " is already in use!", "Please choose another ID to continue.");
             return;
         }
+
+        if(!watchName.isEmpty()){
+            watch.setWatchName(watchName);
+        }
+
+        //TODO: parse IP field
+
         primaryController.addWatch(watch);
+        Util.closeStage(buttonConnect);
     }
 
-    public void connectButtonPressed(ActionEvent event) {
+    public void connectButtonPressed() {
         parseInput();
     }
 }

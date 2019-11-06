@@ -1,30 +1,47 @@
 package org.openjfx;
 
 import javafx.scene.chart.XYChart;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
-// Class for storing data of a sensor
+
+/**
+ * Class for storing {@link DataPoint} of a sensor
+ */
 public class SensorData {
 
-    // data for charting
+    /**
+     * List of {@link DataPoint} containing the data from the sensor
+     */
     private List<DataPoint> records;
 
-    // name of sensor used
+    /**
+     * Name of the sensor the data is from
+     */
     private String sensor;
 
-    // Number of the watch this data belong to
+    /**
+     * Number of the watch this data belong to
+     */
     private int watchNumber;
 
-    private SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-    private SimpleDateFormat time = new SimpleDateFormat("hh:mm:ss");
+    /**
+     * Format used for dates
+     */
+    private final static SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+
+    /**
+     * Format for times
+     */
+    private final static SimpleDateFormat time = new SimpleDateFormat("hh:mm:ss");
 
 
-    // constructor
+    /**
+     * Constructor
+     */
     SensorData(int _watchNumber, String _sensor){
         records = new ArrayList<>();
         sensor = _sensor;
@@ -32,32 +49,37 @@ public class SensorData {
     }
 
 
-    // returns size of records
+    /**
+     * Gives the size of {@link SensorData#records}
+     * @return Size of {@link SensorData#records} as an integer
+     */
     int size(){
         return records.size();
     }
 
 
-    // clears records
+    /**
+     * Clears {@link SensorData#records}
+     */
     public void clear(){
         records.clear();
     }
 
 
-    // adds data point to records
+    /**
+     * Adds a {@link DataPoint} to {@link SensorData#records}
+     * @param point The {@link DataPoint} to be added
+     */
     void add(DataPoint point){
         records.add(point);
     }
 
 
-    public XYChart.Data<Date, Number> getXYPoint(){
-        return null;
-    };
-
-
     // TODO: Delete
+    /**
+     * **DEBUG** Function to print the contents of {@link SensorData#records}.
+     */
     void printRecords(){
-
         for(int i = 0; i < records.size(); i++){
             DataPoint point = records.get(i);
             System.out.print(i + ": " + date.format(point.getDate()) + " , " + time.format(point.getTime()));
@@ -70,20 +92,25 @@ public class SensorData {
     }
 
 
-    // returns sensor
+    /**
+     * Getter for {@link SensorData#sensor}
+     */
     String getSensor() {
         return sensor;
     }
 
 
-    // returns the watchNumber
+    /**
+     * Getter for {@link SensorData#watchNumber}
+     */
     int getWatchNumber() {
-        System.out.println("Returning watchnumber: " + watchNumber);
         return watchNumber;
     }
 
 
-    // Merges the duplicates (same time) in records by taking the average value
+    /**
+     * Merges duplicates ({@link DataPoint} with the same {@link DataPoint#time}) by averaging the {@link DataPoint#dataList} values
+     */
     void mergeDuplicates(){
         List<DataPoint> mergedRecords = new ArrayList<>();
         List<Double> totalValues = new ArrayList<>();
@@ -100,12 +127,12 @@ public class SensorData {
 
             for(int i = 1; i < records.size(); i++){
                 DataPoint record = records.get(i);
-                addDoubleLists(totalValues, old.getDataList());
+                Util.addDoubleLists(totalValues, old.getDataList());
 
                 if(old.getTime().compareTo(record.getTime()) == 0){ // if times are the same
                     duplicateCounter++;
                 }else{ // add point to records
-                    divideDoubleList(totalValues, duplicateCounter);
+                    Util.divideDoubleList(totalValues, duplicateCounter);
                     old.setDataList(totalValues); // set the data list to calculated values
                     mergedRecords.add(old);
 
@@ -124,46 +151,14 @@ public class SensorData {
     }
 
 
-    // Add two double lists together by adding the items
-    // If the lists are not the same length return
-    private void addDoubleLists(List<Double> list1, List<Double> list2){
-        if(list1.size() != list2.size()){
-            System.out.println("Lists not the same size"); // TODO: make exception
-            return;
-        }
-
-        double value;
-
-        for(int i = 0; i < list1.size(); i++){
-            value = list1.get(i) + list2.get(i);
-            list1.set(i, value);
-        }
-
-    }
-
-
-    // Rounds 'value' to 'places' decimals
-    private static double round(double value, int places) {
-        double scale = Math.pow(10, places);
-        return Math.round(value * scale) / scale;
-    }
-
-
-    // Divides all values in the list by 'division'
-    private void divideDoubleList(List<Double> list, Double division){
-        for(int i = 0; i < list.size(); i++){
-            list.set(i, round(list.get(i) / division, 1));
-        }
-    }
-
     // TODO: make this work for all types of data
+    /**
+     * Gets a {@link DataPoint} and converts the data to {@link XYChart.Data} for use in charts
+     * @param i The {@link DataPoint} to get
+     * @return A {@link XYChart.Data} containing {@link DataPoint#time} and the first item of {@link DataPoint#dataList}
+     */
     XYChart.Data<String, Number> getDataPoint(int i) {
         return new XYChart.Data<>(time.format(records.get(i).getTime()), records.get(i).getDataList().get(0));
-    }
-
-    // TODO: implement to save pins to csv
-    DataPoint getDataPoint(String time){
-        return null;
     }
 }
 

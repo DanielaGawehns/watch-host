@@ -186,7 +186,7 @@ public class MeasurementController {
     }
 
     // Checks if all provided data is valid and start a measurement on the selected watch(es)
-    public void startMeasurement(ActionEvent event) throws IOException {
+    public void startMeasurement() throws IOException {
         // todo: check if there is no active measurement
 
         // check if the user given interval is valid for each selected sensor
@@ -234,6 +234,6 @@ public class MeasurementController {
         // todo: send signal to watches
 
         // the measurement has started, switch to the overview tab
-        primaryController.switchToOverview(event);
+        primaryController.switchToOverview();
     }
 }

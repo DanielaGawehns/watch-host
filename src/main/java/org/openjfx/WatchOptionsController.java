@@ -33,7 +33,7 @@ public class WatchOptionsController {
         return watchName;
     }
 
-    public void saveOptions(ActionEvent event) {
+    public void saveOptions() {
         watchID = Integer.parseInt(textfieldWatchID.getText());
         watchName = textfieldWatchName.getText();
     }

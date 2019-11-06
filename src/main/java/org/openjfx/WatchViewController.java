@@ -1,25 +1,26 @@
 package org.openjfx;
 
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
-import java.util.List;
 
 // Class for controlling functions from the watchView screen
 // Controlling watchview.fxml
@@ -148,9 +149,9 @@ public class WatchViewController {
             //label.setText(pane.getBoundsInParent().toString());
 
         });
-        System.out.println("label pos: " + pane.getBoundsInParent().toString());
+
         label.setLayoutY(-10);
-        System.out.println("Created pin");
+
         return pane;
     }
 
@@ -250,7 +251,7 @@ public class WatchViewController {
         stage.show();
     }
 
-    public void optionsPressed(ActionEvent event) throws IOException {
+    public void optionsPressed() throws IOException {
         showOptions();
     }
 

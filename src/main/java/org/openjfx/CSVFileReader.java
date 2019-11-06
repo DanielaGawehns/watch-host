@@ -1,32 +1,37 @@
 package org.openjfx;
 
-import javafx.scene.chart.XYChart;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 
-// class for reading CSV files
-// TODO: extend this class for dealing with all layouts necessary
+
+/**
+ * Helper class to read and parse data from CSV files received from the watches
+ */
 class CSVFileReader{
 
-    // splitting symbol for csv files
     private static final String COMMA_DELIMITER = ",";
 
     private static final int DATA_START = 3;
 
+    /**
+     * The number of the watch the file belongs to
+     */
     private int watchNumber;
 
 
-    // read in data from CSV file
-    // reads from file 'filename'
-    // returns data as List of DataPoints
+
+    /**
+     * Reads a csv file and parses the data using {@link org.openjfx.CSVFileReader#parseRecord(String[])}
+     * Expects at least a rule starting with # indicating a watchnumber
+     * @param path Specifies file location
+     * @return List of {@link org.openjfx.DataPoint} containing the parsed data
+     */
     List<DataPoint> readFile(String path){
         System.out.println("Start reading: " + path);
         List<DataPoint> dataList = new ArrayList<>();
@@ -45,11 +50,16 @@ class CSVFileReader{
             while ((line = br.readLine()) != null) { // go through all the lines
 
                 String[] record = line.split(COMMA_DELIMITER);
-                point = parseRecord(record);
+                try {
+                    point = parseRecord(record); // TODO: make try catch
+                }catch (ParseException e){
+                    System.out.println(e.getMessage());
+                    continue; // don't add
+                }
+
                 dataList.add(point);
-               //System.out.println("added point with time " + point.getTime().toString());
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Done reading: " + path);
@@ -57,9 +67,17 @@ class CSVFileReader{
         return dataList;
     }
 
+    /**
+     * Parses a split line into usable data
+     * @param record Should contain split strings representing a line of a CSV file
+     * @return A {@link DataPoint} containing the parses information
+     * @throws ParseException If a wrong format is found
+     */
     private DataPoint parseRecord(String[] record) throws ParseException {
+
         if(record.length < 4){
-            System.out.println("Record error"); // TODO: make exception
+            System.out.println("Record error");
+            throw new ParseException("Length of records too small", 0);
         }
         int dataFields = 1;
         String sensorName = record[0];
@@ -75,12 +93,20 @@ class CSVFileReader{
         }
 
         for(int i = DATA_START; i < DATA_START + dataFields; i++){
-            data.add(Double.parseDouble(record[i]));
+            try {
+                data.add(Double.parseDouble(record[i]));
+            }catch (NumberFormatException e){
+                throw new ParseException("Datapoint has wrong format", 0);
+            }
+
         }
-        //System.out.println("CSVReader: Parsed record with data: " + sensorName + " , " + date.toString() + " , " + time.toString());
         return new DataPoint(sensorName, date, time, data);
     }
 
+    /**
+     * Getter for {@link org.openjfx.CSVFileReader#watchNumber}
+     * @return Int containing the watchNumber
+     */
     int getWatchNumber() {
         return watchNumber;
     }
