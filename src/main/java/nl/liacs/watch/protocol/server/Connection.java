@@ -2,6 +2,8 @@ package nl.liacs.watch.protocol.server;
 
 import nl.liacs.watch.protocol.types.Message;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 public class Connection implements nl.liacs.watch.protocol.Connection {
@@ -17,17 +19,18 @@ public class Connection implements nl.liacs.watch.protocol.Connection {
     }
 
     @Override
-    public Message receive() {
-        return null;
+    public Message receive() throws IOException {
+        var stream = new DataInputStream(this.socket.getInputStream());
+        return Message.decode(stream);
     }
 
     @Override
-    public void send(Message message) {
-
+    public void send(Message message) throws Exception {
+        this.socket.getOutputStream().write(message.encode());
     }
 
     @Override
-    public void close() {
-
+    public void close() throws IOException {
+        this.socket.close();
     }
 }
