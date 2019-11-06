@@ -1,17 +1,20 @@
 package nl.liacs.watch.protocol.types;
 
-import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
+import java.io.DataInputStream;
+import java.io.IOException;
 
 public class Message {
     public MessageType type;
     public MessageParameter[] parameters;
 
-    @org.jetbrains.annotations.NotNull
-    public static Message decode(byte[] bytes) {
-        ByteArrayDataInput s = ByteStreams.newDataInput(bytes);
+    Message() {
+    }
 
+    @org.jetbrains.annotations.NotNull
+    public static Message decode(DataInputStream s) throws IOException {
         var msg = new Message();
         msg.type = MessageType.values()[s.readUnsignedByte()];
 
