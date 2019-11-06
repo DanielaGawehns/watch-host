@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 public class MessageParameter {
-    ParameterType type = ParameterType.UNKOWN;
+    ParameterType type = ParameterType.UNKNOWN;
     byte[] bytes;
 
     MessageParameter() {}
@@ -37,14 +37,12 @@ public class MessageParameter {
         }
         return new String(bytes, 0, bytes.length-1, Charset.forName("US-ASCII"));
     }
-
     public Double getDouble() {
         if (type != ParameterType.DOUBLE) {
             throw new IllegalArgumentException("type is not double");
         }
         return ByteStreams.newDataInput(bytes).readDouble(); // TODO: something more efficient
     }
-
     public byte[] getBinary() {
         if (type != ParameterType.BINARY) {
             throw new IllegalArgumentException("type is not binary");
@@ -57,7 +55,7 @@ public class MessageParameter {
     }
 
     public byte[] encode() throws Exception {
-        if (this.type == ParameterType.UNKOWN) {
+        if (this.type == ParameterType.UNKNOWN) {
             throw new Exception("parameter type can't be unknown");
         }
 

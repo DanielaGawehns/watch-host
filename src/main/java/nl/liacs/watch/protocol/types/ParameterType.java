@@ -1,7 +1,7 @@
 package nl.liacs.watch.protocol.types;
 
 public enum ParameterType {
-    UNKOWN,
+    UNKNOWN,
     DOUBLE,
     STRING,
     BINARY,

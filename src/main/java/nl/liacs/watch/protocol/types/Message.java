@@ -36,7 +36,7 @@ public class Message {
             s.readFully(pbytes, 0, psize);
 
             var param = new MessageParameter();
-            param.type = ParameterType.UNKOWN;
+            param.type = ParameterType.UNKNOWN;
             param.bytes = pbytes;
             params[i] = param;
         }
