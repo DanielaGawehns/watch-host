@@ -8,19 +8,6 @@ public class Message {
     public MessageType type;
     public MessageParameter[] parameters;
 
-    public byte[] encode() throws Exception {
-        ByteArrayDataOutput bb = ByteStreams.newDataOutput();
-
-        bb.write(type.ordinal());
-        bb.write(parameters.length);
-
-        for (MessageParameter parameter : parameters) {
-            bb.write(parameter.encode());
-        }
-
-        return bb.toByteArray();
-    }
-
     @org.jetbrains.annotations.NotNull
     public static Message decode(byte[] bytes) {
         ByteArrayDataInput s = ByteStreams.newDataInput(bytes);
@@ -45,5 +32,18 @@ public class Message {
         msg.type = mtype;
         msg.parameters = params;
         return msg;
+    }
+
+    public byte[] encode() throws Exception {
+        ByteArrayDataOutput bb = ByteStreams.newDataOutput();
+
+        bb.write(type.ordinal());
+        bb.write(parameters.length);
+
+        for (MessageParameter parameter : parameters) {
+            bb.write(parameter.encode());
+        }
+
+        return bb.toByteArray();
     }
 }

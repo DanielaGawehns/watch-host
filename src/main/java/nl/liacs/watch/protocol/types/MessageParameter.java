@@ -4,18 +4,20 @@ import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Doubles;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class MessageParameter {
     ParameterType type = ParameterType.UNKNOWN;
     byte[] bytes;
 
-    MessageParameter() {}
+    MessageParameter() {
+    }
 
     public MessageParameter(byte[] bytes) {
         this.type = ParameterType.BINARY;
         this.bytes = bytes;
     }
+
     public MessageParameter(String string) {
         this.type = ParameterType.STRING;
 
@@ -23,6 +25,7 @@ public class MessageParameter {
         bb.put(string.getBytes());
         this.bytes = bb.array();
     }
+
     public MessageParameter(double val) {
         this.type = ParameterType.DOUBLE;
 
@@ -35,14 +38,16 @@ public class MessageParameter {
         if (type != ParameterType.STRING) {
             throw new IllegalArgumentException("type is not string");
         }
-        return new String(bytes, 0, bytes.length-1, Charset.forName("US-ASCII"));
+        return new String(bytes, 0, bytes.length - 1, StandardCharsets.US_ASCII);
     }
+
     public Double getDouble() {
         if (type != ParameterType.DOUBLE) {
             throw new IllegalArgumentException("type is not double");
         }
         return ByteStreams.newDataInput(bytes).readDouble(); // TODO: something more efficient
     }
+
     public byte[] getBinary() {
         if (type != ParameterType.BINARY) {
             throw new IllegalArgumentException("type is not binary");
