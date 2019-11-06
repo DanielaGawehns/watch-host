@@ -12,11 +12,11 @@ public class Message {
     public static Message decode(byte[] bytes) {
         ByteArrayDataInput s = ByteStreams.newDataInput(bytes);
 
-        MessageType mtype = MessageType.values()[s.readUnsignedByte()];
-        int nparams = s.readUnsignedByte();
+        var msg = new Message();
+        msg.type = MessageType.values()[s.readUnsignedByte()];
 
-        MessageParameter[] params = new MessageParameter[nparams];
-        for (int i = 0; i < nparams; i++) {
+        msg.parameters = new MessageParameter[s.readUnsignedByte()];
+        for (int i = 0; i < msg.parameters.length; i++) {
             int psize = s.readUnsignedShort();
 
             byte[] pbytes = new byte[psize];
@@ -25,12 +25,9 @@ public class Message {
             var param = new MessageParameter();
             param.type = ParameterType.UNKNOWN;
             param.bytes = pbytes;
-            params[i] = param;
+            msg.parameters[i] = param;
         }
 
-        var msg = new Message();
-        msg.type = mtype;
-        msg.parameters = params;
         return msg;
     }
 
