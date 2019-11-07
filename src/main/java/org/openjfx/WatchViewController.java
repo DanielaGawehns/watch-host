@@ -19,53 +19,83 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
-// Class for controlling functions from the watchView screen
-// Controlling watchview.fxml
+
+
+/**
+ * Class for controlling functions from the watchView screen
+ * Controlling watchview.fxml
+ */
 public class WatchViewController {
 
-
+    /**
+     * ProgressBar for visualizing the memory that is used
+     */
     @FXML
     private ProgressBar storageBar;
 
+    /**
+     * Label for the storage. Should be of format {@code <used>/<max>}
+     */
     @FXML
     private Label storageLabel;
 
+    /**
+     * Label for the batteryLevel
+     */
     @FXML
     private Label batteryLevelLabel;
 
+    /**
+     * Label for the battery time remaining
+     */
     @FXML
     private Label batteryRemainingLabel;
 
+    /**
+     * Label for the watch nickname
+     */
     @FXML
     private Label watchNameLabel;
 
+    /**
+     * Label for the watchID
+     */
     @FXML
     private Label watchNrLabel;
 
+    /**
+     * Linechart for the HRM
+     */
     @FXML
     private LineChart<String, Number> sensorChart;
 
+    /**
+     * Linechart for the PRESSURE
+     */
     @FXML
     public LineChart<String, Number> pressureChart;
 
 
-
-    // The watch of which the overview is showed
+    /**
+     * The {@link Smartwatch} of which the overview is showed
+     */
     private Smartwatch watch;
 
+    /**
+     * Controller of {@link WatchOptionsController}
+     */
     private WatchOptionsController watchOptionsController;
 
-    // set the watch that is shown
+
+    /**
+     * Sets {@link WatchViewController#watch} and fills the charts using {@link WatchViewController#fillChart(LineChart, String)}
+     * @param _watch The {@link Smartwatch} which data will be shown
+     */
     void setWatch(Smartwatch _watch){
         System.out.println("Setting watch...");
         watch = _watch;
-
-        //grid.prefWidthProperty().bind(view.widthProperty()); // bind width of grid to the width of the borderPane
-        //scrollPressure.prefWidthProperty().bind(scrollMain.widthProperty());
-        //scrollPressure.fitToWidthProperty().set(true);
 
         setInfo();
 
@@ -80,8 +110,13 @@ public class WatchViewController {
         System.out.println("Done filling chart");
     }
 
-    // fill chart with data from sensor
+
     // TODO: Make this work with all types of charts
+    /**
+     * Fills a Linechart with data
+     * @param chart The Linechart to be filled
+     * @param sensor The sensor that is used
+     */
     private void fillChart(LineChart<String, Number> chart, String sensor) {
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
         System.out.println("Fill Chart for watch: " + watch.getWatchID());
@@ -97,36 +132,22 @@ public class WatchViewController {
 
         System.out.println("Data size is " + sensorData.size());
 
-        /*XYChart.Data<String, Number> old = sensorData.getDataPoint(0);
-        old.setNode(createDataNode(old.getXValue(), sensor));
-        series.getData().add(old);
-        Node chartArea = chart.lookup(".chart-plot-background");
-        Bounds chartAreaBounds = chartArea.localToScene(chartArea.getBoundsInLocal());*/
         for(int i = 0; i < sensorData.size(); i += 3){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
 
-            temp.setNode(createDataNode(temp.getXValue(), sensor));
+            temp.setNode(createDataNode());
             series.getData().add(temp); // add datapoint to series
-            //Node node = temp.getNode();
-
-            //System.out.println("pos:" + chartAreaBounds.toString());
-            /*if(temp.getNode().getBoundsInParent().getMinX() < old.getNode().getBoundsInParent().getMinX() + 2) {
-
-                System.out.println("Adding: " + temp.toString());
-                series.getData().add(temp); // add datapoint to series
-            }else{
-                temp.setNode(null);
-                System.out.println("Node not added!");
-           }*/
-            //old = temp;
         }
     }
 
 
-    // Node that is clickable
-    // Prints pin above the node
-    // TODO: save these pins for exporting
-    private static Node createDataNode(String time, String sensor) {
+
+    // TODO: maybe not needed
+    /**
+     * Created a clickable node at a datapoint in a chart and creates a label that can be filled
+     * @return The {@code Node} that has been created
+     */
+    private static Node createDataNode() {
         var label = new Label();
 
         var pane = new Pane(label);
@@ -145,9 +166,7 @@ public class WatchViewController {
         });
 
         pane.setOnMouseClicked(mouseEvent -> {
-            pinWindow(pane, label, time, sensor);
-            //label.setText(pane.getBoundsInParent().toString());
-
+            pinWindow(pane, label);
         });
 
         label.setLayoutY(-10);
@@ -156,7 +175,12 @@ public class WatchViewController {
     }
 
 
-    private static void pinWindow(Pane pane, Label label, String time, String sensor){
+    /**
+     * Shown the pinWindow when a {@code Node} is clicked. Shows options to add or remove text to the label
+     * @param pane The pane (Node) which was clicked
+     * @param label The label that we write text to
+     */
+    private static void pinWindow(Pane pane, Label label){
         System.out.println("Clicked");
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -193,7 +217,9 @@ public class WatchViewController {
     }
 
 
-    // Sets all info fields
+    /**
+     * Sets all the information fields in the watch view
+     */
     private void setInfo(){
         setStorageInfo();
         setBatteryInfo();
@@ -202,7 +228,9 @@ public class WatchViewController {
     }
 
 
-    // Sets storage information items in watchInfo section
+    /**
+     * Sets storage information items in watchInfo section
+     */
     private void setStorageInfo(){
         float maxStorage = watch.getWatchData().getMaxStorage();
         float usedStorage = watch.getWatchData().getUsedStorage();
@@ -213,25 +241,36 @@ public class WatchViewController {
     }
 
 
-    // Sets battery information items in watchInfo section
+    /**
+     * Sets battery information items in watchInfo section
+     */
     private void setBatteryInfo(){
         batteryLevelLabel.setText(watch.getBatteryPercentage() + "%");
         //TODO: add calculation for remaining time
     }
 
 
-    // Sets watch information items in watchInfo section
+    /**
+     * Sets watch information items in watchInfo section
+     */
     private void setWatchInfo(){
         watchNameLabel.setText(watch.getWatchName());
         watchNrLabel.setText(watch.getWatchID() + "");
     }
 
 
-    // Sets measurement information in measurementInfo section
+    /**
+     * Sets measurement information in measurementInfo section
+     */
     private void setMeasurementInfo(){
         // TODO: Fill this
     }
 
+
+    /**
+     * Shows the watch options menu controlled by {@link WatchOptionsController}
+     * @throws IOException Thrown by {@code FXMLLoader}
+     */
     private void showOptions() throws IOException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
@@ -251,6 +290,11 @@ public class WatchViewController {
         stage.show();
     }
 
+
+    /**
+     * Event for the options button
+     * @throws IOException Thrown by {@link WatchViewController#showOptions()}
+     */
     public void optionsPressed() throws IOException {
         showOptions();
     }
