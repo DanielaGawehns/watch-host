@@ -1,7 +1,6 @@
 package org.openjfx;
 
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -13,63 +12,90 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
-import java.util.List;
 
-// Class for controlling functions from the watchView screen
-// Controlling watchview.fxml
+
+/**
+ * Class for controlling functions from the watchView screen
+ * Controlling watchview.fxml
+ */
 public class WatchViewController {
 
-
-    // Root BorderPane
-    @FXML
-    private BorderPane view;
-
-    @FXML
-    private GridPane grid;
-
+    /**
+     * ProgressBar for visualizing the memory that is used
+     */
     @FXML
     private ProgressBar storageBar;
 
+    /**
+     * Label for the storage. Should be of format {@code <used>/<max>}
+     */
     @FXML
     private Label storageLabel;
 
+    /**
+     * Label for the batteryLevel
+     */
     @FXML
     private Label batteryLevelLabel;
 
+    /**
+     * Label for the battery time remaining
+     */
     @FXML
     private Label batteryRemainingLabel;
 
+    /**
+     * Label for the watch nickname
+     */
     @FXML
     private Label watchNameLabel;
 
+    /**
+     * Label for the watchID
+     */
     @FXML
     private Label watchNrLabel;
 
+    /**
+     * Linechart for the HRM
+     */
     @FXML
     private LineChart<String, Number> sensorChart;
 
+    /**
+     * Linechart for the PRESSURE
+     */
     @FXML
     public LineChart<String, Number> pressureChart;
 
-    // The watch of which the overview is showed
+
+    /**
+     * The {@link Smartwatch} of which the overview is showed
+     */
     private Smartwatch watch;
 
+    /**
+     * Controller of {@link WatchOptionsController}
+     */
     private WatchOptionsController watchOptionsController;
 
-    // set the watch that is shown
+
+    /**
+     * Sets {@link WatchViewController#watch} and fills the charts using {@link WatchViewController#fillChart(LineChart, String)}
+     * @param _watch The {@link Smartwatch} which data will be shown
+     */
     void setWatch(Smartwatch _watch){
         System.out.println("Setting watch...");
         watch = _watch;
-
-        grid.prefWidthProperty().bind(view.widthProperty()); // bind width of grid to the width of the borderPane
 
         setInfo();
 
@@ -84,8 +110,13 @@ public class WatchViewController {
         System.out.println("Done filling chart");
     }
 
-    // fill chart with data from sensor
+
     // TODO: Make this work with all types of charts
+    /**
+     * Fills a Linechart with data
+     * @param chart The Linechart to be filled
+     * @param sensor The sensor that is used
+     */
     private void fillChart(LineChart<String, Number> chart, String sensor) {
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
         System.out.println("Fill Chart for watch: " + watch.getWatchID());
@@ -101,20 +132,22 @@ public class WatchViewController {
 
         System.out.println("Data size is " + sensorData.size());
 
-        for(int i = 0; i < sensorData.size(); i++){
+        for(int i = 0; i < sensorData.size(); i += 3){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
+
             temp.setNode(createDataNode());
-            System.out.println("Adding: " + temp.toString());
             series.getData().add(temp); // add datapoint to series
         }
     }
 
 
-    // Node that is clickable
-    // Prints pin above the node
-    // TODO: save these pins for exporting
-    private static Node createDataNode(/*XYChart.Data<Number, Number> data*/) {
-        //Node node = data.getNode();
+
+    // TODO: maybe not needed
+    /**
+     * Created a clickable node at a datapoint in a chart and creates a label that can be filled
+     * @return The {@code Node} that has been created
+     */
+    private static Node createDataNode() {
         var label = new Label();
 
         var pane = new Pane(label);
@@ -129,21 +162,25 @@ public class WatchViewController {
 
         pane.setOnMouseExited(mouseEvent -> {
             pane.setStyle("-fx-background-color: transparent");
+            label.setText("");
         });
 
         pane.setOnMouseClicked(mouseEvent -> {
-            pinWindow(label);
-
-
+            pinWindow(pane, label);
         });
-        System.out.println("label pos: " + pane.getBoundsInParent().toString());
+
         label.setLayoutY(-10);
-        System.out.println("Created pin");
+
         return pane;
     }
 
 
-    private static void pinWindow(Label label){
+    /**
+     * Shown the pinWindow when a {@code Node} is clicked. Shows options to add or remove text to the label
+     * @param pane The pane (Node) which was clicked
+     * @param label The label that we write text to
+     */
+    private static void pinWindow(Pane pane, Label label){
         System.out.println("Clicked");
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -161,17 +198,28 @@ public class WatchViewController {
 
         buttonSet.setOnAction(e -> {
             label.setText(field.getText());
+            // TODO: save label to csv
+            pane.setStyle("-fx-background-color: red");
+            pane.setOnMouseExited(mouseEvent -> {
+                pane.setStyle("-fx-background-color: red");
+            });
             dialog.close();
         });
 
         buttonRemove.setOnAction(e -> {
             label.setText("");
+            pane.setStyle("-fx-background-color: transparent");
+            pane.setOnMouseExited(mouseEvent -> {
+                pane.setStyle("-fx-background-color: transparent");
+            });
             dialog.close();
         });
     }
 
 
-    // Sets all info fields
+    /**
+     * Sets all the information fields in the watch view
+     */
     private void setInfo(){
         setStorageInfo();
         setBatteryInfo();
@@ -180,7 +228,9 @@ public class WatchViewController {
     }
 
 
-    // Sets storage information items in watchInfo section
+    /**
+     * Sets storage information items in watchInfo section
+     */
     private void setStorageInfo(){
         float maxStorage = watch.getWatchData().getMaxStorage();
         float usedStorage = watch.getWatchData().getUsedStorage();
@@ -191,31 +241,42 @@ public class WatchViewController {
     }
 
 
-    // Sets battery information items in watchInfo section
+    /**
+     * Sets battery information items in watchInfo section
+     */
     private void setBatteryInfo(){
         batteryLevelLabel.setText(watch.getBatteryPercentage() + "%");
         //TODO: add calculation for remaining time
     }
 
 
-    // Sets watch information items in watchInfo section
+    /**
+     * Sets watch information items in watchInfo section
+     */
     private void setWatchInfo(){
         watchNameLabel.setText(watch.getWatchName());
         watchNrLabel.setText(watch.getWatchID() + "");
     }
 
 
-    // Sets measurement information in measurementInfo section
+    /**
+     * Sets measurement information in measurementInfo section
+     */
     private void setMeasurementInfo(){
         // TODO: Fill this
     }
 
+
+    /**
+     * Shows the watch options menu controlled by {@link WatchOptionsController}
+     * @throws IOException Thrown by {@code FXMLLoader}
+     */
     private void showOptions() throws IOException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
         Parent watchView = loader.load();
         Stage stage = new Stage();
-        stage.setOnCloseRequest(e -> {
+        stage.setOnCloseRequest(e -> { //TODO: maybe change this
             watch.setWatchID(watchOptionsController.getWatchID());
             watch.setWatchName(watchOptionsController.getWatchName());
             System.out.println("Setting watch info: " + watch.getWatchID() + " " + watch.getWatchName());
@@ -226,15 +287,15 @@ public class WatchViewController {
         watchOptionsController = loader.getController();
         watchOptionsController.setWatchData(watch.getWatchID(), watch.getWatchName());
 
-
-
         stage.show();
-
-
-
     }
 
-    public void optionsPressed(ActionEvent event) throws IOException {
+
+    /**
+     * Event for the options button
+     * @throws IOException Thrown by {@link WatchViewController#showOptions()}
+     */
+    public void optionsPressed() throws IOException {
         showOptions();
     }
 
