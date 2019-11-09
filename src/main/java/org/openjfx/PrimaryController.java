@@ -96,7 +96,12 @@ public class PrimaryController{
         for(Integer ID : watchIDList){
             WatchData data = new WatchData(ID, 69, 8000, 6969);
             String name = dbManager.getWatchName(ID);
-            watches.add(new Smartwatch(data, name));
+            Smartwatch watch = new Smartwatch(data, name);
+            for(String sensor : allSensors){
+                watch.setData(dbManager.getDataList(ID, sensor));
+            }
+
+            watches.add(watch);
         }
 
         currentWatch = -1;
@@ -243,7 +248,13 @@ public class PrimaryController{
             for(String sensor : allSensors){
                 dbManager.insertDatalist(reader.getWatchNumber(), watches.getFromID(reader.getWatchNumber()).getSensorData(sensor));
             }
+            if(fileEntry.delete()) { // delete the file
+                System.out.println("File deleted!");
+            }else{
+                System.out.println("File deletion failed!");
+            }
         }
+
     }
 
 

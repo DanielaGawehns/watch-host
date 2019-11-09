@@ -82,7 +82,7 @@ public class SensorData {
     void printRecords(){
         for(int i = 0; i < records.size(); i++){
             DataPoint point = records.get(i);
-            System.out.print(i + ": " + date.format(point.getDate()) + " , " + time.format(point.getTime()));
+            System.out.print(i + ": " + point.getDate() + " , " + point.getTime());
             List<Double> list = point.getDataList();
             for (Double aDouble : list) {
                 System.out.print(" , " + aDouble);
@@ -161,7 +161,7 @@ public class SensorData {
      * @return A {@link XYChart.Data} containing {@link DataPoint#time} and the first item of {@link DataPoint#dataList}
      */
     XYChart.Data<String, Number> getDataPoint(int i) {
-        return new XYChart.Data<>(time.format(records.get(i).getTime()), records.get(i).getDataList().get(0));
+        return new XYChart.Data<>(records.get(i).getTime().toString(), records.get(i).getDataList().get(0));
     }
 }
 

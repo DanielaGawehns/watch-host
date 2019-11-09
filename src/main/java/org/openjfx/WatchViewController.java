@@ -106,7 +106,7 @@ public class WatchViewController {
 
         try {
             fillChart(sensorChart, "HRM"); // fill Chart TODO: change parameter
-            fillChart(pressureChart, "PRESSURE");
+            //fillChart(pressureChart, "PRESSURE");
         }catch (Exception e){ // if data is not found
             System.out.println("No data found for watch: " + " and sensor: TEMP");
             sensorChart.setDisable(true);
@@ -124,7 +124,7 @@ public class WatchViewController {
      */
     private void fillChart(LineChart<String, Number> chart, String sensor) {
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
-        System.out.println("Fill Chart for watch: " + watch.getWatchID());
+        System.out.println("Fill Chart for watch: " + watch.getWatchID() + " and sensor " + sensor);
         SensorData sensorData = watch.getSensorData(sensor); // get data of the right sensor
 
         chart.setAnimated(false); // disable animation for clearing
@@ -137,10 +137,10 @@ public class WatchViewController {
 
         System.out.println("Data size is " + sensorData.size());
 
-        for(int i = 0; i < sensorData.size(); i += 3){ //TODO: find more robust way to remove unnecessary nodes
+        for(int i = 0; i < sensorData.size(); i += 1){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
 
-            temp.setNode(createDataNode());
+            //temp.setNode(createDataNode());
             series.getData().add(temp); // add datapoint to series
         }
     }

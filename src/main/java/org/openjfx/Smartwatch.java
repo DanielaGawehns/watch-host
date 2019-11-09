@@ -153,6 +153,10 @@ public class Smartwatch {
             sensorDataEdited.remove(sensor);
         }
     }
+
+    void setData(SensorData dataList){
+        sensorDataList.set(sensorMap.get(dataList.getSensor()), dataList);
+    }
 }
 
 

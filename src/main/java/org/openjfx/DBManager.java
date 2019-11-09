@@ -252,4 +252,51 @@ public class DBManager {
         }
     }
 
+    SensorData getDataList(int ID, String sensor){
+        return getDataList(ID, sensor, LocalTime.MIN,LocalTime.MAX);
+    }
+
+    SensorData getDataList(int ID, String sensor, LocalTime startTime, LocalTime endTime){
+        int dataID = getDataListID(ID, sensor);
+        int columns = 0;
+        String command = "SELECT * FROM data" + dataID + " WHERE time BETWEEN ? AND ?";
+        SensorData data = new SensorData(ID, sensor);
+        LocalTime time;
+        LocalDate date;
+        List<Double> dataList;
+
+        System.out.println("DB: " + command);
+        try{
+            Connection con = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+            stmt.setTime(1, Time.valueOf(startTime));
+            stmt.setTime(2, Time.valueOf(endTime));
+            ResultSet rs = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            columns = rsmd.getColumnCount() - 2;
+
+            while(rs.next()){
+                dataList = new ArrayList<>();
+                date = rs.getDate("date").toLocalDate();
+                time = rs.getTime("time").toLocalTime();
+
+                for(int i = 0; i < columns; i++){
+                    dataList.add(rs.getDouble("data_" + (i+1)));
+                }
+                DataPoint point = new DataPoint(sensor, date, time, dataList);
+                data.add(point);
+            }
+
+            stmt.close();
+            rs.close();
+            con.close();
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        System.out.println("DB: found sensordata: ");
+        data.printRecords();
+        return data;
+
+    }
+
 }
