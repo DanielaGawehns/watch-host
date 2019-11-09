@@ -15,6 +15,11 @@ import java.util.TreeSet;
 public class Smartwatch {
 
     /**
+     * Manager for managing the Database connection {@link DBManager}
+     */
+    private static DBManager dbManager = new DBManager();
+
+    /**
      * Data about the watch {@link WatchData}
      */
     private WatchData watchData;
@@ -22,12 +27,12 @@ public class Smartwatch {
     /**
      * Data about subject {@link SubjectData}
      */
-    private SubjectData subjectData;
+    private SubjectData subjectData = null;
 
     /**
      * Nickname for the watch specified by the user
      */
-    private String watchName;
+    private String watchName = "NONAME";
 
     /**
      * List of {@link SensorData} containing data of all the sensors available
@@ -41,38 +46,40 @@ public class Smartwatch {
     static{
         sensorMap = new HashMap<>();
         sensorMap.put("HRM", 0); // put HRM on spot 0
-        sensorMap.put("PRESSURE", 1);
-        sensorMap.put("ACCELEROMETER", 2);
+        //sensorMap.put("PRESSURE", 1);
+        //sensorMap.put("ACCELEROMETER", 2);
     }
 
 
     /**
      * Constructor
      */
-    Smartwatch(WatchData _data, SubjectData _subjectData){
+    /*Smartwatch(WatchData _data, SubjectData _subjectData){
         System.out.println("making smartwatch");
         watchData = _data;
         subjectData = _subjectData;
-        watchName = "NO NAME";
 
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
-    }
+        //sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
+        //sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
+       // sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
+    }*/
 
 
     /**
      * Constructor
      */
-    Smartwatch(WatchData _data){
+    Smartwatch(WatchData _data, String name){
         System.out.println("making smartwatch");
         watchData = _data;
-        watchName = "NO NAME";
+        if(!name.isEmpty()){
+            watchName = name;
+        }
 
         sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
+        //sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
+        //sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
     }
+
 
 
     /**
@@ -133,6 +140,7 @@ public class Smartwatch {
     void addData(List<DataPoint> dataList){
         SortedSet<String> sensorDataEdited = new TreeSet<>();
         String sensor = "";
+
 
         for (DataPoint dataPoint : dataList) {
             sensorDataList.get(sensorMap.get(dataPoint.getSensorName())).add(dataPoint);

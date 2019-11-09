@@ -42,15 +42,26 @@ public class PrimaryController{
     @FXML
     private BorderPane view;
 
+    private List<String> allSensors = new ArrayList<>() {
+        {
+            add("HRM");
+        }
+    };
+
     /**
      * List of smartwatches connected {@link Smartwatch}
      */
-    private static List<Smartwatch> watches = new ArrayList<>();
+    private static SmartwatchList watches = new SmartwatchList();
 
     /**
      * Reader for reading CSV files {@link CSVFileReader}
      */
     private CSVFileReader reader = new CSVFileReader();
+
+    /**
+     * Manager for managing the Database connection {@link DBManager}
+     */
+    private static DBManager dbManager = new DBManager();
 
     /**
      * Controller for the watchView {@link WatchViewController}
@@ -73,7 +84,6 @@ public class PrimaryController{
     private int currentWatch;
 
 
-    // TODO: remove adding of smartwatches
     /**
      * Initializes the main view by printing the sidebar and overview
      * @throws IOException Thrown by {@link PrimaryController#loadOverviewFXML()}
@@ -81,22 +91,18 @@ public class PrimaryController{
     public void initialize() throws IOException {
         System.out.println("INITIALIZE Primary Controller");
 
-        WatchData data1 = new WatchData(1, 45, 8000, 4123);
-        WatchData data2 = new WatchData(2, 12, 8000, 6452);
-        WatchData data3 = new WatchData(3, 89, 8000, 1235);
-        SubjectData subjectData1 = new SubjectData(1);
-        SubjectData subjectData2 = new SubjectData(2);
-        SubjectData subjectData3 = new SubjectData(3);
+        List<Integer> watchIDList = dbManager.getAllWatchId();
 
-
-        watches.add(new Smartwatch(data1, subjectData1)); // TEMP: add watch 1
-        watches.add(new Smartwatch(data2, subjectData2)); // TEMP: add watch 2
-        watches.add(new Smartwatch(data3, subjectData3)); // TEMP: add watch 3
+        for(Integer ID : watchIDList){
+            WatchData data = new WatchData(ID, 69, 8000, 6969);
+            String name = dbManager.getWatchName(ID);
+            watches.add(new Smartwatch(data, name));
+        }
 
         currentWatch = -1;
         loadOverviewFXML();
         loadSideBar();
-        syncButtonPressed();
+        //syncButtonPressed();
     }
 
 
@@ -109,7 +115,7 @@ public class PrimaryController{
     /**
      * Getter for {@link PrimaryController#watches}
      */
-    static List<Smartwatch> getWatches() { return PrimaryController.watches; }
+    static SmartwatchList getWatches() { return PrimaryController.watches; }
 
 
     /**
@@ -119,6 +125,10 @@ public class PrimaryController{
      */
     void addWatch(Smartwatch watch){
         watches.add(watch);
+        dbManager.insertWatch(watch.getWatchID());
+        for(String sensor : allSensors){
+            dbManager.insertSensor(watch.getWatchID(), sensor);
+        }
         loadSideBar();
     }
 
@@ -129,8 +139,8 @@ public class PrimaryController{
      * @return True if ID is not used. False if the ID is already in use
      */
     boolean idNotUsed(int ID){
-        for (Smartwatch watch : watches) {
-            if (watch.getWatchID() == ID) {
+        for (int i = 0; i < watches.size(); i++) {
+            if (watches.get(i).getWatchID() == ID) {
                 return false;
             }
         }
@@ -228,7 +238,11 @@ public class PrimaryController{
     private void syncFiles(File folder) {
         for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all folders in map 'folder'
             List<DataPoint> dataList = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
-            watches.get(reader.getWatchNumber()).addData(dataList); // add data stream to watch
+            System.out.println("Read list of size " + dataList.size());
+            watches.getFromID(reader.getWatchNumber()).addData(dataList); // add data stream to watch
+            for(String sensor : allSensors){
+                dbManager.insertDatalist(reader.getWatchNumber(), watches.getFromID(reader.getWatchNumber()).getSensorData(sensor));
+            }
         }
     }
 
@@ -238,9 +252,9 @@ public class PrimaryController{
      */
     public void syncButtonPressed() {
         syncFiles(new File(System.getProperty("user.dir") + "/src/main/resources/input/test")); // read files in input folder
-        if(currentWatch > 0){
+        /*if(currentWatch > 0){
             watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch
-        }
+        }*/
     }
 
 

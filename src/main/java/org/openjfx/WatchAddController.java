@@ -70,16 +70,16 @@ public class WatchAddController {
 
         if(primaryController.idNotUsed(watchID)){
             watchData = new WatchData(watchID);
-            watch = new Smartwatch(watchData);
+            watch = new Smartwatch(watchData, watchName);
 
         }else{
             Util.printErrorDialog("Watch ID: " + watchID + " is already in use!", "Please choose another ID to continue.");
             return;
         }
 
-        if(!watchName.isEmpty()){
+        /*if(!watchName.isEmpty()){
             watch.setWatchName(watchName);
-        }
+        }*/
 
         //TODO: parse IP field
 

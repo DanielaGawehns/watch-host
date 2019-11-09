@@ -45,7 +45,7 @@ public class MeasurementController {
 
     @FXML
     private VBox connectedWatches;
-    private List<Smartwatch> connectedWatchesList; // list of watches that are currently connected
+    private SmartwatchList connectedWatchesList; // list of watches that are currently connected
 
     // List of sensors to measure with the desired interval
      private List<Pair<String, Integer>> selectedSensors = new ArrayList<>();

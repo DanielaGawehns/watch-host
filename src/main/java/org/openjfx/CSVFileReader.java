@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +45,7 @@ class CSVFileReader{
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(path))) { // read in file
             String line = br.readLine();
             if(line.startsWith("#")){ // read watchnumber
-                watchNumber = Integer.parseInt(line.substring(1)) - 1;
+                watchNumber = Integer.parseInt(line.substring(1));
                 System.out.println("Watch number: " + watchNumber);
             }else{
                 System.out.println("No watch number found"); // TODO: make exception
@@ -64,6 +67,7 @@ class CSVFileReader{
         }
         System.out.println("Done reading: " + path);
 
+        System.out.println("Read datalist of size " + dataList.size());
         return dataList;
     }
 
@@ -75,14 +79,16 @@ class CSVFileReader{
      */
     private DataPoint parseRecord(String[] record) throws ParseException {
 
+        DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("d/MM/yyyy");
+
         if(record.length < 4){
             System.out.println("Record error");
             throw new ParseException("Length of records too small", 0);
         }
         int dataFields = 1;
         String sensorName = record[0];
-        Date date = new SimpleDateFormat("dd/MM/yyyy").parse(record[1]);
-        Date time = new SimpleDateFormat("hh:mm:ss").parse(record[2]);
+        LocalDate date = LocalDate.parse(record[1], formatterDate);
+        LocalTime time = LocalTime.parse(record[2]);
         List<Double> data = new ArrayList<>();
 
         switch (sensorName){

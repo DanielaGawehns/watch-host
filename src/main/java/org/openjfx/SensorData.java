@@ -147,8 +147,11 @@ public class SensorData {
                 old = record;
             }
         }
+        System.out.println("Merged records have size " + mergedRecords.size());
         records = mergedRecords;
     }
+
+    DataPoint get(int i){ return records.get(i); }
 
 
     // TODO: make this work for all types of data

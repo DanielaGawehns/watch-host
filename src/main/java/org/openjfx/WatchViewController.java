@@ -84,6 +84,11 @@ public class WatchViewController {
     private Smartwatch watch;
 
     /**
+     * Manager for managing the Database connection {@link DBManager}
+     */
+    static DBManager dbManager = new DBManager();
+
+    /**
      * Controller of {@link WatchOptionsController}
      */
     private WatchOptionsController watchOptionsController;
@@ -279,6 +284,8 @@ public class WatchViewController {
         stage.setOnCloseRequest(e -> { //TODO: maybe change this
             watch.setWatchID(watchOptionsController.getWatchID());
             watch.setWatchName(watchOptionsController.getWatchName());
+            dbManager.setWatchName(watchOptionsController.getWatchID(), watchOptionsController.getWatchName());
+
             System.out.println("Setting watch info: " + watch.getWatchID() + " " + watch.getWatchName());
         });
         stage.setTitle("Watch Options");
