@@ -139,7 +139,7 @@ public class PrimaryController{
 
 
     /**
-     * Loads the overview (overfiew.fxml) into the {@link PrimaryController#view}.
+     * Loads the overview (overview.fxml) into the {@link PrimaryController#view}.
      * Also binds the width of the overview to the {@link PrimaryController#view}
      * @throws IOException Thrown by {@code FXMLLoader}
      */
