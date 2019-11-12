@@ -239,8 +239,9 @@ public class MeasurementController {
 
 
     /**
-     * Event for the Start Measurement button. First checks if all data for the measurement is valid.
-     * If this is the case runs {@link Measurement#setSensors(List)}, {@link Measurement#setWatches(List)}, and {@link Measurement#setDuration(Integer)}
+     * Event for the Start Measurement button. First checks if all data for the measurement is valid
+     * If this is the case runs {@link Measurement#setSensors(List)} and {@link Measurement#setDuration(Integer)} to store the measurement information
+     * All the data on the measurement is sent to the selected watches
      * Afterwards run {@link PrimaryController#switchToOverview()} to return to the overview screen
      * @throws IOException Thrown by {@link PrimaryController#switchToOverview()}
      */
@@ -286,10 +287,14 @@ public class MeasurementController {
 
         // store all values for the measurement
         measurement.setSensors(selectedSensors);
-        measurement.setWatches(selectedWatches);
         measurement.setDuration(duration);
 
         // todo: send signal to watches
+        // save measurement for each selected watch
+        for (int i = 0; i < selectedWatches.size(); i++) {
+            Smartwatch curr = selectedWatches.get(i);
+            curr.setMeasurement(measurement);
+        }
 
         // the measurement has started, switch to the overview tab
         primaryController.switchToOverview();

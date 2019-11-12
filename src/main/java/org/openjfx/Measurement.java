@@ -13,10 +13,6 @@ class Measurement {
      */
     private List<Pair<String, Integer>> sensors = new ArrayList<>();
 
-    /**
-     * List of {@link Smartwatch} that are selected to perform the measurement
-     */
-    private List<Smartwatch> watches = new ArrayList<>();
 
     /**
      * The duration of the measurement in minutes
@@ -31,13 +27,18 @@ class Measurement {
 
 
     /**
-     * Setter for {@link Measurement#watches}
-     */
-    public void setWatches(List<Smartwatch> list) { watches = list; }
-
-
-    /**
      * Setter for {@link Measurement#duration}
      */
     public void setDuration(Integer x) { duration = x; }
+
+
+    /**
+     * Getter for {@link Measurement#sensors}
+     */
+     List<Pair<String, Integer>> getSensors() { return sensors; }
+
+    /**
+     * Getter for {@link Measurement#sensors}
+     */
+    Integer getDuration() { return duration; }
 }

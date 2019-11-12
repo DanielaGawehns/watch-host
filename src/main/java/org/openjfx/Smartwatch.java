@@ -45,6 +45,11 @@ public class Smartwatch {
         sensorMap.put("ACCELEROMETER", 2);
     }
 
+    /**
+     * The current measurement which is being performed by the watch
+     */
+    private Measurement measurement;
+
 
     /**
      * Constructor
@@ -124,6 +129,18 @@ public class Smartwatch {
      * Setter for {@link Smartwatch#watchName}
      */
     void setWatchName(String name) { watchName = name; }
+
+
+    /**
+     * Setter for {@link Smartwatch#measurement}
+     */
+    void setMeasurement(Measurement m) { measurement = m; }
+
+
+    /**
+     * Getter for {@link Smartwatch#measurement}
+     */
+    Measurement getMeasurement() { return measurement; }
 
 
     /**
