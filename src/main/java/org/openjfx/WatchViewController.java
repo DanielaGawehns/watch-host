@@ -17,8 +17,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.io.File;
 import java.io.IOException;
 
 
@@ -299,5 +302,26 @@ public class WatchViewController {
         showOptions();
     }
 
+
+    /**
+     * Event for Add Comments button
+     */
+    public void addComments() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+                new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        Stage stage = new Stage();
+        File selectedFile = fileChooser.showOpenDialog(stage);
+        /*
+        if (selectedFile != null) {
+            stage.display(selectedFile);
+        }*/
+        watch.getMeasurement().readComments(selectedFile);
+    }
 }
 
