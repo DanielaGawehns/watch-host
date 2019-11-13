@@ -45,7 +45,7 @@ public class BroadcastReceiver {
             packet = new DatagramPacket(
                 answerString,
                 answerString.length,
-                this.broadcastIP,
+                InetAddress.getByName(hostAndPort.getHost()),
                 sendPort
             );
             this.sendServer.send(packet);
