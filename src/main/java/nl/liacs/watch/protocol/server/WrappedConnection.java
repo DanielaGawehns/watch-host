@@ -17,17 +17,25 @@ public class WrappedConnection {
         this.sendQueue = new LinkedBlockingQueue<>();
     }
 
-    public void receiveLoop() throws IOException {
+    void receiveLoop() throws IOException {
         while (true) {
             var msg = this.connection.receive();
             this.receiveQueue.add(msg);
         }
     }
 
-    public void sendLoop() throws Exception {
+    void sendLoop() throws Exception {
         while (true) {
             var msg = this.sendQueue.take();
             this.connection.send(msg);
         }
+    }
+
+    public void send(Message msg) throws IllegalStateException {
+        if (!connection.isOpen()) {
+            throw new IllegalStateException("connection is closed");
+        }
+
+        this.sendQueue.add(msg);
     }
 }

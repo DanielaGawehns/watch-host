@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class Connection implements nl.liacs.watch.protocol.Connection {
-    Socket socket;
+    private final Socket socket;
 
     public Connection(Socket socket) {
         this.socket = socket;

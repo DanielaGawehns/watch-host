@@ -1,53 +1,45 @@
 package nl.liacs.watch.protocol.server;
 
-import com.google.common.base.Charsets;
-import com.google.common.net.HostAndPort;
+import nl.liacs.watch.protocol.types.Constants;
+import nl.liacs.watch.protocol.types.HostAndPort;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class BroadcastReceiver {
-    private final int version;
+    private static final byte[] listenBytes = "HelloWorld!\0".getBytes();
+    private static final byte[] answerBytes = "WatchSrvrPing\0".getBytes();
     private final DatagramSocket listenServer;
     private final DatagramSocket sendServer;
     private final BlockingQueue<HostAndPort> watchQueue;
-    private final InetAddress broadcastIP = InetAddress.getByName("255.255.255.255");
 
-    private static final byte[] listenString = "HelloWorld\0".getBytes();
-    private static final byte[] answerString = "WatchSrvrPing\0".getBytes();
-    private static final int listenPort = 2112;
-    private static final int sendPort = 2113;
-
-    public BroadcastReceiver(int version) throws SocketException, UnknownHostException {
-        this.listenServer = new DatagramSocket(listenPort);
-        this.sendServer = new DatagramSocket(listenPort);
-        this.version = version;
-        this.watchQueue = new LinkedBlockingQueue<HostAndPort>();
+    public BroadcastReceiver() throws SocketException {
+        this.listenServer = new DatagramSocket(Constants.BroadcastHostPort);
+        this.sendServer = new DatagramSocket(Constants.BroadcastWatchPort);
+        this.watchQueue = new LinkedBlockingQueue<>();
     }
 
     public void Listen() throws IOException {
         while (true) {
-            var bytes = new byte[listenString.length];
+            var bytes = new byte[listenBytes.length];
             var packet = new DatagramPacket(bytes, bytes.length);
             this.listenServer.receive(packet);
 
-            if (!new String(bytes, Charsets.US_ASCII).equals(listenString)) {
+            var hostAndPort = new HostAndPort(packet.getAddress(), packet.getPort());
+
+            if (!Arrays.equals(bytes, listenBytes)) {
+                var rec = new String(listenBytes, StandardCharsets.US_ASCII);
+                System.out.format("datagram from %s contained wrong string (%s)\n", hostAndPort, rec);
                 continue;
             }
 
-            var hostAndPort = HostAndPort.fromParts(
-                packet.getAddress().getHostAddress(),
-                packet.getPort()
-            );
-
-            packet = new DatagramPacket(
-                answerString,
-                answerString.length,
-                InetAddress.getByName(hostAndPort.getHost()),
-                sendPort
-            );
+            packet = new DatagramPacket(answerBytes, answerBytes.length);
             this.sendServer.send(packet);
 
             this.watchQueue.add(hostAndPort);

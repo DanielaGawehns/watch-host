@@ -1,10 +1,10 @@
 package nl.liacs.watch.protocol.server;
 
-import com.google.common.net.HostAndPort;
-
 import java.io.IOException;
-import java.net.Socket;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class ConnectionWaiter {
     private final BroadcastReceiver broadcastReceiver;
@@ -12,12 +12,13 @@ public class ConnectionWaiter {
     private final BlockingQueue<WrappedConnection> wrappedConnections;
 
     public ConnectionWaiter(int version, int nthreads) throws IOException {
-        this.broadcastReceiver = new BroadcastReceiver(version);
+        this.broadcastReceiver = new BroadcastReceiver();
         this.threadPool = Executors.newFixedThreadPool(nthreads);
-        this.wrappedConnections = new LinkedBlockingQueue<WrappedConnection>();
+        this.wrappedConnections = new LinkedBlockingQueue<>();
     }
 
     public void start() {
+        /*
         this.threadPool.submit(new Thread(() -> {
             this.broadcastReceiver.Listen();
             while (true) {
@@ -29,6 +30,7 @@ public class ConnectionWaiter {
                 }));
             }
         }));
+         */
     }
 
     public void shutdown() {
