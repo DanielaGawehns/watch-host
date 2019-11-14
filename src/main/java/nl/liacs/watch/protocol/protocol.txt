@@ -1,8 +1,19 @@
 # Watch communication protocol v1
 
+# Watch-host discovery
+
+When a watch wants to find the hosts on the network, it sends a UDP broadcast to the local network (255.255.255.255) on port 2112.
+The payload of this broadcast MUST be "HelloWorld!".
+
+On receiving this message, the host MUST send an UDP unicast message to the sender of the broadcast on port 2113 with the contents "WatchSrvrPing".
+
+Now the watch can connect as described in the following section.
+
 # Connection procedure
 
-Host MUST open a TCP server on a fixed port (TBD).
+TODO: we should also be talking about SSL.
+
+Host MUST open a TCP server on a fixed port (2114).
 The watch can connect to the host at any moment.
 
 After the socket is successfully opened, the watch MUST send the version number
