@@ -2,21 +2,21 @@
 
 # Connection procedure
 
-Server MUST open a TCP server on a fixed port (TBD).
-The watch can connect to the server at any moment.
+Host MUST open a TCP server on a fixed port (TBD).
+The watch can connect to the host at any moment.
 
 After the socket is successfully opened, the watch MUST send the version number
 as an 8 bit unsigned number.
-If the version is unknown to the server, the server SHOULD close the connection.
-Otherwise, if the version number is known, the server MUST continue to
+If the version is unknown to the host, the host SHOULD close the connection.
+Otherwise, if the version number is known, the host MUST continue to
 communicate according to that protocol version.
 
-After the server has accepted the version number, it MUST send an ACK ($00000110_2$).
+After the host has accepted the version number, it MUST send an ACK ($00000110_2$).
 
 Now the watch and host are free to communicate in any order, per the rest of
 this document.
 
-**Note**: A server is not required to support older version numbers, they are
+**Note**: A host is not required to support older version numbers, they are
 free to do so. But it's up to the implementator to choose the version range to
 support.
 
