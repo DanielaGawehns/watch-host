@@ -58,6 +58,7 @@ public class WatchAddController {
         WatchData watchData;
         Smartwatch watch;
 
+        // Parse ID field
         try{
            watchID = Integer.parseInt(textfieldID.getText());
            if(watchID < 0){
@@ -68,21 +69,18 @@ public class WatchAddController {
             return;
         }
 
+        // Check the ID
         if(primaryController.idNotUsed(watchID)){
             watchData = new WatchData(watchID);
             watch = new Smartwatch(watchData, watchName);
-
         }else{
             Util.printErrorDialog("Watch ID: " + watchID + " is already in use!", "Please choose another ID to continue.");
             return;
         }
 
-        /*if(!watchName.isEmpty()){
-            watch.setWatchName(watchName);
-        }*/
-
         //TODO: parse IP field
 
+        // Add the watch
         primaryController.addWatch(watch);
         Util.closeStage(buttonConnect);
     }

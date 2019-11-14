@@ -32,9 +32,7 @@ class Util {
      * @param node The node of which the stage should be closed
      */
     static void closeStage(Node node){
-        // get a handle to the stage
         Stage stage = (Stage) node.getScene().getWindow();
-        // do what you have to do
         stage.close();
     }
 
@@ -82,6 +80,10 @@ class Util {
         return Math.round(value * scale) / scale;
     }
 
+
+    /**
+     * Map containing sensor - dataList size
+     */
     static final Map<String, Integer> sensorDataListSize = new HashMap<>(); // TODO: remove this and get datalist size from input file
     static{
         sensorDataListSize.put("HRM", 1);

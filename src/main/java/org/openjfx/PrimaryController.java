@@ -105,7 +105,6 @@ public class PrimaryController{
         currentWatch = -1;
         loadOverviewFXML();
         loadSideBar();
-        //syncButtonPressed();
     }
 
 
@@ -129,12 +128,14 @@ public class PrimaryController{
     void addWatch(Smartwatch watch){
         watches.add(watch);
         dbManager.insertWatch(watch.getWatchID(), watch.getWatchName());
-        /*for(String sensor : allSensors){
-            dbManager.insertSensor(watch.getWatchID(), sensor);
-        }*/
         loadSideBar();
     }
 
+
+    /**
+     * Removes a watch from {@link PrimaryController#watches} and reloads the sideBar to update
+     * @param ID Watch ID
+     */
     void removeWatch(int ID){
         watches.remove(ID);
         loadSideBar();
@@ -221,7 +222,6 @@ public class PrimaryController{
         loadWatchFXML();
     }
 
-    // Switch to overview tab
 
     /**
      * Event for the overview button. Runs {@link PrimaryController#loadOverviewFXML()}

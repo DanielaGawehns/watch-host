@@ -13,12 +13,7 @@ import java.util.TreeSet;
 /**
  * Class holding all smartwatch data
  */
-public class Smartwatch {
-
-    /**
-     * Manager for managing the Database connection {@link DBManager}
-     */
-    private static DBManager dbManager = new DBManager();
+class Smartwatch {
 
     /**
      * Data about the watch {@link WatchData}
@@ -43,7 +38,7 @@ public class Smartwatch {
     /**
      * Map to map sensor name string to integer index for {@link Smartwatch#sensorDataList}
      */
-    private Map<String, Integer> sensorMap = new HashMap<>();;
+    private Map<String, Integer> sensorMap = new HashMap<>();
 
 
     /**
@@ -120,8 +115,7 @@ public class Smartwatch {
      */
     void addData(List<DataPoint> dataList){
         SortedSet<String> sensorDataEdited = new TreeSet<>();
-        String sensor = "";
-
+        String sensor;
 
         for (DataPoint dataPoint : dataList) {
             if(!sensorMap.containsKey(dataPoint.getSensorName())){
@@ -141,14 +135,29 @@ public class Smartwatch {
         }
     }
 
+
+    /**
+     * Sets {@link SensorData} of corresponding sensor
+     * @param dataList Data that will be set
+     */
     void setData(SensorData dataList){
         sensorDataList.set(sensorMap.get(dataList.getSensor()), dataList);
     }
 
+
+    /**
+     * Get a list with sensors from the watch
+     * @return List of Strings containing names of the sensors
+     */
     List<String> getSensorListFromMap(){
         return new ArrayList<>(sensorMap.keySet());
     }
 
+
+    /**
+     * Adds a new sensor to the watch
+     * @param sensor Name of the sensor
+     */
     void addSensor(String sensor){
         sensorMap.put(sensor, sensorMap.size());
         System.out.println("Put sensor " + sensor + " place " + (sensorMap.size()-1));
