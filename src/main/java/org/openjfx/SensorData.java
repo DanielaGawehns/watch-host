@@ -2,6 +2,8 @@ package org.openjfx;
 
 import javafx.scene.chart.XYChart;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +25,9 @@ public class SensorData {
      */
     private String sensor;
 
+
+    private int dataFieldsNumber;
+
     /**
      * Number of the watch this data belong to
      */
@@ -31,7 +36,7 @@ public class SensorData {
     /**
      * Format used for dates
      */
-    private final static SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+    private final static SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
 
     /**
      * Format for times
@@ -42,10 +47,11 @@ public class SensorData {
     /**
      * Constructor
      */
-    SensorData(int _watchNumber, String _sensor){
+    SensorData(int _watchNumber, String _sensor, int _dataFieldsNumber){
         records = new ArrayList<>();
         sensor = _sensor;
         watchNumber = _watchNumber;
+        dataFieldsNumber = _dataFieldsNumber;
     }
 
 
@@ -82,10 +88,10 @@ public class SensorData {
     void printRecords(){
         for(int i = 0; i < records.size(); i++){
             DataPoint point = records.get(i);
-            System.out.print(i + ": " + point.getDate() + " , " + point.getTime());
+            System.out.print(i + ": " + point.getDate() + "," + point.getTime());
             List<Double> list = point.getDataList();
             for (Double aDouble : list) {
-                System.out.print(" , " + aDouble);
+                System.out.print("," + aDouble);
             }
             System.out.println("");
         }
@@ -105,6 +111,22 @@ public class SensorData {
      */
     int getWatchNumber() {
         return watchNumber;
+    }
+
+
+    /**
+     * Getter for {@link SensorData#dataFieldsNumber}
+     */
+    int getDataFieldsNumber(){ return dataFieldsNumber; }
+
+
+    boolean contains(LocalDate date, LocalTime time){
+        for(int i = 0; i < size(); i++){
+            if(records.get(i).getDate().equals(date) && records.get(i).getTime().equals(time)){
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -129,7 +151,7 @@ public class SensorData {
                 DataPoint record = records.get(i);
                 Util.addDoubleLists(totalValues, old.getDataList());
 
-                if(old.getTime().compareTo(record.getTime()) == 0){ // if times are the same
+                if(old.getTime().equals(record.getTime())){ // if times are the same
                     duplicateCounter++;
                 }else{ // add point to records
                     Util.divideDoubleList(totalValues, duplicateCounter);
@@ -149,6 +171,7 @@ public class SensorData {
         }
         System.out.println("Merged records have size " + mergedRecords.size());
         records = mergedRecords;
+        printRecords();
     }
 
     DataPoint get(int i){ return records.get(i); }

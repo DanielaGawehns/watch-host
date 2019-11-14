@@ -1,6 +1,7 @@
 module org.openjfx {
     requires javafx.controls;
     requires javafx.fxml;
+    requires sqlite.jdbc;
     requires java.sql;
 
     opens org.openjfx to javafx.fxml;

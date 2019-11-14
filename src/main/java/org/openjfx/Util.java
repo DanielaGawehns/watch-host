@@ -3,7 +3,10 @@ package org.openjfx;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class holding generic functions
@@ -78,4 +81,10 @@ class Util {
         double scale = Math.pow(10, places);
         return Math.round(value * scale) / scale;
     }
+
+    static final Map<String, Integer> sensorDataListSize = new HashMap<>(); // TODO: remove this and get datalist size from input file
+    static{
+        sensorDataListSize.put("HRM", 1);
+    }
+
 }

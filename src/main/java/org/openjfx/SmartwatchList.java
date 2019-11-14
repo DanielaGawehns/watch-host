@@ -17,7 +17,7 @@ class SmartwatchList {
     Smartwatch getFromID(int ID){
         for(Smartwatch watch : watches){
             if(watch.getWatchID() == ID){
-                System.out.println("Watch's data set has size " + watch.getSensorData("HRM").size());
+               // System.out.println("Watch's data set has size " + watch.getSensorData("HRM").size());
                 return watch;
             }
         }
@@ -25,4 +25,13 @@ class SmartwatchList {
     }
 
     int size(){ return watches.size(); }
+
+    void remove(int ID){
+        for(int i = 0; i < size(); i++){
+            if(get(i).getWatchID() == ID){
+                watches.remove(i);
+                return;
+            }
+        }
+    }
 }

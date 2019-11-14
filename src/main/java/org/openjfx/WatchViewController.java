@@ -1,6 +1,7 @@
 package org.openjfx;
 
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -8,10 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -20,7 +18,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
-
+import java.util.Optional;
 
 
 /**
@@ -93,14 +91,20 @@ public class WatchViewController {
      */
     private WatchOptionsController watchOptionsController;
 
+    /**
+     * Controller of {@link PrimaryController}
+     */
+    private PrimaryController primaryController;
+
 
     /**
      * Sets {@link WatchViewController#watch} and fills the charts using {@link WatchViewController#fillChart(LineChart, String)}
      * @param _watch The {@link Smartwatch} which data will be shown
      */
-    void setWatch(Smartwatch _watch){
+    void setWatch(Smartwatch _watch, PrimaryController controller){
         System.out.println("Setting watch...");
         watch = _watch;
+        primaryController = controller;
 
         setInfo();
 
@@ -306,5 +310,17 @@ public class WatchViewController {
         showOptions();
     }
 
+    public void disconnectButtonPressed() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Disconnecting watch...");
+        alert.setHeaderText("This will remove ALL data about the watch");
+        alert.setContentText("Press OK to continue");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get() == ButtonType.OK){
+            dbManager.removeSmartwatch(watch.getWatchID());
+            primaryController.removeWatch(watch.getWatchID());
+        }
+    }
 }
 
