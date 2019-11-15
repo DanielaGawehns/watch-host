@@ -20,6 +20,7 @@
                         <NumberAxis animated="false" label="Heart Rate (BPM)" side="LEFT" />
                      </yAxis>
                   </LineChart>
+                  <VBox fx:id="commentsBox" />
                   <LineChart fx:id="pressureChart" animated="false" createSymbols="false" disable="true" title="Pressure" verticalGridLinesVisible="false">
                     <xAxis>
                       <CategoryAxis animated="false" label="Time" side="BOTTOM" tickMarkVisible="false" />

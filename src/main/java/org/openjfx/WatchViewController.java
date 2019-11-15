@@ -3,6 +3,7 @@ package org.openjfx;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,9 +22,15 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -31,6 +38,8 @@ import java.io.IOException;
  * Controlling watchview.fxml
  */
 public class WatchViewController {
+
+    private static final String COMMA_DELIMITER = ",";
 
     /**
      * ProgressBar for visualizing the memory that is used
@@ -75,6 +84,18 @@ public class WatchViewController {
     private LineChart<String, Number> sensorChart;
 
     /**
+     * VBox in which to place the researchers comments
+     */
+    @FXML
+    private VBox commentsBox;
+
+    /**
+     * Stores the comments from the researcher about the measurement, uses {@link Triplet}
+     * The first item is the starting time, second is the end time, third is the actual comment of what occured
+     */
+    private List<Triplet<Date, Date, String>> comments = new ArrayList<>();
+
+    /**
      * Linechart for the PRESSURE
      */
     @FXML
@@ -105,6 +126,7 @@ public class WatchViewController {
         try {
             fillChart(sensorChart, "HRM"); // fill Chart TODO: change parameter
             fillChart(pressureChart, "PRESSURE");
+            setComments();
         }catch (Exception e){ // if data is not found
             System.out.println("No data found for watch: " + " and sensor: TEMP");
             sensorChart.setDisable(true);
@@ -310,9 +332,8 @@ public class WatchViewController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
                 new FileChooser.ExtensionFilter("Text Files", "*.txt"),
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
-                new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
 
         Stage stage = new Stage();
@@ -321,7 +342,84 @@ public class WatchViewController {
         if (selectedFile != null) {
             stage.display(selectedFile);
         }*/
-        watch.getMeasurement().readComments(selectedFile);
+
+        readComments(selectedFile);
+
+        setWatch(watch);
+    }
+
+    /**
+     * Reads a csv file and parses the data using
+     * @param file Specifies file to read from
+     */
+    void readComments(File file){
+        try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) { // read in file
+            String line;
+            while ((line = br.readLine()) != null) { // go through all the lines
+                String[] record = line.split(COMMA_DELIMITER);
+
+                if (record.length < 3) {
+                    System.out.println("Record error");
+                    throw new ParseException("Length of records too small", 0);
+                }
+
+                try {
+                    Date t1 = new SimpleDateFormat("kk:mm:ss").parse(record[0]);
+                    Date t2 = new SimpleDateFormat("kk:mm:ss").parse(record[1]);
+                    // todo: also require date?
+                    String body = record[2];
+              //      System.out.println("t1: " + t1);
+               //     System.out.println("t2: " + t2);
+                 //   System.out.println("body: " + body);
+                    Triplet<Date, Date, String> comment = new Triplet<>(t1, t2, body);
+                    comments.add(comment);
+                } catch (IllegalArgumentException | NullPointerException e) {
+                    // todo: notify user of invalid input file
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void setComments() {
+        System.out.println("STETTING size: " + comments.size());
+        for (int i = 0; i < comments.size(); i++) {
+            System.out.println("SETTINGCOMMENT");
+            Triplet<Date, Date, String> comment = comments.get(i);
+
+            VBox vbox = new VBox();
+            HBox hbox = new HBox();
+
+            Date t1Date = comment.first();
+            Date t2Date = comment.second();
+            DateFormat timeFormat = new SimpleDateFormat("kk:mm:ss");
+            String t1String = timeFormat.format(t1Date);
+            String t2String = timeFormat.format(t2Date);
+            Label t1 = new Label(t1String);
+            Label t2 = new Label(t2String);
+            Label body = new Label(comment.third());
+
+
+
+            System.out.println("t1: " + t1String);
+            System.out.println("t2: " + t2String);
+            System.out.println("body: " + comment.third());
+
+
+            System.out.println("CHECK1");
+            hbox.getChildren().addAll(t1, t2, body);
+            hbox.setAlignment(Pos.CENTER_LEFT);
+            System.out.println("CHECK2");
+
+            vbox.getChildren().addAll(hbox);
+            vbox.setAlignment(Pos.CENTER);
+            System.out.println("CHECK3");
+
+            commentsBox.getChildren().add(vbox);
+            System.out.println("size afterfirstprinting: " + comments.size());
+        }
     }
 }
 
