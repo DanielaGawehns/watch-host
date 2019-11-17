@@ -1,13 +1,10 @@
 package org.openjfx;
 
+import org.sqlite.SQLiteConfig;
 import java.sql.*;
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import org.sqlite.*;
 
 
 /**
@@ -20,6 +17,10 @@ class DBManager {
      */
     private Set<Integer> dataIDList = new LinkedHashSet<>();
 
+    /**
+     * Set containing all the measurement ID's
+     */
+    private Set<Integer> measurementIDList = new LinkedHashSet<>();
 
     /**
      * Connects to the database
@@ -41,15 +42,16 @@ class DBManager {
 
 
     /**
-     * Creates a new random dataList ID and stores it in {@link DBManager#dataIDList}. Checks if ID is already in use
-     * @return the dataList ID that was generated. -1 on error
+     * Generates a new random ID and tries to store it in {@code IDList}
+     * @param IDList The set of ID's to generate a new ID for
+     * @return Integer containing the added ID or -1 on error
      */
-    private int getNewDataID(){
+    private int getNewDataID(Set<Integer> IDList){
         int random;
         for(int i = 0; i < Integer.MAX_VALUE; i++){
             random = new Random().nextInt(Integer.MAX_VALUE);
-            if(!dataIDList.contains(random)){
-                dataIDList.add(random);
+            if(!IDList.contains(random)){
+                IDList.add(random);
                 return random;
             }
         }
@@ -64,7 +66,7 @@ class DBManager {
      * @param dataListSize Amount of columns of the {@link DataPoint#dataList}
      */
     private void insertSensor(int ID, String sensor, int dataListSize){
-        insertSensor(ID, sensor, dataListSize, getNewDataID());
+        insertSensor(ID, sensor, dataListSize, getNewDataID(dataIDList));
     }
 
 
@@ -243,7 +245,6 @@ class DBManager {
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
-
     }
 
 
@@ -315,7 +316,7 @@ class DBManager {
         Connection con = null;
 
         if(dataID == -1){ // if dataListID does not exist
-            dataID = getNewDataID();
+            dataID = getNewDataID(dataIDList);
             insertSensor(ID, dataList.getSensor(), size, dataID); // insert the new sensor
         }
 
@@ -523,6 +524,120 @@ class DBManager {
             System.out.println(e.getMessage());
         }
         System.out.println("DB: Deleted watch " + ID);
+    }
+
+    /**
+     * Adds a new measurement to the database
+     * @param IDList List of ID's of the watches to add the measurement to
+     * @param sensors List of sensor-polling rate pairs to add to the measurement
+     * @param duration Duration of the measurement
+     */
+    void addMeasurement(List<Integer> IDList, List<Pair<String, Integer>> sensors, int duration){
+        int measurementID = getNewDataID(measurementIDList);
+
+        createMeasurementTable(measurementID);
+
+        for(var sensor : sensors){
+            addToSensorTable(measurementID, sensor.first(), sensor.second());
+        }
+
+        for(Integer ID : IDList){
+            insertMeasurement(ID, duration, measurementID);
+        }
+    }
+
+
+    /**
+     * Adds a new line to a measurement table
+     * @param measurementID ID of the table
+     * @param sensor Sensor to be added to the measurement
+     * @param pollRate Polling rate of said sensor
+     */
+    private void addToSensorTable(int measurementID, String sensor, Integer pollRate){
+        String command = "INSERT INTO measurement" + measurementID + "(sensor, polling_rate) VALUES(?, ?)";
+
+        try{
+            Connection con = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+
+            stmt.setString(1, sensor);
+            stmt.setInt(2, pollRate);
+            stmt.executeUpdate();
+
+            System.out.println("DB: added sensor " + sensor + " to measurement table" + measurementID);
+
+            stmt.close();
+            con.close();
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    /**
+     * Creates a new measurement table to store sensors and polling rate
+     * @param measurementID ID of the table
+     */
+    private void createMeasurementTable(int measurementID){
+        String command = "CREATE TABLE measurement" + measurementID + "(sensor TEXT NOT NULL, polling_rate INTEGER NOT NULL)";
+        try{
+            Connection con = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+            stmt.executeUpdate();
+
+            System.out.println("DB: added measurement table with ID " + measurementID);
+
+            stmt.close();
+            con.close();
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    /**
+     * Inserts line into measurements table to link measurement to a watch
+     * @param ID Watch ID
+     * @param duration Duration of measurement
+     * @param measurementID ID of measurement table
+     */
+    private void insertMeasurement(int ID, int duration, int measurementID){
+        String command = "INSERT INTO measurements(ID, duration, measurement_ID) VALUES(?, ?, ?) ";
+
+        try{
+            Connection con = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+
+            stmt.setInt(1, ID);
+            stmt.setInt(2, duration);
+            stmt.setInt(3, measurementID);
+            stmt.executeUpdate();
+
+            stmt.close();
+            con.close();
+
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    void removeMeasurementFromWatch(int ID, int measurementID){
+        String command = "DELETE FROM measurements WHERE ID = ? AND measurement_ID = ?";
+
+        try{
+            Connection con = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+            stmt.setInt(1, ID);
+            stmt.setInt(2, measurementID);
+            stmt.executeUpdate();
+
+            stmt.close();
+            con.close();
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
     }
 
 }
