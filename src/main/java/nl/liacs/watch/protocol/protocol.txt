@@ -45,7 +45,7 @@ support.
 Specified by every command, possible are:
 
 - Binary data string;
-- Null terminated ASCII string;
+- **Non**-null terminated ASCII string;
 - Double precision IEEE float.
 
 ## Message types

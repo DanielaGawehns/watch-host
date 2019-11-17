@@ -21,7 +21,7 @@ public class MessageParameter {
     public MessageParameter(String string) {
         this.type = ParameterType.STRING;
 
-        var bb = ByteBuffer.allocate(string.length() + 1);
+        var bb = ByteBuffer.allocate(string.length());
         bb.put(string.getBytes());
         this.bytes = bb.array();
     }
@@ -38,7 +38,7 @@ public class MessageParameter {
         if (type != ParameterType.STRING) {
             throw new IllegalArgumentException("type is not string");
         }
-        return new String(bytes, 0, bytes.length - 1, StandardCharsets.US_ASCII);
+        return new String(bytes, StandardCharsets.US_ASCII);
     }
 
     public Double getDouble() {
@@ -64,20 +64,7 @@ public class MessageParameter {
             throw new Exception("parameter type can't be unknown");
         }
 
-        int length = 0;
-
-        switch (this.type) {
-            case DOUBLE:
-                length = Doubles.BYTES;
-                break;
-            case BINARY:
-                length = this.getBinary().length;
-                break;
-            case STRING:
-                length = this.getString().length() + 1;
-                break;
-        }
-
+        int length = this.bytes.length;
         var bb = ByteBuffer.allocate(2 + length);
         bb.putShort((short) length);
         bb.put(this.bytes);
