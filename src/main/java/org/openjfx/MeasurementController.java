@@ -9,8 +9,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class for controlling function for the New Measurement screen
+ * Controller for measurement.fxml
+ */
 public class MeasurementController {
-    // List of all available sensors
+
+    /**
+     * List of all the possible sensors available
+     */
     private List<String> allSensors = new ArrayList<>() {
         {
             add("ACCELEROMETER");
@@ -30,43 +37,82 @@ public class MeasurementController {
         }
     };
 
-    // VBox to be filled with all the possible sensors
     // todo: make this a single list which is automatically split
+    /**
+     * VBox containing the first third of the list of available sensors
+     */
     @FXML
     private VBox sensorList;
+
+    /**
+     * VBox containing the second third of the list of available sensors
+     */
     @FXML
     private VBox sensorList2;
+
+    /**
+     * VBox containing the third third of the list of available sensors
+     */
     @FXML
     private VBox sensorList3;
 
+    /**
+     * HBox containing the TextField in which the user can enter the duration of the measurement
+     */
     @FXML
     private HBox durationHBox;
-    private TextField durationTextField = new TextField(); // field for the user to enter the desired measurement duration
 
+    /**
+     * TextField in which the user can enter the desired measurement duration
+     */
+    private TextField durationTextField = new TextField();
+
+    /**
+     * VBox containing the list of connected watches
+     */
     @FXML
     private VBox connectedWatches;
-    private SmartwatchList connectedWatchesList; // list of watches that are currently connected
 
-    // List of sensors to measure with the desired interval
+    /**
+     * List containing the connected watches
+     */
+    private List<Smartwatch> connectedWatchesList;
+
+    /**
+     * List of sensors which are selected
+     */
      private List<Pair<String, Integer>> selectedSensors = new ArrayList<>();
 
-    // List of watches that have been selected to perform the measurement on
+    /**
+     * List of {@link Smartwatch} which are selected to perform the measurement
+     */
     private List<Smartwatch> selectedWatches = new ArrayList<>();
 
-    // List of the TextField for all selected sensors
-    // used to check if the interval in each TextField is valid when the measurement is started
+    /**
+     * List of the TextFields for all the intervals entered by the user
+     */
     private List<TextField> intervalFields = new ArrayList<>();
 
-    // Instance of Measurement class to store all data that must be sent to watches
+    /**
+     * Instance of {@link Measurement}
+     */
     Measurement measurement = new Measurement();
 
-    // Instance of PrimaryController
+    /**
+     * Instance of {@link PrimaryController}
+     */
     private PrimaryController primaryController;
 
-    // Set the primaryController to return back to the overview tab after starting a measurement
+
+    /**
+     * Setter for {@link MeasurementController#primaryController}
+     */
     public void setPrimaryController(PrimaryController controller) { primaryController = controller; }
 
-    // Load sensor selection field into the UI
+
+    /**
+     * Loads the sensors into {@link MeasurementController#sensorList}, {@link MeasurementController#sensorList2} and {@link MeasurementController#sensorList3} which contains a list of all sensors from {@link MeasurementController#allSensors}
+     */
     public void loadSensors() {
         final ToggleGroup tg = new ToggleGroup(); // needed to make selection of ToggleButtons work
 
@@ -125,7 +171,10 @@ public class MeasurementController {
         }
     }
 
-    // Loads the watch selection field into the UI
+
+    /**
+     * Loads the connected watches in {@link MeasurementController#connectedWatches} which contains a list of connected watches from {@link MeasurementController#connectedWatchesList}
+     */
     public void loadWatches() {
         connectedWatchesList = PrimaryController.getWatches();
 
@@ -168,7 +217,10 @@ public class MeasurementController {
         }
     }
 
-    // Load the duration entering field into the UI
+
+    /**
+     * Loads the {@link MeasurementController#durationTextField} into {@link MeasurementController#durationHBox}
+     */
     public void loadDurationField() {
         VBox vbox = new VBox();
         HBox hbox = new HBox();
@@ -185,7 +237,14 @@ public class MeasurementController {
         durationHBox.getChildren().add(vbox);
     }
 
-    // Checks if all provided data is valid and start a measurement on the selected watch(es)
+
+    /**
+     * Event for the Start Measurement button. First checks if all data for the measurement is valid
+     * If this is the case runs {@link Measurement#setSensors(List)} and {@link Measurement#setDuration(Integer)} to store the measurement information
+     * All the data on the measurement is sent to the selected watches
+     * Afterwards run {@link PrimaryController#switchToOverview()} to return to the overview screen
+     * @throws IOException Thrown by {@link PrimaryController#switchToOverview()}
+     */
     public void startMeasurement() throws IOException {
         // todo: check if there is no active measurement
 
@@ -228,10 +287,14 @@ public class MeasurementController {
 
         // store all values for the measurement
         measurement.setSensors(selectedSensors);
-        measurement.setWatches(selectedWatches);
         measurement.setDuration(duration);
 
         // todo: send signal to watches
+        // save measurement for each selected watch
+        for (int i = 0; i < selectedWatches.size(); i++) {
+            Smartwatch curr = selectedWatches.get(i);
+            curr.setMeasurement(measurement);
+        }
 
         // the measurement has started, switch to the overview tab
         primaryController.switchToOverview();

@@ -40,6 +40,11 @@ class Smartwatch {
      */
     private Map<String, Integer> sensorMap = new HashMap<>();
 
+    /**
+     * The current measurement which is being performed by the watch
+     */
+    private Measurement measurement;
+
 
     /**
      * Constructor
@@ -107,6 +112,18 @@ class Smartwatch {
      * Setter for {@link Smartwatch#watchName}
      */
     void setWatchName(String name) { watchName = name; }
+
+
+    /**
+     * Setter for {@link Smartwatch#measurement}
+     */
+    void setMeasurement(Measurement m) { measurement = m; }
+
+
+    /**
+     * Getter for {@link Smartwatch#measurement}
+     */
+    Measurement getMeasurement() { return measurement; }
 
 
     /**
