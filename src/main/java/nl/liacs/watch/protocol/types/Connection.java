@@ -1,4 +1,4 @@
-package nl.liacs.watch.protocol;
+package nl.liacs.watch.protocol.types;
 
 import nl.liacs.watch.protocol.types.Message;
 

@@ -3,15 +3,16 @@ package nl.liacs.watch.protocol.server;
 import nl.liacs.watch.protocol.types.Message;
 import nl.liacs.watch.protocol.types.UnknownProtocolException;
 
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Connection wraps a socket and implements {@link nl.liacs.watch.protocol.Connection}.
+ * Connection wraps a socket and implements {@link nl.liacs.watch.protocol.types.Connection}.
  */
-public class Connection implements nl.liacs.watch.protocol.Connection {
+public class Connection implements nl.liacs.watch.protocol.types.Connection, Closeable {
     private final Socket socket;
     private final DataInputStream is;
     private final DataOutputStream os;
