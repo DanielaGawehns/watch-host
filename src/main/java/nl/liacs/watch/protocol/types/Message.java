@@ -6,13 +6,27 @@ import com.google.common.io.ByteStreams;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+/**
+ * Class representing a protocol message.
+ */
 public class Message {
+    /**
+     * The type of the message.
+     */
     public MessageType type;
+    /**
+     * Every parameter of the message.
+     */
     public MessageParameter[] parameters;
 
     Message() {
     }
 
+    /**
+     * @param s The data input stream to read from.
+     * @return The parsed message.
+     * @throws IOException IO error when reading from the stream failed.
+     */
     @org.jetbrains.annotations.NotNull
     public static Message decode(DataInputStream s) throws IOException {
         var msg = new Message();
@@ -34,7 +48,11 @@ public class Message {
         return msg;
     }
 
-    public byte[] encode() throws Exception {
+    /**
+     * @return The current message encoded as a byte array.
+     * @throws IllegalStateException When the type of a parameter is unknown.
+     */
+    public byte[] encode() throws IllegalStateException {
         ByteArrayDataOutput bb = ByteStreams.newDataOutput();
 
         bb.write(type.ordinal());
