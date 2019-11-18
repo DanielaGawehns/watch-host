@@ -28,6 +28,18 @@ import java.util.Optional;
 public class WatchViewController {
 
     /**
+     * Label for measurement duration
+     */
+    @FXML
+    private Label durationLabel;
+
+    /**
+     * Vbox for placing the sensor labels
+     */
+    @FXML
+    private  VBox measurementLabels;
+
+    /**
      * ProgressBar for visualizing the memory that is used
      */
     @FXML
@@ -272,7 +284,22 @@ public class WatchViewController {
      * Sets measurement information in measurementInfo section
      */
     private void setMeasurementInfo(){
-        // TODO: Fill this
+        Measurement measurement = watch.getMeasurement();
+        var sensors = measurement.getSensors();
+        Label label;
+
+        if(measurement.size() <= 0){
+            label = new Label("No measurement active.");
+        }
+
+        for(var sensor : sensors){
+            String text = sensor.first() + " - " + sensor.second() + " ms";
+            label = new Label(text);
+            measurementLabels.getChildren().add(label);
+        }
+        String duration = "For: " + measurement.getDuration() + " minutes";
+        durationLabel.setText(duration);
+        // TODO: check this
     }
 
 

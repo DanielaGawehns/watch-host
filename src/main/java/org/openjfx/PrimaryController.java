@@ -90,7 +90,9 @@ public class PrimaryController{
             WatchData data = new WatchData(ID, 69, 8000, 6969);
             String name = dbManager.getWatchName(ID);
             List<String> sensorNameList = dbManager.getSensorList(ID);
+            Measurement measurement = dbManager.getWatchMeasurement(ID); // TODO check this
             Smartwatch watch = new Smartwatch(data, name);
+            watch.setMeasurement(measurement);
             for(String sensor : sensorNameList){
                 watch.addSensor(sensor);
             }

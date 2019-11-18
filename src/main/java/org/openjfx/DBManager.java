@@ -623,6 +623,13 @@ class DBManager {
         }
     }
 
+
+    // TODO Make something that deletes the whole measurement
+    /**
+     * Disconnects a measurement from a watch. The measurement Table will NOT be deleted
+     * @param ID Watch ID
+     * @param measurementID Measurement ID
+     */
     void removeMeasurementFromWatch(int ID, int measurementID){
         String command = "DELETE FROM measurements WHERE ID = ? AND measurement_ID = ?";
 
@@ -639,5 +646,82 @@ class DBManager {
             System.out.println(e.getMessage());
         }
     }
+
+
+    /**
+     * Gets the duration of a measurement
+     * @param measurementID Measurement ID
+     * @return Duration as an Integer. -1 if measurement is not found
+     */
+    private int getMeasurementDuration(int measurementID){
+        String command = "SELECT * FROM measurements WHERE measurementID = ?";
+        int duration = -1;
+
+        try{
+            Connection con  = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+            ResultSet rs = stmt.executeQuery();
+
+            if(rs.next()){
+                duration = rs.getInt(2);
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return duration;
+    }
+
+
+    /**
+     * Gets the measurement given its ID. Using {@link DBManager#getMeasurementDuration(int)}
+     * @param measurementID Measurement ID
+     * @return The measurement
+     */
+    private Measurement getMeasurement(int measurementID){
+        String command = "SELECT * FROM measurement" + measurementID;
+        Measurement measurement = new Measurement();
+        List<Pair<String, Integer>> values = new ArrayList<>();
+        try {
+            Connection con  = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                var pair = new Pair<>(rs.getString(1), rs.getInt(2));
+                values.add(pair);
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        measurement.setSensors(values);
+        measurement.setDuration(getMeasurementDuration(measurementID));
+        return measurement;
+    }
+
+
+    /**
+     * Get the measurement of a watch. Using {@link DBManager#getMeasurement(int)}
+     * @param ID Watch ID
+     * @return The measurement
+     */
+    Measurement getWatchMeasurement(int ID){
+        String command = "SELECT * FROM measurements WHERE ID = ?";
+        int measurementID = 0;
+        try {
+            Connection con  = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+            stmt.setInt(1, ID);
+            ResultSet rs = stmt.executeQuery();
+
+            if(rs.next()){
+                measurementID = rs.getInt(3);
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return getMeasurement(measurementID);
+    }
+
+    //TODO: check measurement functions
 
 }

@@ -17,7 +17,7 @@ class Measurement {
     /**
      * The duration of the measurement in minutes
      */
-    private Integer duration;
+    private int duration = 0;
 
 
     /**
@@ -29,7 +29,7 @@ class Measurement {
     /**
      * Setter for {@link Measurement#duration}
      */
-    public void setDuration(Integer x) { duration = x; }
+    public void setDuration(int x) { duration = x; }
 
 
     /**
@@ -41,4 +41,11 @@ class Measurement {
      * Getter for {@link Measurement#sensors}
      */
     Integer getDuration() { return duration; }
+
+
+    /**
+     * Size of the {@link Measurement#sensors} list
+     * @return Size as Integer
+     */
+    int size(){ return sensors.size(); }
 }

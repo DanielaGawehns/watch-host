@@ -49,11 +49,11 @@ class Smartwatch {
     /**
      * Constructor
      */
-    Smartwatch(WatchData _data, String name){
+    Smartwatch(WatchData _data, String _name){
         System.out.println("making smartwatch");
         watchData = _data;
-        if(!name.isEmpty()){
-            watchName = name;
+        if(!_name.isEmpty()){
+            watchName = _name;
         }
 
         //sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
