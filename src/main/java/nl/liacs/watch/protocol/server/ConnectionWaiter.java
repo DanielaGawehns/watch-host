@@ -7,12 +7,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ConnectionWaiter {
-    private final BroadcastReceiver broadcastReceiver;
+    private final BroadcastHandler broadcastHandler;
     private final ExecutorService threadPool;
     private final BlockingQueue<WrappedConnection> wrappedConnections;
 
     public ConnectionWaiter(int version, int nthreads) throws IOException {
-        this.broadcastReceiver = new BroadcastReceiver();
+        this.broadcastHandler = new BroadcastHandler();
         this.threadPool = Executors.newFixedThreadPool(nthreads);
         this.wrappedConnections = new LinkedBlockingQueue<>();
     }

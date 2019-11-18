@@ -12,14 +12,14 @@ import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class BroadcastReceiver {
+public class BroadcastHandler {
     private static final byte[] listenBytes = "HelloWorld!\0".getBytes();
     private static final byte[] answerBytes = "WatchSrvrPing\0".getBytes();
     private final DatagramSocket listenServer;
     private final DatagramSocket sendServer;
     private final BlockingQueue<HostAndPort> watchQueue;
 
-    public BroadcastReceiver() throws SocketException {
+    public BroadcastHandler() throws SocketException {
         this.listenServer = new DatagramSocket(Constants.BroadcastHostPort);
         this.sendServer = new DatagramSocket(Constants.BroadcastWatchPort);
         this.watchQueue = new LinkedBlockingQueue<>();
