@@ -2,129 +2,329 @@ package org.openjfx;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.TabPane;
-import javafx.scene.input.MouseEvent;
-
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.SplitMenuButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
-// Controller of main screen
+
+/**
+ * Class controlling the main screen
+ * Controller of primary.fxml
+ * Houses the main components of the program
+ */
 public class PrimaryController{
 
-    // lineChart from primary.fxml
+    /**
+     * Vbox containing the list of connected watches
+     */
     @FXML
-    private LineChart<Number, Number> sensorChart;
+    private VBox watchBar;
 
-    // tabPane from primary.fxml
+    /**
+     * BorderPane resembling the main view. Should be filled by various fxml files
+     */
     @FXML
-    private TabPane tabPane;
+    private BorderPane view;
 
-    // List of smartwatches connected
-    private List<Smartwatch> watches = new ArrayList<Smartwatch>();
+    /**
+     * List of smartwatches connected {@link Smartwatch}
+     */
+    private static List<Smartwatch> watches = new ArrayList<>();
 
-    // Reader for reading CSV files
+    /**
+     * Reader for reading CSV files {@link CSVFileReader}
+     */
     private CSVFileReader reader = new CSVFileReader();
 
-    // which smartwatch is selected for charting
+    /**
+     * Controller for the watchView {@link WatchViewController}
+     */
+    private WatchViewController watchController;
+
+    /**
+     * Controller for measurement setup screen {@link MeasurementController}
+     */
+    private MeasurementController measurementController;
+
+    /**
+     * Controller for watch register screen {@link WatchAddController}
+     */
+    private WatchAddController watchAddController;
+
+    /**
+     * Which smartwatch is selected for charting
+     */
     private int currentWatch;
 
-    // constructor
+
+    // TODO: remove adding of smartwatches
+    /**
+     * Initializes the main view by printing the sidebar and overview
+     * @throws IOException Thrown by {@link PrimaryController#loadOverviewFXML()}
+     */
     public void initialize() throws IOException {
         System.out.println("INITIALIZE Primary Controller");
-        for(int i = 0; i < 2; i++){
-            watches.add(new Smartwatch());
+
+        WatchData data1 = new WatchData(1, 45, 8000, 4123);
+        WatchData data2 = new WatchData(2, 12, 8000, 6452);
+        WatchData data3 = new WatchData(3, 89, 8000, 1235);
+        SubjectData subjectData1 = new SubjectData(1);
+        SubjectData subjectData2 = new SubjectData(2);
+        SubjectData subjectData3 = new SubjectData(3);
+
+
+        watches.add(new Smartwatch(data1, subjectData1)); // TEMP: add watch 1
+        watches.add(new Smartwatch(data2, subjectData2)); // TEMP: add watch 2
+        watches.add(new Smartwatch(data3, subjectData3)); // TEMP: add watch 3
+
+        currentWatch = -1;
+        loadOverviewFXML();
+        loadSideBar();
+        syncButtonPressed();
+    }
+
+
+    /**
+     * Getter for {@link PrimaryController#view}
+     */
+    public BorderPane getView() { return view; }
+
+
+    /**
+     * Getter for {@link PrimaryController#watches}
+     */
+    static List<Smartwatch> getWatches() { return PrimaryController.watches; }
+
+
+    /**
+     * Adds a new {@link Smartwatch} to the {@link PrimaryController#watches} list
+     * Also reloads the sideBar to show added watch
+     * @param watch The watch to be added
+     */
+    void addWatch(Smartwatch watch){
+        watches.add(watch);
+        loadSideBar();
+    }
+
+
+    /**
+     * Checks if the id given by {@code ID} is not used by another watch
+     * @param ID The ID to be checked
+     * @return True if ID is not used. False if the ID is already in use
+     */
+    boolean idNotUsed(int ID){
+        for (Smartwatch watch : watches) {
+            if (watch.getWatchID() == ID) {
+                return false;
+            }
         }
+        return true;
     }
 
 
-    // fill sensorChart with data from watches
-    private void fillChart() {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        System.out.println("Fill Chart for watch: " + (currentWatch-1));
-        SensorData sensorData;
+    /**
+     * Loads the overview (overview.fxml) into the {@link PrimaryController#view}.
+     * Also binds the width of the overview to the {@link PrimaryController#view}
+     * @throws IOException Thrown by {@code FXMLLoader}
+     */
+    private void loadOverviewFXML() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("overview.fxml")); // load fxml file
+        BorderPane newPane = loader.load(); // load file into replacement pane
 
-        try{
-           sensorData = watches.get(currentWatch - 1).getSensorData("TEST");
-        }catch (Exception e){ // if data is not found
-            System.out.println("No data found for watch: " + (currentWatch-1) + " and sensor: TEMP");
-            sensorChart.setDisable(true);
-            return;
-        }
-
-        sensorChart.setDisable(false); // turn on chart
-        sensorChart.setAnimated(false); // disable animation for clearing
-        sensorChart.getData().clear();
-        sensorChart.setAnimated(true);
-
-        System.out.println("Added series");
-        for(int i = 0; i < sensorData.size(); i++){
-            XYChart.Data<Number, Number> temp = sensorData.getDataPoint(i);
-            System.out.println("Adding: " + sensorData.getDataPoint(i).toString());
-            series.getData().add(sensorData.getDataPoint(i)); // add datapoint to series
-
-        }
-        sensorChart.getData().add(series); // add series to chart
-        series.setName(sensorData.getSensor()); // set title of line for legend
-        sensorChart.setTitle(sensorData.getSensor()); // set title of chart
+        newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
+        view.setCenter(newPane); // set newPane as center of borderPane
     }
 
 
-    // event for logo 1
-    public void watchlogo1Pressed(MouseEvent mouseEvent) {
-        watchlogoPressed(1);
+    /**
+     * Loads the watch view (watchView.fxml) into the {@link PrimaryController#view}.
+     * Also binds the width of the overview to the {@link PrimaryController#view} and sends the {@link Smartwatch} data to be displayed to the {@link WatchViewController}
+     * @throws IOException Thrown by {@code FXMLLoader}
+     */
+    private void loadWatchFXML() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml")); // load fxml file
+        BorderPane newPane = loader.load(); // load file into replacement pane
+
+        watchController = loader.getController(); // set controller to controller of new file
+        watchController.setWatch(watches.get(currentWatch-1)); // send Data of the watch being viewed to the controller
+
+        newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
+        view.setCenter(newPane); // set newPane as center of borderPane
+        System.out.println("Switching to watchview for watch " + watches.get(currentWatch-1).getWatchID());
+        System.out.println("- name: " + watches.get(currentWatch-1).getWatchName());
     }
 
 
-    // event for logo 2
-    public void watchlogo2Pressed(MouseEvent mouseEvent) {
-        watchlogoPressed(2);
+    /**
+     * Loads the measurement view (measurement.fxml) into the {@link PrimaryController#view}.
+     * Also binds the width of the overview to the {@link PrimaryController#view} and sends the {@link PrimaryController} data to be used in the {@link MeasurementController}
+     * @throws IOException Thrown by {@code FXMLLoader}
+     */
+    private void loadMeasurementSetupFXML() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("measurement.fxml")); // load fxml file
+        BorderPane newPane = loader.load(); // load file into replacement pane
+        measurementController = loader.getController(); // set controller to controller of new file
+        measurementController.setPrimaryController(this); // pass current Primary class to measurementController
+
+        newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
+        view.setCenter(newPane); // set newPane as center of borderPane
     }
 
 
-    // Moves to right tab
-    // Sets currentWatch and fills the chart
-    private void watchlogoPressed(int number){
-        moveToTab(0);
-        currentWatch = number;
-        fillChart();
+    /**
+     * Moves to the watch view and sets {@link PrimaryController#currentWatch} appropriately
+     * @param number The number of the watch to be displayed
+     * @throws IOException Thrown by {@link PrimaryController#loadWatchFXML()}
+     */
+    private void watchlogoPressed(int number) throws IOException {
+        currentWatch = number; // set current watch
+        loadWatchFXML();
+    }
+
+    // Switch to overview tab
+
+    /**
+     * Event for the overview button. Runs {@link PrimaryController#loadOverviewFXML()}
+     * @throws IOException Thrown by {@link PrimaryController#loadOverviewFXML()}
+     */
+    public void switchToOverview() throws IOException {
+        loadOverviewFXML();
     }
 
 
-    // switch to overview tab
-    // TODO: make this nicer with separate fxml file
-    public void switchToOverview(ActionEvent actionEvent) {
-        moveToTab(1);
+    /**
+     * Event for the measurement setup button. Runs {@link PrimaryController#loadMeasurementSetupFXML()}
+     * Runs initializing functions for {@link MeasurementController}
+     * @throws IOException Thrown by {@link PrimaryController#loadOverviewFXML()}
+     */
+    public void switchToMeasurementSetup() throws IOException {
+        loadMeasurementSetupFXML();
+        measurementController.loadSensors();
+        measurementController.loadWatches();
+        measurementController.loadDurationField();
     }
 
 
-    // handles tab moves
-    private void moveToTab(int number){
-        tabPane.getSelectionModel().select(number);
-    }
-
-
-    // Go to input dir and read all files
-    // TODO: replace this
+    /**
+     * Finds all the files in the folder specified by {@code folder} and runs the {@link PrimaryController#reader} on them
+     * @param folder The folder to crawl
+     */
     private void syncFiles(File folder) {
-        SensorData sensorData;
-        System.out.println("Start reader folder: " + folder.getAbsolutePath());
-        for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){
-            System.out.println(fileEntry.getAbsoluteFile());
-            sensorData = reader.readFile(fileEntry.getAbsolutePath());
-            watches.get(sensorData.getWatchNumber()).setSensorData(sensorData, "TEMP");
+        for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all folders in map 'folder'
+            List<DataPoint> dataList = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
+            watches.get(reader.getWatchNumber()).addData(dataList); // add data stream to watch
         }
-
     }
 
 
-    // Event for syncButton
-    public void syncButtonPressed(ActionEvent actionEvent) {
-        syncFiles(new File(System.getProperty("user.dir") + "\\src\\main\\resources\\input\\"));
+    /**
+     * Event for the sync button. Runs {@link PrimaryController#syncFiles(File)}
+     */
+    public void syncButtonPressed() {
+        syncFiles(new File(System.getProperty("user.dir") + "/src/main/resources/input/test")); // read files in input folder
+        if(currentWatch > 0){
+            watchController.setWatch(watches.get(currentWatch-1)); // set watch to last accessed watch
+        }
+    }
+
+
+    /**
+     * Loads the sidebar in {@link PrimaryController#watchBar} which contains a list of connected watches from {@link PrimaryController#watches}
+     */
+    private void loadSideBar(){
+        watchBar.getChildren().clear();
+        for(int i = 0; i < watches.size(); i++){
+            VBox vbox = new VBox();
+            HBox hbox = new HBox();
+            SplitMenuButton button = new SplitMenuButton();
+            Image image = new Image("/images/smartwatch.png");
+            ImageView imageView = new ImageView(image);
+            int batteryLevel = watches.get(i).getBatteryPercentage();
+            int batteryType;
+            int finalI = i + 1;
+
+            button.setText("Watch " + watches.get(i).getWatchID());
+            button.setGraphic(imageView);
+
+            button.setOnAction((ActionEvent event) ->{ // If clicked
+                try {
+                    watchlogoPressed(finalI);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+            button.getItems().addAll(new MenuItem("Options..."), new MenuItem("Disconnect"));
+
+            if(batteryLevel < 20){
+                batteryType = 1;
+            }else if(batteryLevel < 60){
+                batteryType = 2;
+            }else{
+                batteryType = 3;
+            }
+
+            Image imageBattery = new Image("/images/battery" + batteryType + ".png");
+            ImageView imageViewBattery = new ImageView(imageBattery);
+
+            Label label = new Label(batteryLevel + "%");
+            Separator sep = new Separator();
+
+            hbox.getChildren().addAll(button, imageViewBattery, label);
+            hbox.setAlignment(Pos.CENTER);
+            hbox.setSpacing(5);
+
+            vbox.getChildren().addAll(hbox, sep);
+            vbox.setAlignment(Pos.CENTER);
+
+            watchBar.getChildren().add(vbox);
+        }
+    }
+
+
+    /**
+     * Loads the watch add dialog for adding new watches.
+     * Runs initializing functions for {@link PrimaryController#watchAddController}
+     * @throws IOException Thrown by {@code FXMLLoader}
+     */
+    private void loadWatchAdd() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchadd.fxml"));
+        Parent watchView = loader.load();
+
+        watchAddController = loader.getController();
+        watchAddController.setPrimaryController(this);
+
+        Stage stage = new Stage();
+
+        stage.setTitle("Register watch");
+        stage.setScene(new Scene(watchView));
+        stage.setResizable(false);
+
+        stage.show();
+    }
+
+
+    /**
+     * Event for add watch button. Runs {@link PrimaryController#loadWatchAdd()}
+     * @throws IOException
+     */
+    public void drawWatchAddScreen() throws IOException {
+        loadWatchAdd();
     }
 }

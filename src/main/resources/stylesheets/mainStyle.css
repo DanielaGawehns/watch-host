@@ -3,10 +3,6 @@
     -fx-faint-focus-color: transparent;
 }
 
-.tab-pane .tab-header-area {
-    visibility: hidden ;
-}
-
 .button{
     -fx-border-color: transparent;
     -fx-border-width: 0;
@@ -18,3 +14,38 @@
     -fx-background-color: grey;
     -fx-text-fill: white;
 }
+
+.button:hover {
+    -fx-background-color: white;
+}
+
+
+.split-menu-button:hover {
+    -fx-background-color: white;
+}
+
+.split-menu-button{
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+.split-menu-button .label {
+    -fx-background-color:  transparent;
+}
+
+.split-menu-button .arrow-button {
+   -fx-background-color: transparent;
+}
+
+
+
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.border.pane, .scroll-pane { -fx-background-insets: 0; -fx-padding: 0; }
+
+.scroll-pane{ -fx-background-color: transparent;}
+
+.separator{-fx-background-color: #706e6e;}

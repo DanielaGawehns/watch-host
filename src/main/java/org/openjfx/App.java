@@ -9,32 +9,39 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * JavaFX App
+ * Main class for loading the main screen
  */
 public class App extends Application {
 
-    private static Scene scene;
 
-    // start function
-    // loads primary.fxml and sets it as root
+    /**
+     * Start function
+     * @param stage Stage to load scene into
+     * @throws IOException Thrown by {@link App#loadFXML(String)}
+     */
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"));
-        //setRoot("primary");
+        Scene scene = new Scene(loadFXML("primary"));
         stage.setScene(scene);
         stage.show();
     }
 
-    // set file fxml to root
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
 
+    /**
+     * Loads a fxml file
+     * @param fxml File to load. Should not include the .fxml extension
+     * @return Loaded fxml file as Parent
+     * @throws IOException Thrown by {@code FXMLLoader}
+     */
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
 
+    /**
+     * Main function
+     * @param args Unused launch arguments
+     */
     public static void main(String[] args) {
         launch();
     }
