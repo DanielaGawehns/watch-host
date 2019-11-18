@@ -51,7 +51,12 @@ public class BroadcastHandler {
                 continue;
             }
 
-            packet = new DatagramPacket(answerBytes, answerBytes.length);
+            packet = new DatagramPacket(
+                answerBytes,
+                answerBytes.length,
+                packet.getAddress(),
+                Constants.BroadcastWatchPort
+            );
             this.sendServer.send(packet);
 
             this.watchQueue.add(hostAndPort);
