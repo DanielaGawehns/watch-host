@@ -76,7 +76,7 @@ public class MeasurementController {
     /**
      * List containing the connected watches
      */
-    private List<Smartwatch> connectedWatchesList;
+    private SmartwatchList connectedWatchesList;
 
     /**
      * List of sensors which are selected
@@ -107,13 +107,13 @@ public class MeasurementController {
     /**
      * Setter for {@link MeasurementController#primaryController}
      */
-    public void setPrimaryController(PrimaryController controller) { primaryController = controller; }
+    void setPrimaryController(PrimaryController controller) { primaryController = controller; }
 
 
     /**
      * Loads the sensors into {@link MeasurementController#sensorList}, {@link MeasurementController#sensorList2} and {@link MeasurementController#sensorList3} which contains a list of all sensors from {@link MeasurementController#allSensors}
      */
-    public void loadSensors() {
+    void loadSensors() {
         final ToggleGroup tg = new ToggleGroup(); // needed to make selection of ToggleButtons work
 
         // place all sensors
@@ -175,7 +175,7 @@ public class MeasurementController {
     /**
      * Loads the connected watches in {@link MeasurementController#connectedWatches} which contains a list of connected watches from {@link MeasurementController#connectedWatchesList}
      */
-    public void loadWatches() {
+    void loadWatches() {
         connectedWatchesList = PrimaryController.getWatches();
 
         final ToggleGroup tg = new ToggleGroup(); // needed to make selection of ToggleButtons work
@@ -221,7 +221,7 @@ public class MeasurementController {
     /**
      * Loads the {@link MeasurementController#durationTextField} into {@link MeasurementController#durationHBox}
      */
-    public void loadDurationField() {
+    void loadDurationField() {
         VBox vbox = new VBox();
         HBox hbox = new HBox();
 
