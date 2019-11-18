@@ -14,6 +14,8 @@ import java.util.List;
  * Controller for measurement.fxml
  */
 public class MeasurementController {
+    
+    private DBManager dbManager = new DBManager();
 
     /**
      * List of all the possible sensors available
@@ -96,7 +98,7 @@ public class MeasurementController {
     /**
      * Instance of {@link Measurement}
      */
-    Measurement measurement = new Measurement();
+    private Measurement measurement = new Measurement();
 
     /**
      * Instance of {@link PrimaryController}
@@ -133,7 +135,7 @@ public class MeasurementController {
 
             // ensures that the interval TextfField is aligned with the right of the HBox
             Region filler = new Region();
-            hbox.setHgrow(filler, Priority.ALWAYS);
+            HBox.setHgrow(filler, Priority.ALWAYS);
 
             Label ms = new Label("ms");
 
@@ -243,9 +245,8 @@ public class MeasurementController {
      * If this is the case runs {@link Measurement#setSensors(List)} and {@link Measurement#setDuration(Integer)} to store the measurement information
      * All the data on the measurement is sent to the selected watches
      * Afterwards run {@link PrimaryController#switchToOverview()} to return to the overview screen
-     * @throws IOException Thrown by {@link PrimaryController#switchToOverview()}
      */
-    public void startMeasurement() throws IOException {
+    public void startMeasurement() {
         // todo: check if there is no active measurement
 
         // check if the user given interval is valid for each selected sensor
@@ -258,6 +259,7 @@ public class MeasurementController {
                 interval = Integer.parseInt(currentInterval.getText());
             } catch (NumberFormatException ex) {
                 ex.printStackTrace();
+                Util.printErrorDialog("Interval error", "Chosen interval is not valid. Please choose another one to continue.");
                 return;
             }
 
@@ -265,12 +267,13 @@ public class MeasurementController {
             if (interval > 0) { // todo: more rigorous checking based on type of sensor
                 currentSensor.setSecond(interval); // interval is valid, store the value
             } else {
+                Util.printErrorDialog("Interval error", "Chosen interval is not valid. Please choose another one to continue.");
                 return; // interval not valid, cannot start a measurement
             }
         }
 
         // check if the given duration is a valid number
-        Integer duration;
+        int duration;
         try {
             duration = Integer.parseInt(durationTextField.getText());
         } catch (NumberFormatException ex) {
@@ -291,10 +294,12 @@ public class MeasurementController {
 
         // todo: send signal to watches
         // save measurement for each selected watch
-        for (int i = 0; i < selectedWatches.size(); i++) {
-            Smartwatch curr = selectedWatches.get(i);
+        List<Integer> IDList = new ArrayList<>();
+        for (Smartwatch curr : selectedWatches) {
             curr.setMeasurement(measurement);
+            IDList.add(curr.getWatchID());
         }
+        dbManager.addMeasurement(IDList, measurement);
 
         // the measurement has started, switch to the overview tab
         primaryController.switchToOverview();

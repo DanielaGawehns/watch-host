@@ -7,6 +7,8 @@ import java.time.LocalTime;
 import java.util.*;
 
 
+//TODO maybe add finally blocks to close connections in case of exceptions
+
 /**
  * Class for managing the connection between the front-end and the database
  */
@@ -355,6 +357,7 @@ class DBManager {
 
                 try{
                     stmt.executeUpdate();
+                    stmt.close();
                 }catch (SQLException e){ // Catch Duplicate errors
                     if(e.getErrorCode() != 19){ // If other error detected, pass on
                         throw e;
@@ -529,20 +532,19 @@ class DBManager {
     /**
      * Adds a new measurement to the database
      * @param IDList List of ID's of the watches to add the measurement to
-     * @param sensors List of sensor-polling rate pairs to add to the measurement
-     * @param duration Duration of the measurement
+     * @param measurement The measurement to add
      */
-    void addMeasurement(List<Integer> IDList, List<Pair<String, Integer>> sensors, int duration){
+    void addMeasurement(List<Integer> IDList, Measurement measurement){
         int measurementID = getNewDataID(measurementIDList);
 
         createMeasurementTable(measurementID);
 
-        for(var sensor : sensors){
+        for(var sensor : measurement.getSensors()){
             addToSensorTable(measurementID, sensor.first(), sensor.second());
         }
 
         for(Integer ID : IDList){
-            insertMeasurement(ID, duration, measurementID);
+            insertMeasurement(ID, measurement.getDuration(), measurementID);
         }
     }
 
@@ -568,7 +570,6 @@ class DBManager {
 
             stmt.close();
             con.close();
-
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
@@ -590,7 +591,6 @@ class DBManager {
 
             stmt.close();
             con.close();
-
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
@@ -617,7 +617,6 @@ class DBManager {
 
             stmt.close();
             con.close();
-
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }
@@ -628,21 +627,41 @@ class DBManager {
     /**
      * Disconnects a measurement from a watch. The measurement Table will NOT be deleted
      * @param ID Watch ID
-     * @param measurementID Measurement ID
      */
-    void removeMeasurementFromWatch(int ID, int measurementID){
-        String command = "DELETE FROM measurements WHERE ID = ? AND measurement_ID = ?";
+    void removeMeasurementFromWatch(int ID){
+        String command = "DELETE FROM measurements WHERE ID = ?";
+        int measurementID = getMeasurementID(ID);
 
         try{
             Connection con = connect();
             PreparedStatement stmt = con.prepareStatement(command);
             stmt.setInt(1, ID);
-            stmt.setInt(2, measurementID);
             stmt.executeUpdate();
 
             stmt.close();
             con.close();
         }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        checkMeasurementClients(measurementID);
+    }
+
+
+    private void checkMeasurementClients(int measurementID){
+        String command = "SELECT * FROM measurements WHERE measurement_ID = ?";
+        try{
+            Connection con  = connect();
+            PreparedStatement stmt = con.prepareStatement(command);
+            stmt.setInt(1, measurementID);
+            ResultSet rs = stmt.executeQuery();
+
+            if(!rs.next()){
+                dropTable("measurement" + measurementID);
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        }catch(SQLException e){
             System.out.println(e.getMessage());
         }
     }
@@ -654,20 +673,25 @@ class DBManager {
      * @return Duration as an Integer. -1 if measurement is not found
      */
     private int getMeasurementDuration(int measurementID){
-        String command = "SELECT * FROM measurements WHERE measurementID = ?";
+        String command = "SELECT * FROM measurements WHERE measurement_ID = ?";
         int duration = -1;
-
+        System.out.println(command + " -" + measurementID);
         try{
             Connection con  = connect();
             PreparedStatement stmt = con.prepareStatement(command);
+            stmt.setInt(1, measurementID);
             ResultSet rs = stmt.executeQuery();
 
             if(rs.next()){
-                duration = rs.getInt(2);
+                duration = rs.getInt("duration");
             }
+            rs.close();
+            stmt.close();
+            con.close();
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
+        System.out.println("Found duration " + duration);
         return duration;
     }
 
@@ -690,6 +714,9 @@ class DBManager {
                 var pair = new Pair<>(rs.getString(1), rs.getInt(2));
                 values.add(pair);
             }
+            rs.close();
+            stmt.close();
+            con.close();
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
@@ -700,13 +727,14 @@ class DBManager {
 
 
     /**
-     * Get the measurement of a watch. Using {@link DBManager#getMeasurement(int)}
+     * Gets the measurement ID of the measurement on a watch
      * @param ID Watch ID
-     * @return The measurement
+     * @return ID of the measurement
      */
-    Measurement getWatchMeasurement(int ID){
+    private int getMeasurementID(int ID){
         String command = "SELECT * FROM measurements WHERE ID = ?";
-        int measurementID = 0;
+        int measurementID = -1;
+
         try {
             Connection con  = connect();
             PreparedStatement stmt = con.prepareStatement(command);
@@ -716,10 +744,28 @@ class DBManager {
             if(rs.next()){
                 measurementID = rs.getInt(3);
             }
+
+            stmt.close();
+            rs.close();
+            con.close();
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-        return getMeasurement(measurementID);
+        return measurementID;
+    }
+
+
+    /**
+     * Get the measurement of a watch. Using {@link DBManager#getMeasurement(int)}
+     * @param ID Watch ID
+     * @return The measurement. {@code null} if watch has no active measurement
+     */
+    Measurement getWatchMeasurement(int ID){
+        int measurementID = getMeasurementID(ID);
+        if(measurementID > -1){
+            return getMeasurement(measurementID);
+        }
+        return null;
     }
 
     //TODO: check measurement functions

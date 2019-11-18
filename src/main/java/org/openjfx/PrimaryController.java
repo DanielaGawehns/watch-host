@@ -90,7 +90,7 @@ public class PrimaryController{
             WatchData data = new WatchData(ID, 69, 8000, 6969);
             String name = dbManager.getWatchName(ID);
             List<String> sensorNameList = dbManager.getSensorList(ID);
-            Measurement measurement = dbManager.getWatchMeasurement(ID); // TODO check this
+            Measurement measurement = dbManager.getWatchMeasurement(ID);
             Smartwatch watch = new Smartwatch(data, name);
             watch.setMeasurement(measurement);
             for(String sensor : sensorNameList){
@@ -179,7 +179,7 @@ public class PrimaryController{
      * Loads the watch view (watchView.fxml) into the {@link PrimaryController#view}.
      * Also binds the width of the overview to the {@link PrimaryController#view} and sends the {@link Smartwatch} data to be displayed to the {@link WatchViewController}
      */
-    private void loadWatchFXML() {
+    void loadWatchFXML() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane

@@ -110,6 +110,7 @@
                   <Label text="Current measurement:" />
                   <VBox fx:id="measurementLabels" alignment="CENTER" spacing="5.0" />
                   <Label fx:id="durationLabel" />
+                  <Button alignment="CENTER" mnemonicParsing="false" onAction="#stopPressed" text="Stop" />
                </children>
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

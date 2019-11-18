@@ -285,12 +285,15 @@ public class WatchViewController {
      */
     private void setMeasurementInfo(){
         Measurement measurement = watch.getMeasurement();
-        var sensors = measurement.getSensors();
         Label label;
 
-        if(measurement.size() <= 0){
+        if(measurement == null || measurement.size() <= 0){
             label = new Label("No measurement active.");
+            measurementLabels.getChildren().add(label);
+            return;
         }
+
+        var sensors = measurement.getSensors();
 
         for(var sensor : sensors){
             String text = sensor.first() + " - " + sensor.second() + " ms";
@@ -337,6 +340,11 @@ public class WatchViewController {
         showOptions();
     }
 
+
+    /**
+     * Event for disconnect button. Uses {@link DBManager#removeSmartwatch(int)} and {@link PrimaryController#removeWatch(int)}
+     * to remove the watch
+     */
     public void disconnectButtonPressed() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Disconnecting watch...");
@@ -347,6 +355,29 @@ public class WatchViewController {
         if(result.get() == ButtonType.OK){
             dbManager.removeSmartwatch(watch.getWatchID());
             primaryController.removeWatch(watch.getWatchID());
+        }
+    }
+
+
+    /**
+     * Event for measurement stop button. Uses {@link DBManager#removeMeasurementFromWatch(int)} and {@link Smartwatch#setMeasurement(Measurement)}
+     * to remove the measurement from the watch
+     */
+    public void stopPressed() {
+        if(watch.getMeasurement() != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Removing measurement...");
+            alert.setHeaderText("This will stop the measurement on the watch");
+            alert.setContentText("Press OK to continue");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                dbManager.removeMeasurementFromWatch(watch.getWatchID());
+                watch.setMeasurement(null);
+
+                //TODO: stop measurement on the watch
+            }
+            primaryController.loadWatchFXML();
         }
     }
 }
