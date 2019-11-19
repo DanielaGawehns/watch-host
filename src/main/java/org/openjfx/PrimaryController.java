@@ -45,7 +45,7 @@ public class PrimaryController{
     /**
      * List of smartwatches connected {@link Smartwatch}
      */
-    private static SmartwatchList watches = new SmartwatchList();
+    private static SmartwatchList watches = null;
 
     /**
      * Reader for reading CSV files {@link CSVFileReader}
@@ -84,25 +84,7 @@ public class PrimaryController{
     public void initialize() {
         System.out.println("INITIALIZE Primary Controller");
 
-        List<Integer> watchIDList = dbManager.getAllWatchId();
-
-        for(Integer ID : watchIDList){
-            WatchData data = new WatchData(ID, 69, 8000, 6969);
-            String name = dbManager.getWatchName(ID);
-            List<String> sensorNameList = dbManager.getSensorList(ID);
-            Measurement measurement = dbManager.getWatchMeasurement(ID);
-            Smartwatch watch = new Smartwatch(data, name);
-            watch.setMeasurement(measurement);
-            for(String sensor : sensorNameList){
-                watch.addSensor(sensor);
-            }
-
-            for(String sensor : sensorNameList){
-                watch.setData(dbManager.getDataList(ID, sensor));
-            }
-
-            watches.add(watch);
-        }
+        watches = dbManager.getAllWatches();
 
         currentWatch = -1;
         loadOverviewFXML();
@@ -129,7 +111,7 @@ public class PrimaryController{
      */
     void addWatch(Smartwatch watch){
         watches.add(watch);
-        dbManager.insertWatch(watch.getWatchID(), watch.getWatchName());
+        dbManager.insertWatch(watch);
         loadSideBar();
     }
 

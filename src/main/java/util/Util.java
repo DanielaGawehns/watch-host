@@ -1,4 +1,4 @@
-package org.openjfx;
+package util;
 
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * Utility class holding generic functions
  */
-class Util {
+public class Util {
 
     /**
      * Prints an error dialog that pops up on the screen
      * @param header String containing the header message
      * @param body String containing the body message
      */
-    static void printErrorDialog(String header, String body){
+    public static void printErrorDialog(String header, String body){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(header);
@@ -31,7 +31,7 @@ class Util {
      * Closes a stage
      * @param node The node of which the stage should be closed
      */
-    static void closeStage(Node node){
+    public static void closeStage(Node node){
         Stage stage = (Stage) node.getScene().getWindow();
         stage.close();
     }
@@ -42,7 +42,7 @@ class Util {
      * @param list1 A list of {@code Double}
      * @param list2 A list of {@code Double}
      */
-    static void addDoubleLists(List<Double> list1, List<Double> list2){
+    public static void addDoubleLists(List<Double> list1, List<Double> list2){
         if(list1.size() != list2.size()){
             System.out.println("Lists not the same size"); // TODO: make exception
             return;
@@ -62,7 +62,7 @@ class Util {
      * @param list The list of {@code Double} to be divided
      * @param division The amount the list should be divided by
      */
-    static void divideDoubleList(List<Double> list, Double division){
+    public static void divideDoubleList(List<Double> list, Double division){
         for(int i = 0; i < list.size(); i++){
             list.set(i, round(list.get(i) / division, 1));
         }
@@ -75,7 +75,7 @@ class Util {
      * @param places The amount of decimals to be rounded to. Should >= 0
      * @return The value with the right amount of decimal places
      */
-    static double round(double value, int places) {
+    public static double round(double value, int places) {
         double scale = Math.pow(10, places);
         return Math.round(value * scale) / scale;
     }
@@ -84,7 +84,7 @@ class Util {
     /**
      * Map containing sensor - dataList size
      */
-    static final Map<String, Integer> sensorDataListSize = new HashMap<>(); // TODO: remove this and get datalist size from input file
+    public static final Map<String, Integer> sensorDataListSize = new HashMap<>(); // TODO: remove this and get datalist size from input file
     static{
         sensorDataListSize.put("HRM", 1);
     }

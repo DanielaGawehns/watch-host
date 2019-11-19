@@ -1,6 +1,8 @@
 package org.openjfx;
 
 import org.sqlite.SQLiteConfig;
+import util.Pair;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -57,7 +59,7 @@ class DBManager {
                 return random;
             }
         }
-        return -1; //TODO: make this more clear
+        return -1;
     }
 
 
@@ -72,6 +74,22 @@ class DBManager {
     }
 
 
+    private void cleanup(Connection con, PreparedStatement stmt){
+        try{
+            if(stmt != null)
+                stmt.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        try{
+            if(con != null)
+                con.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+
     /**
      * Inserts a new line into the {@code datalists} table and creates a new {@code} data table for the inserted sensor
      * @param ID Watch ID
@@ -81,10 +99,12 @@ class DBManager {
      */
     private void insertSensor(int ID, String sensor, int dataListSize, int dataID){
         StringBuilder command = new StringBuilder("INSERT INTO datalists(ID, sensor_name, data_ID) VALUES(?, ?, ?)");
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command.toString());
+            con = connect();
+            stmt = con.prepareStatement(command.toString());
 
             stmt.setInt(1, ID);
             stmt.setString(2, sensor);
@@ -102,11 +122,10 @@ class DBManager {
             stmt.executeUpdate();
 
             System.out.println("DB: added a datalist with dataID " + dataID);
-
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
     }
 
@@ -121,10 +140,12 @@ class DBManager {
         System.out.println("DB: getDatalistID with ID "+ ID + " and sensor " + sensor);
         String command = "SELECT * FROM datalists WHERE ID is ? AND sensor_name is ?";
         int dataID = -1;
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
             System.out.println(stmt);
             stmt.setInt(1, ID);
             stmt.setString(2, sensor);
@@ -135,10 +156,10 @@ class DBManager {
             }
 
             rs.close();
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
         System.out.println("DB: found dataID " + dataID);
         return dataID;
@@ -151,46 +172,90 @@ class DBManager {
      */
     private void dropTable(String name){
         String command = "DROP TABLE " + name;
+        Connection con = null;
+        PreparedStatement stmt = null;
+
         System.out.println(command);
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
             stmt.executeUpdate();
 
             System.out.println("DB: Dropped table " + name);
-
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
     }
 
 
     /**
-     * Gets a list of watch ID's from the {@code smartwatch} table
-     * @return List of integers containing the ID's
+     * Gets all watches from the database. Used {@link DBManager#getWatchData(int)}
+     * @return {@link SmartwatchList} containing all the {@link Smartwatch} connected
      */
-    List<Integer> getAllWatchId() {
-        String command = "SELECT ID FROM smartwatch";
-        List<Integer> watchIDList = new ArrayList<>();
+    SmartwatchList getAllWatches(){
+        String command = "SELECT * FROM smartwatch";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        WatchData data;
+        Smartwatch watch;
+        SmartwatchList list = new SmartwatchList();
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()){
-                watchIDList.add(rs.getInt("ID"));
+                data = getWatchData(rs.getInt(1));
+                if(data != null){
+                    watch = new Smartwatch(data, rs.getString(2));
+                    list.add(watch);
+                    System.out.println("Got watch with ID " + rs.getInt(1));
+                }
             }
-            stmt.close();
+
             rs.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
-        return watchIDList;
+        return list;
+    }
+
+
+    /**
+     * Gets the WatchData from a watch
+     * @param ID Watch ID
+     * @return The WatchData
+     */
+    private WatchData getWatchData(int ID){
+        String command = "SELECT * FROM watch_data WHERE ID = ?";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        WatchData data = null;
+
+        try{
+            con = connect();
+            stmt = con.prepareStatement(command);
+            stmt.setInt(1, ID);
+            ResultSet rs = stmt.executeQuery();
+
+           if(rs.next()){
+               data = new WatchData(ID, rs.getInt(3), rs.getFloat(4), rs.getFloat(5), rs.getString(2));
+           }
+
+            rs.close();
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
+        }
+        System.out.println("Got new WatchData for watch with ID " + ID);
+        return data;
     }
 
 
@@ -202,10 +267,12 @@ class DBManager {
     List<String> getSensorList(int ID){
         String command = "SELECT sensor_name FROM datalists WHERE ID = ?";
         List<String> sensorNameList = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
             stmt.setInt(1, ID);
 
             ResultSet rs = stmt.executeQuery();
@@ -213,11 +280,12 @@ class DBManager {
             while(rs.next()){
                 sensorNameList.add(rs.getString("sensor_name"));
             }
-            stmt.close();
+
             rs.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
         return sensorNameList;
     }
@@ -225,27 +293,56 @@ class DBManager {
 
     /**
      * Inserts a new line into the {@code smartwatch} table containing the new watch info
-     * @param ID Watch ID
-     * @param watchName Watch name
+     * @param watch Smartwatch to be added
      */
-    void insertWatch(int ID, String watchName){
+    void insertWatch(Smartwatch watch){
         String command = "INSERT INTO smartwatch(ID, name) VALUES(?, ?)";
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
 
-            stmt.setInt(1, ID);
-            stmt.setString(2, watchName);
+            stmt.setInt(1, watch.getWatchID());
+            stmt.setString(2, watch.getWatchName());
             stmt.executeUpdate();
 
-            System.out.println("DB: added watch with ID " + ID);
-
-            stmt.close();
-            con.close();
-
+            System.out.println("DB: added watch with ID " + watch.getWatchID());
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
+        }
+        insertWatchData(watch.getWatchData());
+    }
+
+
+    /**
+     * Inserts the watch data into the database
+     * @param data WatchData to be added
+     */
+    private void insertWatchData(WatchData data){
+        String command = "INSERT INTO watch_data VALUES(?, ?, ?, ?, ?)";
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try{
+            con = connect();
+            stmt = con.prepareStatement(command);
+
+            stmt.setInt(1, data.getWatchID());
+            stmt.setString(2, data.getIpAdress());
+            stmt.setInt(3, data.getBatteryPercentage());
+            stmt.setFloat(4, data.getMaxStorage());
+            stmt.setFloat(5, data.getUsedStorage());
+            stmt.executeUpdate();
+
+            System.out.println("DB: added watchData with ID " + data.getWatchID());
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
     }
 
@@ -258,21 +355,23 @@ class DBManager {
     String getWatchName(int ID){
         String command = "SELECT name FROM smartwatch WHERE ID = ?";
         String name = "";
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
             stmt.setInt(1, ID);
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()){
                 name = rs.getString("name");
             }
-            stmt.close();
             rs.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
         return name;
     }
@@ -285,21 +384,22 @@ class DBManager {
      */
     void setWatchName(int ID, String name){
         String command = "UPDATE smartwatch SET name = ? WHERE ID = ?";
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
 
             stmt.setString(1, name);
             stmt.setInt(2, ID);
             stmt.executeUpdate();
 
             System.out.println("DB: set name of  watch with ID " + ID + " to " + name);
-
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
     }
 
@@ -316,6 +416,7 @@ class DBManager {
         int size = dataList.getDataFieldsNumber(); // Get size of dataList
         StringBuilder command;
         Connection con = null;
+        PreparedStatement stmt = null;
 
         if(dataID == -1){ // if dataListID does not exist
             dataID = getNewDataID(dataIDList);
@@ -324,7 +425,6 @@ class DBManager {
 
         try{
             con = connect();
-            PreparedStatement stmt = null;
             con.setAutoCommit(false); // disable auto commit to improve performance
             System.out.println("DB: size of added list is " + dataList.size());
 
@@ -370,11 +470,6 @@ class DBManager {
             con.commit(); // Commit changes to database
             System.out.println("DB: added watch with ID " + ID);
 
-            if(stmt != null){
-                stmt.close();
-            }
-            con.close();
-
         }catch (SQLException e){
             System.out.println(e.getMessage());
             try{
@@ -385,6 +480,8 @@ class DBManager {
             }
 
             return -1;
+        }finally {
+            cleanup(con, stmt);
         }
         return 0;
     }
@@ -448,10 +545,12 @@ class DBManager {
         LocalTime time;
         LocalDate date;
         List<Double> dataList;
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         System.out.println("DB: " + command);
         try{
-            Connection con = connect();
+            con = connect();
 
             // Setup SensorData for extraction
             DatabaseMetaData md = con.getMetaData();
@@ -466,7 +565,7 @@ class DBManager {
             data = new SensorData(ID, sensor, dataListSizeCount);
 
             // Execute command
-            PreparedStatement stmt = con.prepareStatement(command);
+            stmt = con.prepareStatement(command);
             stmt.setTime(1, Time.valueOf(startTime));
             stmt.setTime(2, Time.valueOf(endTime));
             ResultSet rs = stmt.executeQuery();
@@ -487,12 +586,13 @@ class DBManager {
                 data.add(point);
             }
 
-            stmt.close();
             rs.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
+
         System.out.println("DB: found sensordata: ");
         if(data != null){
             data.printRecords();
@@ -509,6 +609,9 @@ class DBManager {
         System.out.println("DB: removeSmartwatch");
         String command = "DELETE FROM smartwatch WHERE ID = ?";
         List<String> sensorList = getSensorList(ID);
+        Connection con = null;
+        PreparedStatement stmt = null;
+
         System.out.println(sensorList);
 
         try{
@@ -516,15 +619,14 @@ class DBManager {
                 dropTable("data" + getDatalistID(ID, sensor));
             }
 
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
             stmt.setInt(1, ID);
             stmt.executeUpdate();
-
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
         System.out.println("DB: Deleted watch " + ID);
     }
@@ -557,21 +659,22 @@ class DBManager {
      */
     private void addToSensorTable(int measurementID, String sensor, Integer pollRate){
         String command = "INSERT INTO measurement" + measurementID + "(sensor, polling_rate) VALUES(?, ?)";
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
 
             stmt.setString(1, sensor);
             stmt.setInt(2, pollRate);
             stmt.executeUpdate();
 
             System.out.println("DB: added sensor " + sensor + " to measurement table" + measurementID);
-
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
     }
 
@@ -582,17 +685,19 @@ class DBManager {
      */
     private void createMeasurementTable(int measurementID){
         String command = "CREATE TABLE measurement" + measurementID + "(sensor TEXT NOT NULL, polling_rate INTEGER NOT NULL)";
+        Connection con = null;
+        PreparedStatement stmt = null;
+
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
             stmt.executeUpdate();
 
             System.out.println("DB: added measurement table with ID " + measurementID);
-
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
     }
 
@@ -605,25 +710,25 @@ class DBManager {
      */
     private void insertMeasurement(int ID, int duration, int measurementID){
         String command = "INSERT INTO measurements(ID, duration, measurement_ID) VALUES(?, ?, ?) ";
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
 
             stmt.setInt(1, ID);
             stmt.setInt(2, duration);
             stmt.setInt(3, measurementID);
             stmt.executeUpdate();
-
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
     }
 
 
-    // TODO Make something that deletes the whole measurement
     /**
      * Disconnects a measurement from a watch. The measurement Table will NOT be deleted
      * @param ID Watch ID
@@ -631,17 +736,18 @@ class DBManager {
     void removeMeasurementFromWatch(int ID){
         String command = "DELETE FROM measurements WHERE ID = ?";
         int measurementID = getMeasurementID(ID);
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try{
-            Connection con = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con = connect();
+            stmt = con.prepareStatement(command);
             stmt.setInt(1, ID);
             stmt.executeUpdate();
-
-            stmt.close();
-            con.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
         checkMeasurementClients(measurementID);
     }
@@ -649,9 +755,12 @@ class DBManager {
 
     private void checkMeasurementClients(int measurementID){
         String command = "SELECT * FROM measurements WHERE measurement_ID = ?";
+        Connection con = null;
+        PreparedStatement stmt = null;
+
         try{
-            Connection con  = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con  = connect();
+            stmt = con.prepareStatement(command);
             stmt.setInt(1, measurementID);
             ResultSet rs = stmt.executeQuery();
 
@@ -659,10 +768,10 @@ class DBManager {
                 dropTable("measurement" + measurementID);
             }
             rs.close();
-            stmt.close();
-            con.close();
         }catch(SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
     }
 
@@ -675,10 +784,13 @@ class DBManager {
     private int getMeasurementDuration(int measurementID){
         String command = "SELECT * FROM measurements WHERE measurement_ID = ?";
         int duration = -1;
+        Connection con = null;
+        PreparedStatement stmt = null;
+
         System.out.println(command + " -" + measurementID);
         try{
-            Connection con  = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con  = connect();
+            stmt = con.prepareStatement(command);
             stmt.setInt(1, measurementID);
             ResultSet rs = stmt.executeQuery();
 
@@ -686,10 +798,10 @@ class DBManager {
                 duration = rs.getInt("duration");
             }
             rs.close();
-            stmt.close();
-            con.close();
         }catch(SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
         System.out.println("Found duration " + duration);
         return duration;
@@ -705,9 +817,12 @@ class DBManager {
         String command = "SELECT * FROM measurement" + measurementID;
         Measurement measurement = new Measurement();
         List<Pair<String, Integer>> values = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement stmt = null;
+
         try {
-            Connection con  = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con  = connect();
+            stmt = con.prepareStatement(command);
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()){
@@ -715,10 +830,10 @@ class DBManager {
                 values.add(pair);
             }
             rs.close();
-            stmt.close();
-            con.close();
         }catch(SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
         measurement.setSensors(values);
         measurement.setDuration(getMeasurementDuration(measurementID));
@@ -734,22 +849,23 @@ class DBManager {
     private int getMeasurementID(int ID){
         String command = "SELECT * FROM measurements WHERE ID = ?";
         int measurementID = -1;
+        Connection con = null;
+        PreparedStatement stmt = null;
 
         try {
-            Connection con  = connect();
-            PreparedStatement stmt = con.prepareStatement(command);
+            con  = connect();
+            stmt = con.prepareStatement(command);
             stmt.setInt(1, ID);
             ResultSet rs = stmt.executeQuery();
 
             if(rs.next()){
                 measurementID = rs.getInt(3);
             }
-
-            stmt.close();
             rs.close();
-            con.close();
         }catch(SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
         }
         return measurementID;
     }
@@ -767,7 +883,5 @@ class DBManager {
         }
         return null;
     }
-
-    //TODO: check measurement functions
 
 }
