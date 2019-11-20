@@ -68,5 +68,6 @@ public class WatchOptionsController {
     public void saveOptions() {
         watchID = Integer.parseInt(textfieldWatchID.getText());
         watchName = textfieldWatchName.getText();
+        //Util.closeStage(textfieldWatchID);
     }
 }

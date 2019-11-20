@@ -1,6 +1,8 @@
 package org.openjfx;
 
 
+import util.Util;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.TreeSet;
 /**
  * Class holding all smartwatch data
  */
-public class Smartwatch {
+class Smartwatch {
 
     /**
      * Data about the watch {@link WatchData}
@@ -22,12 +24,12 @@ public class Smartwatch {
     /**
      * Data about subject {@link SubjectData}
      */
-    private SubjectData subjectData;
+    private SubjectData subjectData = null;
 
     /**
      * Nickname for the watch specified by the user
      */
-    private String watchName;
+    private String watchName = "NONAME";
 
     /**
      * List of {@link SensorData} containing data of all the sensors available
@@ -37,13 +39,7 @@ public class Smartwatch {
     /**
      * Map to map sensor name string to integer index for {@link Smartwatch#sensorDataList}
      */
-    private static final Map<String, Integer> sensorMap;
-    static{
-        sensorMap = new HashMap<>();
-        sensorMap.put("HRM", 0); // put HRM on spot 0
-        sensorMap.put("PRESSURE", 1);
-        sensorMap.put("ACCELEROMETER", 2);
-    }
+    private Map<String, Integer> sensorMap = new HashMap<>();
 
     /**
      * The current measurement which is being performed by the watch
@@ -54,30 +50,18 @@ public class Smartwatch {
     /**
      * Constructor
      */
-    Smartwatch(WatchData _data, SubjectData _subjectData){
+    Smartwatch(WatchData _data, String _name){
         System.out.println("making smartwatch");
         watchData = _data;
-        subjectData = _subjectData;
-        watchName = "NO NAME";
+        if(!_name.isEmpty()){
+            watchName = _name;
+        }
 
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
+        //sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
+        //sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
+        //sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
     }
 
-
-    /**
-     * Constructor
-     */
-    Smartwatch(WatchData _data){
-        System.out.println("making smartwatch");
-        watchData = _data;
-        watchName = "NO NAME";
-
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
-    }
 
 
     /**
@@ -149,17 +133,54 @@ public class Smartwatch {
      */
     void addData(List<DataPoint> dataList){
         SortedSet<String> sensorDataEdited = new TreeSet<>();
-        String sensor = "";
+        String sensor;
 
         for (DataPoint dataPoint : dataList) {
-            sensorDataList.get(sensorMap.get(dataPoint.getSensorName())).add(dataPoint);
-            sensorDataEdited.add(dataPoint.getSensorName());
+            if(!sensorMap.containsKey(dataPoint.getSensorName())){
+                System.out.println("Added sensor: " + dataPoint.getSensorName() + " for watch " + getWatchID());
+                addSensor(dataPoint.getSensorName());
+            }
+            if(!sensorDataList.get(sensorMap.get(dataPoint.getSensorName())).contains(dataPoint.getDate(), dataPoint.getTime())){
+                sensorDataList.get(sensorMap.get(dataPoint.getSensorName())).add(dataPoint);
+                sensorDataEdited.add(dataPoint.getSensorName());
+            }
         }
 
         for(int i = 0; i < sensorDataEdited.size(); i++){
             sensor = sensorDataEdited.first();
             sensorDataList.get(sensorMap.get(sensor)).mergeDuplicates();
             sensorDataEdited.remove(sensor);
+        }
+    }
+
+
+    /**
+     * Sets {@link SensorData} of corresponding sensor
+     * @param dataList Data that will be set
+     */
+    void setData(SensorData dataList){
+        sensorDataList.set(sensorMap.get(dataList.getSensor()), dataList);
+    }
+
+
+    /**
+     * Get a list with sensors from the watch
+     * @return List of Strings containing names of the sensors
+     */
+    List<String> getSensorListFromMap(){
+        return new ArrayList<>(sensorMap.keySet());
+    }
+
+
+    /**
+     * Adds a new sensor to the watch by inserting into {@link Smartwatch#sensorMap}
+     * @param sensor Name of the sensor
+     */
+    void addSensor(String sensor){
+        if(!sensorMap.containsKey(sensor)) {
+            sensorMap.put(sensor, sensorMap.size());
+            System.out.println("Put sensor " + sensor + " place " + (sensorMap.size() - 1));
+            sensorDataList.add(new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor))); // TODO: get the datalist size from input file
         }
     }
 }

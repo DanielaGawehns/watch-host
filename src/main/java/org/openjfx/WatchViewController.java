@@ -1,6 +1,7 @@
 package org.openjfx;
 
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -9,10 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -21,6 +19,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import java.io.IOException;
+import java.util.Optional;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,6 +40,18 @@ import java.util.List;
 public class WatchViewController {
 
     private static final String COMMA_DELIMITER = ",";
+
+    /**
+     * Label for measurement duration
+     */
+    @FXML
+    private Label durationLabel;
+
+    /**
+     * Vbox for placing the sensor labels
+     */
+    @FXML
+    private  VBox measurementLabels;
 
     /**
      * ProgressBar for visualizing the memory that is used
@@ -108,24 +120,35 @@ public class WatchViewController {
     private Smartwatch watch;
 
     /**
+     * Manager for managing the Database connection {@link DBManager}
+     */
+    static DBManager dbManager = new DBManager();
+
+    /**
      * Controller of {@link WatchOptionsController}
      */
     private WatchOptionsController watchOptionsController;
+
+    /**
+     * Controller of {@link PrimaryController}
+     */
+    private PrimaryController primaryController;
 
 
     /**
      * Sets {@link WatchViewController#watch} and fills the charts using {@link WatchViewController#fillChart(LineChart, String)}
      * @param _watch The {@link Smartwatch} which data will be shown
      */
-    void setWatch(Smartwatch _watch){
+    void setWatch(Smartwatch _watch, PrimaryController controller){
         System.out.println("Setting watch...");
         watch = _watch;
+        primaryController = controller;
 
         setInfo();
 
         try {
             fillChart(sensorChart, "HRM"); // fill Chart TODO: change parameter
-            fillChart(pressureChart, "PRESSURE");
+            //fillChart(pressureChart, "PRESSURE");
             setComments();
         }catch (Exception e){ // if data is not found
             System.out.println("No data found for watch: " + " and sensor: TEMP");
@@ -144,7 +167,7 @@ public class WatchViewController {
      */
     private void fillChart(LineChart<String, Number> chart, String sensor) {
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
-        System.out.println("Fill Chart for watch: " + watch.getWatchID());
+        System.out.println("Fill Chart for watch: " + watch.getWatchID() + " and sensor " + sensor);
         SensorData sensorData = watch.getSensorData(sensor); // get data of the right sensor
 
         chart.setAnimated(false); // disable animation for clearing
@@ -157,10 +180,10 @@ public class WatchViewController {
 
         System.out.println("Data size is " + sensorData.size());
 
-        for(int i = 0; i < sensorData.size(); i += 3){ //TODO: find more robust way to remove unnecessary nodes
+        for(int i = 0; i < sensorData.size(); i += 1){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
 
-            temp.setNode(createDataNode());
+            //temp.setNode(createDataNode());
             series.getData().add(temp); // add datapoint to series
         }
     }
@@ -288,7 +311,25 @@ public class WatchViewController {
      * Sets measurement information in measurementInfo section
      */
     private void setMeasurementInfo(){
-        // TODO: Fill this
+        Measurement measurement = watch.getMeasurement();
+        Label label;
+
+        if(measurement == null || measurement.size() <= 0){
+            label = new Label("No measurement active.");
+            measurementLabels.getChildren().add(label);
+            return;
+        }
+
+        var sensors = measurement.getSensors();
+
+        for(var sensor : sensors){
+            String text = sensor.first() + " - " + sensor.second() + " ms";
+            label = new Label(text);
+            measurementLabels.getChildren().add(label);
+        }
+        String duration = "For: " + measurement.getDuration() + " minutes";
+        durationLabel.setText(duration);
+        // TODO: check this
     }
 
 
@@ -304,6 +345,8 @@ public class WatchViewController {
         stage.setOnCloseRequest(e -> { //TODO: maybe change this
             watch.setWatchID(watchOptionsController.getWatchID());
             watch.setWatchName(watchOptionsController.getWatchName());
+            dbManager.setWatchName(watchOptionsController.getWatchID(), watchOptionsController.getWatchName());
+
             System.out.println("Setting watch info: " + watch.getWatchID() + " " + watch.getWatchName());
         });
         stage.setTitle("Watch Options");
@@ -326,6 +369,22 @@ public class WatchViewController {
 
 
     /**
+     * Event for disconnect button. Uses {@link DBManager#removeSmartwatch(int)} and {@link PrimaryController#removeWatch(int)}
+     * to remove the watch
+     */
+    public void disconnectButtonPressed() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Disconnecting watch...");
+        alert.setHeaderText("This will remove ALL data about the watch");
+        alert.setContentText("Press OK to continue");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get() == ButtonType.OK){
+            dbManager.removeSmartwatch(watch.getWatchID());
+            primaryController.removeWatch(watch.getWatchID());
+        }
+
+    /**
      * Event for Add Comments button
      */
     public void addComments() {
@@ -344,6 +403,26 @@ public class WatchViewController {
         setWatch(watch);
     }
 
+
+    /**
+     * Event for measurement stop button. Uses {@link DBManager#removeMeasurementFromWatch(int)} and {@link Smartwatch#setMeasurement(Measurement)}
+     * to remove the measurement from the watch
+     */
+    public void stopPressed() {
+        if(watch.getMeasurement() != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Removing measurement...");
+            alert.setHeaderText("This will stop the measurement on the watch");
+            alert.setContentText("Press OK to continue");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                dbManager.removeMeasurementFromWatch(watch.getWatchID());
+                watch.setMeasurement(null);
+
+                //TODO: stop measurement on the watch
+            }
+            primaryController.loadWatchFXML();
 
     /**
      * Reads a csv file, parses and stores the data

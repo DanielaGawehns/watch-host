@@ -28,13 +28,20 @@ class WatchData {
 
 
     /**
+     * The address of the watch
+     */
+    private String ipAdress = "";
+
+
+    /**
      * Constructor
      */
-    WatchData(int _watchID, int _batteryPercentage, float _maxStorage, float _usedStorage){
+    WatchData(int _watchID, int _batteryPercentage, float _maxStorage, float _usedStorage, String _ipAdress){
         watchID = _watchID;
         batteryPercentage = _batteryPercentage;
         maxStorage = _maxStorage;
         usedStorage = _usedStorage;
+        ipAdress = _ipAdress;
     }
 
 
@@ -108,4 +115,16 @@ class WatchData {
     public void setUsedStorage(float usedStorage) {
         this.usedStorage = usedStorage;
     }
+
+
+    /**
+     * Getter for {@link WatchData#ipAdress}
+     */
+    public String getIpAdress() { return ipAdress; }
+
+
+    /**
+     * Setter for {@link WatchData#ipAdress}
+     */
+    public void setIpAdress(String ipAdress) { this.ipAdress = ipAdress; }
 }

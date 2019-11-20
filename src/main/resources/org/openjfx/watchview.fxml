@@ -94,6 +94,7 @@
                   <VBox alignment="CENTER" spacing="5.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#optionsPressed" prefHeight="25.0" prefWidth="75.0" text="Options" />
+                        <Button mnemonicParsing="false" onAction="#disconnectButtonPressed" text="Disconnect" />
                         <Button mnemonicParsing="false" text="Disconnect" />
                         <Button mnemonicParsing="false" text="Add Comments" onAction="#addComments" />
                      </children>
@@ -110,13 +111,9 @@
             <HBox alignment="CENTER" spacing="20.0">
                <children>
                   <Label text="Current measurement:" />
-                  <VBox alignment="CENTER" spacing="5.0">
-                     <children>
-                        <Label text="Heart Rate" />
-                        <Label text="Pressure" />
-                     </children>
-                  </VBox>
-                  <Label text="For: 1 hour 20 minutes" />
+                  <VBox fx:id="measurementLabels" alignment="CENTER" spacing="5.0" />
+                  <Label fx:id="durationLabel" />
+                  <Button alignment="CENTER" mnemonicParsing="false" onAction="#stopPressed" text="Stop" />
                </children>
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -1,10 +1,7 @@
 package org.openjfx;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import util.Pair;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +19,7 @@ class Measurement {
     /**
      * The duration of the measurement in minutes
      */
-    private Integer duration;
+    private int duration = 0;
 
 
     /**
@@ -34,7 +31,7 @@ class Measurement {
     /**
      * Setter for {@link Measurement#duration}
      */
-    public void setDuration(Integer x) { duration = x; }
+    public void setDuration(int x) { duration = x; }
 
 
     /**
@@ -46,4 +43,11 @@ class Measurement {
      * Getter for {@link Measurement#sensors}
      */
     Integer getDuration() { return duration; }
+
+
+    /**
+     * Size of the {@link Measurement#sensors} list
+     * @return Size as Integer
+     */
+    int size(){ return sensors.size(); }
 }

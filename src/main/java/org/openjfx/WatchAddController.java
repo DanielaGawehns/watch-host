@@ -3,6 +3,8 @@ package org.openjfx;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import util.IpValidator;
+import util.Util;
 
 
 //TODO may need extending
@@ -40,6 +42,12 @@ public class WatchAddController {
      * Instance of PrimaryController
      */
     private PrimaryController primaryController;
+
+
+    /**
+     * Validator for Ip addresses
+     */
+    private IpValidator validator = new IpValidator();
     
 
     /**
@@ -58,6 +66,7 @@ public class WatchAddController {
         WatchData watchData;
         Smartwatch watch;
 
+        // Parse ID field
         try{
            watchID = Integer.parseInt(textfieldID.getText());
            if(watchID < 0){
@@ -68,21 +77,23 @@ public class WatchAddController {
             return;
         }
 
-        if(primaryController.idNotUsed(watchID)){
-            watchData = new WatchData(watchID);
-            watch = new Smartwatch(watchData);
-
-        }else{
+        // Check the ID
+        if(!primaryController.idNotUsed(watchID)){
             Util.printErrorDialog("Watch ID: " + watchID + " is already in use!", "Please choose another ID to continue.");
             return;
         }
 
-        if(!watchName.isEmpty()){
-            watch.setWatchName(watchName);
-        }
+        watchData = new WatchData(watchID);
 
         //TODO: parse IP field
+        if(!validator.isValid(watchIP)){
+            Util.printErrorDialog("Watch IP: " + watchIP + " is not valid!", "Please choose another IP to continue.");
+            return;
+        }
+        watchData.setIpAdress(watchIP);
+        watch = new Smartwatch(watchData, watchName);
 
+        // Add the watch
         primaryController.addWatch(watch);
         Util.closeStage(buttonConnect);
     }
