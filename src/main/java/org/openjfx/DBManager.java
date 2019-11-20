@@ -1,6 +1,5 @@
 package org.openjfx;
 
-import org.sqlite.SQLiteConfig;
 import util.Pair;
 
 import java.sql.*;
@@ -34,9 +33,8 @@ class DBManager {
         Connection connection = null;
         String databaseLoc = "jdbc:sqlite:" + System.getProperty("user.dir") + "/database.sqlite";
         try{
-            SQLiteConfig config = new SQLiteConfig(); // config for enabling foreign keys
-            config.enforceForeignKeys(true);
-            connection = DriverManager.getConnection(databaseLoc, config.toProperties());
+            connection = DriverManager.getConnection(databaseLoc);
+            connection.createStatement().execute("PRAGMA foreign_keys = ON");
             System.out.println("DB: Connected database");
         }catch (SQLException e){
             System.out.println(e.getMessage());
