@@ -338,18 +338,15 @@ public class WatchViewController {
 
         Stage stage = new Stage();
         File selectedFile = fileChooser.showOpenDialog(stage);
-        /*
-        if (selectedFile != null) {
-            stage.display(selectedFile);
-        }*/
 
         readComments(selectedFile);
 
         setWatch(watch);
     }
 
+
     /**
-     * Reads a csv file and parses the data using
+     * Reads a csv file, parses and stores the data
      * @param file Specifies file to read from
      */
     void readComments(File file){
@@ -368,9 +365,7 @@ public class WatchViewController {
                     Date t2 = new SimpleDateFormat("kk:mm:ss").parse(record[1]);
                     // todo: also require date?
                     String body = record[2];
-              //      System.out.println("t1: " + t1);
-               //     System.out.println("t2: " + t2);
-                 //   System.out.println("body: " + body);
+
                     Triplet<Date, Date, String> comment = new Triplet<>(t1, t2, body);
                     comments.add(comment);
                 } catch (IllegalArgumentException | NullPointerException e) {
@@ -383,10 +378,12 @@ public class WatchViewController {
         }
     }
 
+
+    /**
+     * Places the comments from {@link WatchViewController#comments} into {@link WatchViewController#commentsBox} to display them on the screen
+     */
     void setComments() {
-        System.out.println("STETTING size: " + comments.size());
         for (int i = 0; i < comments.size(); i++) {
-            System.out.println("SETTINGCOMMENT");
             Triplet<Date, Date, String> comment = comments.get(i);
 
             VBox vbox = new VBox();
@@ -397,28 +394,21 @@ public class WatchViewController {
             DateFormat timeFormat = new SimpleDateFormat("kk:mm:ss");
             String t1String = timeFormat.format(t1Date);
             String t2String = timeFormat.format(t2Date);
-            Label t1 = new Label(t1String);
-            Label t2 = new Label(t2String);
+            Label t1 = new Label("\t" + t1String + " - ");
+            Label t2 = new Label(t2String + "\t");
             Label body = new Label(comment.third());
-
-
 
             System.out.println("t1: " + t1String);
             System.out.println("t2: " + t2String);
             System.out.println("body: " + comment.third());
 
-
-            System.out.println("CHECK1");
             hbox.getChildren().addAll(t1, t2, body);
             hbox.setAlignment(Pos.CENTER_LEFT);
-            System.out.println("CHECK2");
 
             vbox.getChildren().addAll(hbox);
             vbox.setAlignment(Pos.CENTER);
-            System.out.println("CHECK3");
 
             commentsBox.getChildren().add(vbox);
-            System.out.println("size afterfirstprinting: " + comments.size());
         }
     }
 }
