@@ -173,13 +173,15 @@ class Smartwatch {
 
 
     /**
-     * Adds a new sensor to the watch
+     * Adds a new sensor to the watch by inserting into {@link Smartwatch#sensorMap}
      * @param sensor Name of the sensor
      */
     void addSensor(String sensor){
-        sensorMap.put(sensor, sensorMap.size());
-        System.out.println("Put sensor " + sensor + " place " + (sensorMap.size()-1));
-        sensorDataList.add(new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor))); // TODO: get the datalist size from input file
+        if(!sensorMap.containsKey(sensor)) {
+            sensorMap.put(sensor, sensorMap.size());
+            System.out.println("Put sensor " + sensor + " place " + (sensorMap.size() - 1));
+            sensorDataList.add(new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor))); // TODO: get the datalist size from input file
+        }
     }
 }
 

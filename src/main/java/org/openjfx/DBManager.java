@@ -202,6 +202,7 @@ class DBManager {
         WatchData data;
         Smartwatch watch;
         SmartwatchList list = new SmartwatchList();
+        int ID;
 
         try{
             con = connect();
@@ -209,11 +210,17 @@ class DBManager {
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()){
-                data = getWatchData(rs.getInt(1));
+                ID = rs.getInt(1);
+                data = getWatchData(ID);
+                var sensors = getSensorList(ID);
                 if(data != null){
                     watch = new Smartwatch(data, rs.getString(2));
+                    for(String sensor : sensors){
+                        watch.addSensor(sensor);
+                        watch.setData(getDataList(ID, sensor));
+                    }
                     list.add(watch);
-                    System.out.println("Got watch with ID " + rs.getInt(1));
+                    System.out.println("Got watch with ID " + ID);
                 }
             }
 
