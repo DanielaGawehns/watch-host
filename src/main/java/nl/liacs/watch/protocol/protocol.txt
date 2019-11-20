@@ -120,4 +120,4 @@ In ASCII:
 `INCREMENT 5 accel 100 5.43894 3.47392 1.32419`
 
 In binary:
-`02 05 00 06 61 63 63 65 6c 00 08 40 59 00 00 00 00 00 00 00 08 40 15 ff ff ff c1 79 7c ff ff ff c3 ff ff ff 9f ff ff ff fd 00 08 40 0b ff ff ff ca ff ff ff 96 ff ff ff 91 ff ff ff a7 5c ff ff ff d1 00 08 3f ff ff ff f5 2f ff ff ff e1 ff ff ff da 7b 0b 39 0a`
+`02 05 00 05 61 63 63 65 6c 00 08 40 59 00 00 00 00 00 00 00 08 40 15 c1 79 7c c3 9f fd 00 08 40 0b ca 96 91 a7 5c d1 00 08 3f f5 2f e1 da 7b 0b 39`
