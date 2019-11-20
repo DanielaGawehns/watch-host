@@ -3,6 +3,7 @@ package org.openjfx;
 import util.Pair;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,7 +15,6 @@ class Measurement {
      * List of pairs of sensors which should be measured with a corresponding interval {@link Pair}
      */
     private List<Pair<String, Integer>> sensors = new ArrayList<>();
-
 
     /**
      * The duration of the measurement in minutes

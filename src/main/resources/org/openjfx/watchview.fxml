@@ -20,6 +20,7 @@
                         <NumberAxis animated="false" label="Heart Rate (BPM)" side="LEFT" />
                      </yAxis>
                   </LineChart>
+                  <VBox fx:id="commentsBox" />
                   <LineChart fx:id="pressureChart" animated="false" createSymbols="false" disable="true" title="Pressure" verticalGridLinesVisible="false">
                     <xAxis>
                       <CategoryAxis animated="false" label="Time" side="BOTTOM" tickMarkVisible="false" />
@@ -94,6 +95,8 @@
                      <children>
                         <Button mnemonicParsing="false" onAction="#optionsPressed" prefHeight="25.0" prefWidth="75.0" text="Options" />
                         <Button mnemonicParsing="false" onAction="#disconnectButtonPressed" text="Disconnect" />
+                        <Button mnemonicParsing="false" text="Disconnect" />
+                        <Button mnemonicParsing="false" text="Add Comments" onAction="#addComments" />
                      </children>
                      <HBox.margin>
                         <Insets left="40.0" />
