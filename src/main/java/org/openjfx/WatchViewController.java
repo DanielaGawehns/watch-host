@@ -1,7 +1,6 @@
 package org.openjfx;
 
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -19,12 +18,13 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import util.Triplet;
+
 import java.io.IOException;
 import java.util.Optional;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -379,10 +379,11 @@ public class WatchViewController {
         alert.setContentText("Press OK to continue");
 
         Optional<ButtonType> result = alert.showAndWait();
-        if(result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK) {
             dbManager.removeSmartwatch(watch.getWatchID());
             primaryController.removeWatch(watch.getWatchID());
         }
+    }
 
     /**
      * Event for Add Comments button
@@ -400,7 +401,7 @@ public class WatchViewController {
 
         readComments(selectedFile);
 
-        setWatch(watch);
+        setComments();
     }
 
 
@@ -409,7 +410,7 @@ public class WatchViewController {
      * to remove the measurement from the watch
      */
     public void stopPressed() {
-        if(watch.getMeasurement() != null) {
+        if (watch.getMeasurement() != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Removing measurement...");
             alert.setHeaderText("This will stop the measurement on the watch");
@@ -423,6 +424,8 @@ public class WatchViewController {
                 //TODO: stop measurement on the watch
             }
             primaryController.loadWatchFXML();
+        }
+    }
 
     /**
      * Reads a csv file, parses and stores the data
@@ -462,9 +465,7 @@ public class WatchViewController {
      * Places the comments from {@link WatchViewController#comments} into {@link WatchViewController#commentsBox} to display them on the screen
      */
     void setComments() {
-        for (int i = 0; i < comments.size(); i++) {
-            Triplet<Date, Date, String> comment = comments.get(i);
-
+        for (var comment : comments) {
             VBox vbox = new VBox();
             HBox hbox = new HBox();
 
