@@ -2,6 +2,7 @@ package org.openjfx;
 
 import util.Pair;
 
+import javax.xml.stream.events.Comment;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -190,14 +191,13 @@ class DBManager {
 
 
     /**
-     * Gets all watches from the database. Used {@link DBManager#getWatchData(int)}
+     * Gets all watches from the database. Used {@link DBManager#getWatch(int)}
      * @return {@link SmartwatchList} containing all the {@link Smartwatch} connected
      */
     SmartwatchList getAllWatches(){
         String command = "SELECT * FROM smartwatch";
         Connection con = null;
         PreparedStatement stmt = null;
-        WatchData data;
         Smartwatch watch;
         SmartwatchList list = new SmartwatchList();
         int ID;
@@ -209,19 +209,14 @@ class DBManager {
 
             while(rs.next()){
                 ID = rs.getInt(1);
-                data = getWatchData(ID);
-                var sensors = getSensorList(ID);
-                if(data != null){
-                    watch = new Smartwatch(data, rs.getString(2));
-                    for(String sensor : sensors){
-                        watch.addSensor(sensor);
-                        watch.setData(getDataList(ID, sensor));
-                    }
+                watch = getWatch(ID);
+                if(watch != null){
                     list.add(watch);
-                    System.out.println("Got watch with ID " + ID);
+                }else{
+                    System.err.println("Smartwatch with ID: " + ID + " not found");
                 }
-            }
 
+            }
             rs.close();
         }catch (SQLException e){
             System.out.println(e.getMessage());
@@ -229,6 +224,51 @@ class DBManager {
             cleanup(con, stmt);
         }
         return list;
+    }
+
+
+    /**
+     * Gets a watch from the database. This includes all the data regarding the watch.
+     * Uses {@link DBManager#getWatchData(int)} and {@link DBManager#getSensorList(int)}
+     * @param ID Watch ID
+     * @return The watch {@link Smartwatch}
+     */
+    Smartwatch getWatch(int ID){
+        String command = "SELECT * FROM smartwatch WHERE ID = ?";
+        Smartwatch watch = null;
+        WatchData data;
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try{
+            con = connect();
+            stmt = con.prepareStatement(command);
+            stmt.setInt(1, ID);
+            ResultSet rs = stmt.executeQuery();
+
+           if(rs.next()){
+                data = getWatchData(ID);
+                var sensors = getSensorList(ID);
+                if(data != null){
+                    watch = new Smartwatch(data, rs.getString(2));
+                    for(String sensor : sensors){
+                        watch.addSensor(sensor);
+                        watch.setData(getDataList(ID, sensor));
+
+                    }
+                    watch.setMeasurement(getWatchMeasurement(ID));
+                    System.out.println("Got watch with ID " + ID);
+                }else{
+                    System.err.println("No watchData found for watch with ID: " + ID);
+                }
+            }
+            rs.close();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            cleanup(con, stmt);
+        }
+        return watch;
     }
 
 
@@ -616,18 +656,21 @@ class DBManager {
         List<String> sensorList = getSensorList(ID);
         Connection con = null;
         PreparedStatement stmt = null;
+        int measurementID = getMeasurementID(ID);
 
         System.out.println(sensorList);
 
-        try{
-            for(String sensor : sensorList){
-                dropTable("data" + getDatalistID(ID, sensor));
-            }
+        for(String sensor : sensorList){
+            dropTable("data" + getDatalistID(ID, sensor));
+        }
 
+        try{
             con = connect();
             stmt = con.prepareStatement(command);
             stmt.setInt(1, ID);
             stmt.executeUpdate();
+
+            checkMeasurementClients(measurementID); // Check if measurement is dangling
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }finally {
@@ -758,6 +801,11 @@ class DBManager {
     }
 
 
+    /**
+     * Checks if the measurement has any connected watches left using it. If not it calls {@link DBManager#dropTable(String)}
+     * To delete the dangling measurement table
+     * @param measurementID Measurement ID
+     */
     private void checkMeasurementClients(int measurementID){
         String command = "SELECT * FROM measurements WHERE measurement_ID = ?";
         Connection con = null;
@@ -883,10 +931,81 @@ class DBManager {
      */
     Measurement getWatchMeasurement(int ID){
         int measurementID = getMeasurementID(ID);
+        System.out.println("Got measurement ID: " + measurementID);
         if(measurementID > -1){
             return getMeasurement(measurementID);
         }
         return null;
+    }
+
+
+    //TODO: adopt Comment class
+    void addComment(int ID, LocalTime timeStart, LocalTime timeEnd, String comment){
+        String command = "INSERT INTO comments VALUES(?, ?, ?, ?) ";
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try{
+            con = connect();
+            stmt = con.prepareStatement(command);
+
+            stmt.setInt(1, ID);
+            stmt.setTime(2, Time.valueOf(timeStart));
+            stmt.setTime(3, Time.valueOf(timeEnd));
+            stmt.setString(4, comment);
+            stmt.executeUpdate();
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
+        }
+    }
+
+    //TODO: adopt Comment class
+    List<Comment> getComments(int ID){
+        String command = "SELECT * FROM comments WHERE ID = ?";
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            con  = connect();
+            stmt = con.prepareStatement(command);
+            stmt.setInt(1, ID);
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                //TODO get results and put them into the Comment class
+            }
+            rs.close();
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
+        }
+        return null; // TODO: return the comment object
+    }
+
+
+    // TODO test this function
+    /**
+     * Removes all the comments associated to a watch
+     * @param ID Watch ID
+     */
+    void removeComments(int ID){
+        String command = "DELETE FROM comments WHERE ID = ?";
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try{
+            con = connect();
+            stmt = con.prepareStatement(command);
+            stmt.setInt(1, ID);
+            stmt.executeUpdate();
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }finally {
+            cleanup(con, stmt);
+        }
     }
 
 }

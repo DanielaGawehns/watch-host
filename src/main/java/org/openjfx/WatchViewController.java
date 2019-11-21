@@ -399,9 +399,10 @@ public class WatchViewController {
         Stage stage = new Stage();
         File selectedFile = fileChooser.showOpenDialog(stage);
 
-        readComments(selectedFile);
-
-        setComments();
+        if(selectedFile != null){
+            readComments(selectedFile);
+            setComments();
+        }
     }
 
 
