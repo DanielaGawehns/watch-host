@@ -53,7 +53,7 @@ public class CSV_writer {
                     }
                 }
             }
-            sb.append ("WatchID,Sensor,Date,Time)
+            sb.append ("WatchID,Sensor,Date,Time");
             for ( int i = 1 ; i < maxsize+1 ; i ++){
                 sb.append( COMMA_DELIMITER);
                 sb.append( "data");
