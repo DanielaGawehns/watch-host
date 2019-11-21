@@ -95,7 +95,6 @@
                      <children>
                         <Button mnemonicParsing="false" onAction="#optionsPressed" prefHeight="25.0" prefWidth="75.0" text="Options" />
                         <Button mnemonicParsing="false" onAction="#disconnectButtonPressed" text="Disconnect" />
-                        <Button mnemonicParsing="false" text="Disconnect" />
                         <Button mnemonicParsing="false" text="Add Comments" onAction="#addComments" />
                      </children>
                      <HBox.margin>

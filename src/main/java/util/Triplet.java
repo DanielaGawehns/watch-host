@@ -1,4 +1,4 @@
-package org.openjfx;
+package util;
 
 /**
  * Utility class making pairs
