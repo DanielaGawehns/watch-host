@@ -116,8 +116,10 @@ public class SensorData {
     
     /**
      * Getter for {@link DataPoint} containing data from sensor
-     * /
-    public List<DataPoint> getRecords(){return records; }
+    */
+    public List<DataPoint> getRecords(){return records; 
+        
+    }
 
 
     /**
