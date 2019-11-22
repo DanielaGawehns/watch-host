@@ -385,6 +385,23 @@ public class WatchViewController {
     }
 
     /**
+     * Event for Export button.
+     */
+
+    public void exportCSVButtonPressed(){
+        Alert info = new Alert(Alert.AlertType.CONFIRMATION);
+        info.setTitle("Exporting to a CSV file...");
+        info.setHeaderText("This will store all the data in a CSV file");
+        info.setContentText("Press OK to continue");
+        Optional<ButtonType> result = info.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            CSV_writer writer = new CSV_writer("filename.csv", watch);
+            writer.WriteFile();
+        }
+    }
+
+
+    /**
      * Event for Add Comments button
      */
     public void addComments() {
