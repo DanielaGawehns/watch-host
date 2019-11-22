@@ -12,40 +12,45 @@ public class CSV_writer {
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_SEPARATOR = "\n";
     //private static final String FILE_HEADER = "WatchID,Sensor,Date,Time,Data1,Data2,Data3";
+    private String filename;
+    private Smartwatch watch;
+
+    private List<String> allSensors = new ArrayList<>() {
+        {
+            add("ACCELEROMETER");
+            add("GRAVITY");
+            add("LINEAR ACCELERATION");
+            add("MAGNETIC");
+            add("ROTATION VECTOR");
+            add("ORIENTATION");
+            add("GYROSCOPE");
+            add("LIGHT");
+            add("PROXIMITY");
+            add("PRESSURE");
+            add("ULTRAVIOLET");
+            add("TEMPERATURE");
+            add("HUMIDITY");
+            add("HRM");
+        }
+    };
+
+    public CSV_writer(String _filename , Smartwatch _Watch){
+        filename = _filename;
+        watch = _Watch;
+    }
 
 
-    public CSV_writer(String fileName, Smartwatch _Watch ){
-
-
-
-        private List<String> allSensors = new ArrayList<>() {
-            {
-                add("ACCELEROMETER");
-                add("GRAVITY");
-                add("LINEAR ACCELERATION");
-                add("MAGNETIC");
-                add("ROTATION VECTOR");
-                add("ORIENTATION");
-                add("GYROSCOPE");
-                add("LIGHT");
-                add("PROXIMITY");
-                add("PRESSURE");
-                add("ULTRAVIOLET");
-                add("TEMPERATURE");
-                add("HUMIDITY");
-                add("HRM");
-            }
-        };
+    public void WriteFile( ){
 
         FileWriter fileWriter = null;
         StringBuilder sb = new StringBuilder();
         int maxsize = 0; //size of data point
 
         try{
-            fileWriter = new FileWriter(fileName);
+            fileWriter = new FileWriter(filename);
 
             for ( int i = 0; i < allSensors.size() ; i ++) {
-                SensorData _SensorData = _Watch.getSensorData(allSensors.get(i));
+                SensorData _SensorData = watch.getSensorData(allSensors.get(i));
                 List<DataPoint> _DataPoint = _SensorData.getRecords();
                 for (int j = 0; j < _SensorData.size(); j++) {
                     if (_DataPoint.get(j).getDataList().size() > maxsize){
@@ -65,10 +70,10 @@ public class CSV_writer {
             fileWriter.append(NEW_LINE_SEPARATOR);
 
             for ( int i = 0; i < allSensors.size() ; i ++) {
-                SensorData _SensorData = _Watch.getSensorData(allSensors.get(i));
+                SensorData _SensorData = watch.getSensorData(allSensors.get(i));
                 List<DataPoint> _DataPoint = _SensorData.getRecords();
                 for (int j = 0; j < _SensorData.size(); j++) {
-                    sb.append(_Watch.getWatchID());
+                    sb.append(watch.getWatchID());
                     sb.append(COMMA_DELIMITER);
                     sb.append(_DataPoint.get(j).getSensorName());     // is datapoint gelijk te zetten in csv?
                     sb.append(COMMA_DELIMITER);
