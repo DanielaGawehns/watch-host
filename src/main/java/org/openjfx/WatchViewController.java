@@ -12,6 +12,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -102,17 +103,15 @@ public class WatchViewController {
     private VBox commentsBox;
 
     /**
-     * Stores the comments from the researcher about the measurement, uses {@link Triplet}
-     * The first item is the starting time, second is the end time, third is the actual comment of what occured
+     * Stores comments about the current watch and measurement using {@link Comments}
      */
-    private List<Triplet<Date, Date, String>> comments = new ArrayList<>();
+    private Comments comments = new Comments();
 
     /**
      * Linechart for the PRESSURE
      */
     @FXML
     public LineChart<String, Number> pressureChart;
-
 
     /**
      * The {@link Smartwatch} of which the overview is showed
@@ -429,27 +428,40 @@ public class WatchViewController {
 
     /**
      * Reads a csv file, parses and stores the data
+     * If comments were already present, overwrite them with the content of the new file
      * @param file Specifies file to read from
      */
     void readComments(File file){
+        // todo: store old comments to restore if new file is empty or invalid
+        // clear comments and commentbox before reading in a new file
+        if (!comments.isEmpty()) {
+            comments.clearAll();
+            commentsBox.getChildren().clear();
+        }
+
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(file))) { // read in file
             String line;
             while ((line = br.readLine()) != null) { // go through all the lines
                 String[] record = line.split(COMMA_DELIMITER);
+                System.out.println(record[0]);
 
-                if (record.length < 3) {
+                if (record.length < 4) {
                     System.out.println("Record error");
                     throw new ParseException("Length of records too small", 0);
                 }
 
                 try {
-                    Date t1 = new SimpleDateFormat("kk:mm:ss").parse(record[0]);
-                    Date t2 = new SimpleDateFormat("kk:mm:ss").parse(record[1]);
+                    Date t1 = new SimpleDateFormat("kk:mm:ss").parse(record[0].trim());
+                    Date t2 = new SimpleDateFormat("kk:mm:ss").parse(record[1].trim());
                     // todo: also require date?
-                    String body = record[2];
+                    String body = record[2].trim();
+                    String type = record[3].trim();
 
-                    Triplet<Date, Date, String> comment = new Triplet<>(t1, t2, body);
-                    comments.add(comment);
+                    comments.addStartingTime(t1);
+                    comments.addEndTime(t2);
+                    comments.addCommentBody(body);
+                    comments.addCommentType(type);
+
                 } catch (IllegalArgumentException | NullPointerException e) {
                     // todo: notify user of invalid input file
                     e.printStackTrace();
@@ -465,24 +477,42 @@ public class WatchViewController {
      * Places the comments from {@link WatchViewController#comments} into {@link WatchViewController#commentsBox} to display them on the screen
      */
     void setComments() {
-        for (var comment : comments) {
-            VBox vbox = new VBox();
-            HBox hbox = new HBox();
-
-            Date t1Date = comment.first();
-            Date t2Date = comment.second();
+        for (int i = 0; i < comments.size(); i++) {
+            Date t1Date = comments.getStartingTimeI(i);
+            Date t2Date = comments.getEndTimeI(i);
             DateFormat timeFormat = new SimpleDateFormat("kk:mm:ss");
             String t1String = timeFormat.format(t1Date);
             String t2String = timeFormat.format(t2Date);
-            Label t1 = new Label("\t" + t1String + " - ");
+            Label t1 = new Label("  " + t1String + " - ");
             Label t2 = new Label(t2String + "\t");
-            Label body = new Label(comment.third());
+
+            String bodyString = comments.getCommentBodyI(i);
+            Label body = new Label(bodyString);
+
+            Region leadingfiller = new Region();
+            leadingfiller.setMinWidth(40.0);
+
+            String type = comments.getCommentTypeI(i);
+            Label typecolor = new Label();
+            typecolor.setMinWidth(40.0);
+            typecolor.setMinHeight(5.0);
+            if (type.equals("planned")) {
+                typecolor.setStyle("-fx-fill: cornflowerblue;");
+                typecolor.setStyle("-fx-background-color: cornflowerblue;");
+            } else {
+                typecolor.setStyle("-fx-fill: coral;");
+                typecolor.setStyle("-fx-background-color: coral;");
+            }
+
+            VBox vbox = new VBox();
+            HBox hbox = new HBox();
 
             System.out.println("t1: " + t1String);
             System.out.println("t2: " + t2String);
-            System.out.println("body: " + comment.third());
+            System.out.println("body: " + bodyString);
+            System.out.println("type: " + type);
 
-            hbox.getChildren().addAll(t1, t2, body);
+            hbox.getChildren().addAll(leadingfiller, typecolor, t1, t2, body);
             hbox.setAlignment(Pos.CENTER_LEFT);
 
             vbox.getChildren().addAll(hbox);
