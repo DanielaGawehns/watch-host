@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import util.Util;
 
 import java.io.IOException;
 import java.time.LocalTime;
@@ -118,7 +119,7 @@ public class WatchViewController {
     /**
      * Manager for managing the Database connection {@link DBManager}
      */
-    static DBManager dbManager = new DBManager();
+    private static DBManager dbManager = new DBManager();
 
     /**
      * Controller of {@link WatchOptionsController}
@@ -199,9 +200,7 @@ public class WatchViewController {
         pane.setScaleShape(false);
         pane.setStyle("-fx-background-color: transparent");
 
-        pane.setOnMouseEntered(mouseEvent -> {
-            pane.setStyle("-fx-background-color: grey");
-        });
+        pane.setOnMouseEntered(mouseEvent -> pane.setStyle("-fx-background-color: grey"));
 
 
         pane.setOnMouseExited(mouseEvent -> {
@@ -209,9 +208,7 @@ public class WatchViewController {
             label.setText("");
         });
 
-        pane.setOnMouseClicked(mouseEvent -> {
-            pinWindow(pane, label);
-        });
+        pane.setOnMouseClicked(mouseEvent -> pinWindow(pane, label));
 
         label.setLayoutY(-10);
 
@@ -244,18 +241,14 @@ public class WatchViewController {
             label.setText(field.getText());
             // TODO: save label to csv
             pane.setStyle("-fx-background-color: red");
-            pane.setOnMouseExited(mouseEvent -> {
-                pane.setStyle("-fx-background-color: red");
-            });
+            pane.setOnMouseExited(mouseEvent -> pane.setStyle("-fx-background-color: red"));
             dialog.close();
         });
 
         buttonRemove.setOnAction(e -> {
             label.setText("");
             pane.setStyle("-fx-background-color: transparent");
-            pane.setOnMouseExited(mouseEvent -> {
-                pane.setStyle("-fx-background-color: transparent");
-            });
+            pane.setOnMouseExited(mouseEvent -> pane.setStyle("-fx-background-color: transparent"));
             dialog.close();
         });
     }
@@ -329,38 +322,14 @@ public class WatchViewController {
     }
 
 
-    /**
-     * Shows the watch options menu controlled by {@link WatchOptionsController}
-     * @throws IOException Thrown by {@code FXMLLoader}
-     */
-    private void showOptions() throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
-        Parent watchView = loader.load();
-        Stage stage = new Stage();
-        stage.setOnCloseRequest(e -> { //TODO: maybe change this
-            watch.setWatchID(watchOptionsController.getWatchID());
-            watch.setWatchName(watchOptionsController.getWatchName());
-            dbManager.setWatchName(watchOptionsController.getWatchID(), watchOptionsController.getWatchName());
-
-            System.out.println("Setting watch info: " + watch.getWatchID() + " " + watch.getWatchName());
-        });
-        stage.setTitle("Watch Options");
-        stage.setScene(new Scene(watchView));
-        stage.setResizable(false);
-        watchOptionsController = loader.getController();
-        watchOptionsController.setWatchData(watch.getWatchID(), watch.getWatchName());
-
-        stage.show();
-    }
 
 
     /**
      * Event for the options button
-     * @throws IOException Thrown by {@link WatchViewController#showOptions()}
      */
-    public void optionsPressed() throws IOException {
-        showOptions();
+    public void optionsPressed() {
+        primaryController.showOptions(watch);
     }
 
 
@@ -369,10 +338,9 @@ public class WatchViewController {
      * to remove the watch
      */
     public void disconnectButtonPressed() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Disconnecting watch...");
-        alert.setHeaderText("This will remove ALL data about the watch");
-        alert.setContentText("Press OK to continue");
+        Alert alert = Util.printChoiceBox("Disconnecting watch...",
+                                        "This will remove ALL data about the watch",
+                                         "Press OK to continue");
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
@@ -495,9 +463,9 @@ public class WatchViewController {
 
 
     /**
-     * Places the comments from {@link WatchViewController#comments} into {@link WatchViewController#commentsBox} to display them on the screen
+     * Places the comments from {@link Smartwatch#comments} into {@link WatchViewController#commentsBox} to display them on the screen
      */
-    void setComments() {
+    private void setComments() {
         var comments = watch.getComments();
 
         for (Comment comment : comments) {
