@@ -1,23 +1,21 @@
 package org.openjfx;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalTime;
 
 /**
  * Class for storing comments about specific measurements of a specific watch
  */
-public class Comment {
+class Comment {
 
     /**
      * Stores the starting times from the comments
      */
-    private Date startingTime;
+    private LocalTime startingTime;
 
     /**
      * Stores the end times from the comments
      */
-    private Date endTime;
+    private LocalTime endTime;
 
     /**
      * Stores the text from the comments
@@ -33,13 +31,13 @@ public class Comment {
     /**
      * Getter for {@link Comment#startingTime}
      */
-    Date getStartingTime() { return startingTime; }
+    LocalTime getStartingTime() { return startingTime; }
 
 
     /**
      * Getter for {@link Comment#endTime}
      */
-    Date getEndTime() { return endTime; }
+    LocalTime getEndTime() { return endTime; }
 
 
     /**
@@ -56,13 +54,13 @@ public class Comment {
     /**
      * Setter for {@link Comment#startingTime}
      */
-    void setStartingTime(Date st) { this.startingTime = st; }
+    void setStartingTime(LocalTime st) { this.startingTime = st; }
 
 
     /**
      * Setter for {@link Comment#endTime}
      */
-    void setEndTime(Date et) { this.endTime = et; }
+    void setEndTime(LocalTime et) { this.endTime = et; }
 
 
     /**

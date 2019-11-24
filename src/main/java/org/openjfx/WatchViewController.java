@@ -21,6 +21,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import java.io.BufferedReader;
@@ -101,10 +103,6 @@ public class WatchViewController {
     @FXML
     private VBox commentsBox;
 
-    /**
-     * Stores comments about the current watch and measurement using {@link Comment}
-     */
-    private List<Comment> comments = new ArrayList<>();
 
     /**
      * Linechart for the PRESSURE
@@ -448,11 +446,14 @@ public class WatchViewController {
      * If comments were already present, overwrite them with the content of the new file
      * @param file Specifies file to read from
      */
-    void readComments(File file){
+    private void readComments(File file){
         // todo: store old comments to restore if new file is empty or invalid
         // clear comments and commentbox before reading in a new file
+        var comments = watch.getComments();
+
         if (!comments.isEmpty()) {
-            comments.clear();
+            watch.getComments().clear();
+            dbManager.removeComments(watch.getWatchID());
             commentsBox.getChildren().clear();
         }
 
@@ -468,8 +469,8 @@ public class WatchViewController {
                 }
 
                 try {
-                    Date t1 = new SimpleDateFormat("kk:mm:ss").parse(record[0].trim());
-                    Date t2 = new SimpleDateFormat("kk:mm:ss").parse(record[1].trim());
+                    LocalTime t1 = LocalTime.parse(record[0].trim());
+                    LocalTime t2 = LocalTime.parse(record[1].trim());
                     // todo: also require date?
                     String body = record[2].trim();
                     String type = record[3].trim();
@@ -479,7 +480,8 @@ public class WatchViewController {
                     comment.setEndTime(t2);
                     comment.setCommentBody(body);
                     comment.setCommentType(type);
-                    comments.add(comment);
+                    watch.addComment(comment);
+                    dbManager.addComment(watch.getWatchID(), comment);
 
                 } catch (IllegalArgumentException | NullPointerException e) {
                     // todo: notify user of invalid input file
@@ -496,13 +498,13 @@ public class WatchViewController {
      * Places the comments from {@link WatchViewController#comments} into {@link WatchViewController#commentsBox} to display them on the screen
      */
     void setComments() {
-        for (int i = 0; i < comments.size(); i++) {
-            Comment comment = comments.get(i);
-            Date t1Date = comment.getStartingTime();
-            Date t2Date = comment.getEndTime();
-            DateFormat timeFormat = new SimpleDateFormat("kk:mm:ss");
-            String t1String = timeFormat.format(t1Date);
-            String t2String = timeFormat.format(t2Date);
+        var comments = watch.getComments();
+
+        for (Comment comment : comments) {
+            LocalTime t1Date = comment.getStartingTime();
+            LocalTime t2Date = comment.getEndTime();
+            String t1String = t1Date.toString();
+            String t2String = t2Date.toString();
             Label t1 = new Label("  " + t1String + " - ");
             Label t2 = new Label(t2String + "\t");
 

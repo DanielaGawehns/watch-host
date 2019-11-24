@@ -2,7 +2,6 @@ package org.openjfx;
 
 import util.Pair;
 
-import javax.xml.stream.events.Comment;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -257,6 +256,7 @@ class DBManager {
 
                     }
                     watch.setMeasurement(getWatchMeasurement(ID));
+                    watch.setComments(getComments(ID));
                     System.out.println("Got watch with ID " + ID);
                 }else{
                     System.err.println("No watchData found for watch with ID: " + ID);
@@ -939,9 +939,8 @@ class DBManager {
     }
 
 
-    //TODO: adopt Comment class
-    void addComment(int ID, LocalTime timeStart, LocalTime timeEnd, String comment){
-        String command = "INSERT INTO comments VALUES(?, ?, ?, ?) ";
+    void addComment(int ID, org.openjfx.Comment comment){
+        String command = "INSERT INTO comments VALUES(?, ?, ?, ?, ?)";
         Connection con = null;
         PreparedStatement stmt = null;
 
@@ -950,9 +949,10 @@ class DBManager {
             stmt = con.prepareStatement(command);
 
             stmt.setInt(1, ID);
-            stmt.setTime(2, Time.valueOf(timeStart));
-            stmt.setTime(3, Time.valueOf(timeEnd));
-            stmt.setString(4, comment);
+            stmt.setTime(2, Time.valueOf(comment.getStartingTime()));
+            stmt.setTime(3, Time.valueOf(comment.getEndTime()));
+            stmt.setString(4, comment.getCommentBody());
+            stmt.setString(5, comment.getCommentType());
             stmt.executeUpdate();
         }catch (SQLException e){
             System.out.println(e.getMessage());
@@ -961,11 +961,13 @@ class DBManager {
         }
     }
 
-    //TODO: adopt Comment class
+
     List<Comment> getComments(int ID){
         String command = "SELECT * FROM comments WHERE ID = ?";
         Connection con = null;
         PreparedStatement stmt = null;
+        List<org.openjfx.Comment> comments = new ArrayList<>();
+        org.openjfx.Comment comment;
 
         try {
             con  = connect();
@@ -974,7 +976,13 @@ class DBManager {
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()){
-                //TODO get results and put them into the Comment class
+                comment = new org.openjfx.Comment();
+                comment.setStartingTime(rs.getTime(2).toLocalTime());
+                comment.setEndTime(rs.getTime(3).toLocalTime());
+                comment.setCommentBody(rs.getString(4));
+                comment.setCommentType(rs.getString(5));
+
+                comments.add(comment);
             }
             rs.close();
         }catch(SQLException e){
@@ -982,7 +990,7 @@ class DBManager {
         }finally {
             cleanup(con, stmt);
         }
-        return null; // TODO: return the comment object
+        return comments;
     }
 
 
