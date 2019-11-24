@@ -85,7 +85,7 @@ public class MeasurementController {
     /**
      * List of sensors which are selected
      */
-     private List<Pair<String, Integer>> selectedSensors = new ArrayList<>();
+    private List<Pair<String, Integer>> selectedSensors = new ArrayList<>();
 
     /**
      * List of {@link Smartwatch} which are selected to perform the measurement

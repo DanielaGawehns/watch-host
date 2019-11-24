@@ -19,7 +19,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import util.Triplet;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -103,9 +102,9 @@ public class WatchViewController {
     private VBox commentsBox;
 
     /**
-     * Stores comments about the current watch and measurement using {@link Comments}
+     * Stores comments about the current watch and measurement using {@link Comment}
      */
-    private Comments comments = new Comments();
+    private List<Comment> comments = new ArrayList<>();
 
     /**
      * Linechart for the PRESSURE
@@ -452,7 +451,7 @@ public class WatchViewController {
         // todo: store old comments to restore if new file is empty or invalid
         // clear comments and commentbox before reading in a new file
         if (!comments.isEmpty()) {
-            comments.clearAll();
+            comments.clear();
             commentsBox.getChildren().clear();
         }
 
@@ -474,10 +473,12 @@ public class WatchViewController {
                     String body = record[2].trim();
                     String type = record[3].trim();
 
-                    comments.addStartingTime(t1);
-                    comments.addEndTime(t2);
-                    comments.addCommentBody(body);
-                    comments.addCommentType(type);
+                    Comment comment = new Comment();
+                    comment.setStartingTime(t1);
+                    comment.setEndTime(t2);
+                    comment.setCommentBody(body);
+                    comment.setCommentType(type);
+                    comments.add(comment);
 
                 } catch (IllegalArgumentException | NullPointerException e) {
                     // todo: notify user of invalid input file
@@ -495,21 +496,22 @@ public class WatchViewController {
      */
     void setComments() {
         for (int i = 0; i < comments.size(); i++) {
-            Date t1Date = comments.getStartingTimeI(i);
-            Date t2Date = comments.getEndTimeI(i);
+            Comment comment = comments.get(i);
+            Date t1Date = comment.getStartingTime();
+            Date t2Date = comment.getEndTime();
             DateFormat timeFormat = new SimpleDateFormat("kk:mm:ss");
             String t1String = timeFormat.format(t1Date);
             String t2String = timeFormat.format(t2Date);
             Label t1 = new Label("  " + t1String + " - ");
             Label t2 = new Label(t2String + "\t");
 
-            String bodyString = comments.getCommentBodyI(i);
+            String bodyString = comment.getCommentBody();
             Label body = new Label(bodyString);
 
             Region leadingfiller = new Region();
             leadingfiller.setMinWidth(40.0);
 
-            String type = comments.getCommentTypeI(i);
+            String type = comment.getCommentType();
             Label typecolor = new Label();
             typecolor.setMinWidth(40.0);
             typecolor.setMinHeight(5.0);
