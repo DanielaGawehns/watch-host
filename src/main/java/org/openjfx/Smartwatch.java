@@ -69,7 +69,7 @@ class Smartwatch {
      * @param sensor The name of the sensor
      * @return The {@link SensorData} corresponding the the sensor name
      */
-    SensorData getSensorData(String sensor){
+    public SensorData getSensorData(String sensor){
         return sensorDataList.get(sensorMap.get(sensor));
     }
 

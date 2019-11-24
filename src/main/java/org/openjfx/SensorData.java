@@ -60,7 +60,7 @@ public class SensorData {
      * Gives the size of {@link SensorData#records}
      * @return Size of {@link SensorData#records} as an integer
      */
-    int size(){
+    public int size(){
         return records.size();
     }
 
@@ -112,6 +112,13 @@ public class SensorData {
      */
     int getWatchNumber() {
         return watchNumber;
+    }
+    
+    /**
+     * Getter for {@link DataPoint} containing data from sensor
+    */
+    public List<DataPoint> getRecords(){return records; 
+        
     }
 
 
