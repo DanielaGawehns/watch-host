@@ -7,7 +7,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -98,8 +100,14 @@ public class WatchViewController {
     /**
      * VBox in which to place the researchers comments
      */
+    private VBox commentsBox = new VBox();
+
+
+    /**
+     * VBox to contain the charts and comments
+     */
     @FXML
-    private VBox commentsBox;
+    private VBox charts;
 
     /**
      * Stores comments about the current watch and measurement using {@link Comment}
@@ -145,12 +153,12 @@ public class WatchViewController {
         setInfo();
 
         try {
-            fillChart(sensorChart, "HRM"); // fill Chart TODO: change parameter
-            //fillChart(pressureChart, "PRESSURE");
+            for (String sensor : watch.getSensorListFromMap()) {
+                placeChartOnScreen(sensor);
+            }
             setComments();
         }catch (Exception e){ // if data is not found
             System.out.println("No data found for watch: " + " and sensor: TEMP");
-            sensorChart.setDisable(true);
             return;
         }
         System.out.println("Done filling chart");
@@ -186,6 +194,67 @@ public class WatchViewController {
         }
     }
 
+
+    /**
+     * Creates a chart and fills it uing {@link WatchViewController#fillChart(LineChart, String)}. Then places the chart in {@link WatchViewController#charts} together with the comments from {@link WatchViewController#commentsBox} to display them on the screen
+     * @param sensorName the name of the sensor for which we want to make a chart
+     */
+    private void placeChartOnScreen(String sensorName) {
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Time");
+        NumberAxis yAxis = new NumberAxis();
+        switch (sensorName) {
+            case "HRM":
+                yAxis.setLabel("Heart Rate (BPM)");
+                break;
+            case "PRESSURE":
+                yAxis.setLabel("Pressure (Pa)");
+                break;
+            case "ACCELEROMETER":
+                yAxis.setLabel("Accelerometer (XX)");
+                break;
+            case "GRAVITY":
+                yAxis.setLabel("Gravity (XX)");
+                break;
+            case "LINEAR ACCELERATION":
+                yAxis.setLabel("Linear Acceleration (XX)");
+                break;
+            case "MAGNETIC":
+                yAxis.setLabel("Magnetic (XX)");
+                break;
+            case "ROTATION VECTOR":
+                yAxis.setLabel("Rotation Vector (XX)");
+                break;
+            case "ORIENTATION":
+                yAxis.setLabel("Orientation (XX)");
+                break;
+            case "GYROSCOPE":
+                yAxis.setLabel("Gyroscope (XX)");
+                break;
+            case "LIGHT":
+                yAxis.setLabel("Light (XX)");
+                break;
+            case "PROXIMITY":
+                yAxis.setLabel("Proximity (XX)");
+                break;
+            case "ULTRAVIOLET":
+                yAxis.setLabel("Ultraviolet (XX)");
+                break;
+            case "TEMPERATURE":
+                yAxis.setLabel("Temperature (XX)");
+                break;
+            case "HUMIDITY":
+                yAxis.setLabel("Humidity (XX)");
+                break;
+            default:
+                // todo: throw exception for invalid sensor?
+        }
+
+        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+        fillChart(chart, sensorName);
+        charts.getChildren().add(chart);
+        charts.getChildren().add(commentsBox);
+    }
 
 
     // TODO: maybe not needed
@@ -447,9 +516,9 @@ public class WatchViewController {
      * If comments were already present, overwrite them with the content of the new file
      * @param file Specifies file to read from
      */
-    void readComments(File file){
+    private void readComments(File file){
         // todo: store old comments to restore if new file is empty or invalid
-        // clear comments and commentbox before reading in a new file
+        // clear comments and commentsbox before reading in a new file
         if (!comments.isEmpty()) {
             comments.clear();
             commentsBox.getChildren().clear();
@@ -494,9 +563,8 @@ public class WatchViewController {
     /**
      * Places the comments from {@link WatchViewController#comments} into {@link WatchViewController#commentsBox} to display them on the screen
      */
-    void setComments() {
-        for (int i = 0; i < comments.size(); i++) {
-            Comment comment = comments.get(i);
+    private void setComments() {
+        for (Comment comment : comments) {
             Date t1Date = comment.getStartingTime();
             Date t2Date = comment.getEndTime();
             DateFormat timeFormat = new SimpleDateFormat("kk:mm:ss");

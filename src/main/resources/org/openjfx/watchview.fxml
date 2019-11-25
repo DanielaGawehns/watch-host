@@ -10,35 +10,7 @@
    <center>
       <ScrollPane fx:id="scrollMain" fitToWidth="true" hbarPolicy="NEVER" BorderPane.alignment="CENTER">
          <content>
-            <VBox alignment="CENTER">
-               <children>
-                  <LineChart fx:id="sensorChart" disable="true" title="Heart Rate">
-                     <xAxis>
-                        <CategoryAxis animated="false" label="Time" side="BOTTOM" />
-                     </xAxis>
-                     <yAxis>
-                        <NumberAxis animated="false" label="Heart Rate (BPM)" side="LEFT" />
-                     </yAxis>
-                  </LineChart>
-                  <VBox fx:id="commentsBox" />
-                  <LineChart fx:id="pressureChart" animated="false" createSymbols="false" disable="true" title="Pressure" verticalGridLinesVisible="false">
-                    <xAxis>
-                      <CategoryAxis animated="false" label="Time" side="BOTTOM" tickMarkVisible="false" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis animated="false" label="Pressure (Pa)" minorTickVisible="false" side="LEFT" />
-                    </yAxis>
-                  </LineChart>
-                  <LineChart disable="true" title="Gravity">
-                    <xAxis>
-                      <NumberAxis label="Time" side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis label="Gravity" side="LEFT" />
-                    </yAxis>
-                  </LineChart>
-               </children>
-            </VBox>
+            <VBox alignment="CENTER" fx:id="charts" />
          </content>
       </ScrollPane>
    </center>
