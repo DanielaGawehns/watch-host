@@ -1,10 +1,14 @@
-package org.openjfx;
+package org.openjfx.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import org.openjfx.DBManager;
+import org.openjfx.Measurement;
+import org.openjfx.Smartwatch;
+import org.openjfx.SmartwatchList;
 import util.Pair;
 import util.Util;
 

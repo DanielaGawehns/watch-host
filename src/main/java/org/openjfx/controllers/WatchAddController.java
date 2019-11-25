@@ -1,8 +1,10 @@
-package org.openjfx;
+package org.openjfx.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import org.openjfx.Smartwatch;
+import org.openjfx.WatchData;
 import util.IpValidator;
 import util.Util;
 

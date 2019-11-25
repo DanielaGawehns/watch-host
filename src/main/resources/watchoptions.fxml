@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.WatchOptionsController">
+
+<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.controllers.WatchOptionsController">
    <children>
       <HBox alignment="CENTER_RIGHT" spacing="10.0">
          <children>
             <Label text="Watch ID: " />
-            <Label fx:id="labelWatchID" prefHeight="17.0" prefWidth="149.0" text="WATCH ID" />
+            <TextField fx:id="textfieldWatchID" />
          </children>
       </HBox>
       <HBox alignment="CENTER_RIGHT" spacing="10.0">

@@ -1,4 +1,4 @@
-package org.openjfx;
+package org.openjfx.controllers;
 
 
 import javafx.fxml.FXML;
@@ -7,7 +7,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -19,11 +21,9 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import util.Util;
+import org.openjfx.*;
 
 import java.io.IOException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import java.io.BufferedReader;
@@ -101,9 +101,19 @@ public class WatchViewController {
     /**
      * VBox in which to place the researchers comments
      */
-    @FXML
-    private VBox commentsBox;
+    private VBox commentsBox = new VBox();
 
+
+    /**
+     * VBox to contain the charts and comments
+     */
+    @FXML
+    private VBox charts;
+
+    /**
+     * Stores comments about the current watch and measurement using {@link Comment}
+     */
+    private List<Comment> comments = new ArrayList<>();
 
     /**
      * Linechart for the PRESSURE
@@ -119,7 +129,7 @@ public class WatchViewController {
     /**
      * Manager for managing the Database connection {@link DBManager}
      */
-    private static DBManager dbManager = new DBManager();
+    static DBManager dbManager = new DBManager();
 
     /**
      * Controller of {@link WatchOptionsController}
@@ -144,12 +154,12 @@ public class WatchViewController {
         setInfo();
 
         try {
-            fillChart(sensorChart, "HRM"); // fill Chart TODO: change parameter
-            //fillChart(pressureChart, "PRESSURE");
+            for (String sensor : watch.getSensorListFromMap()) {
+                placeChartOnScreen(sensor);
+            }
             setComments();
         }catch (Exception e){ // if data is not found
             System.out.println("No data found for watch: " + " and sensor: TEMP");
-            sensorChart.setDisable(true);
             return;
         }
         System.out.println("Done filling chart");
@@ -186,6 +196,22 @@ public class WatchViewController {
     }
 
 
+    /**
+     * Creates a chart and fills it uing {@link WatchViewController#fillChart(LineChart, String)}. Then places the chart in {@link WatchViewController#charts} together with the comments from {@link WatchViewController#commentsBox} to display them on the screen
+     * @param sensorName the name of the sensor for which we want to make a chart
+     */
+    private void placeChartOnScreen(String sensorName) {
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Time");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel(Sensors.sensorNameToFriendlyString(sensorName));
+
+        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+        fillChart(chart, sensorName);
+        charts.getChildren().add(chart);
+        charts.getChildren().add(commentsBox);
+    }
+
 
     // TODO: maybe not needed
     /**
@@ -200,7 +226,9 @@ public class WatchViewController {
         pane.setScaleShape(false);
         pane.setStyle("-fx-background-color: transparent");
 
-        pane.setOnMouseEntered(mouseEvent -> pane.setStyle("-fx-background-color: grey"));
+        pane.setOnMouseEntered(mouseEvent -> {
+            pane.setStyle("-fx-background-color: grey");
+        });
 
 
         pane.setOnMouseExited(mouseEvent -> {
@@ -208,7 +236,9 @@ public class WatchViewController {
             label.setText("");
         });
 
-        pane.setOnMouseClicked(mouseEvent -> pinWindow(pane, label));
+        pane.setOnMouseClicked(mouseEvent -> {
+            pinWindow(pane, label);
+        });
 
         label.setLayoutY(-10);
 
@@ -241,14 +271,18 @@ public class WatchViewController {
             label.setText(field.getText());
             // TODO: save label to csv
             pane.setStyle("-fx-background-color: red");
-            pane.setOnMouseExited(mouseEvent -> pane.setStyle("-fx-background-color: red"));
+            pane.setOnMouseExited(mouseEvent -> {
+                pane.setStyle("-fx-background-color: red");
+            });
             dialog.close();
         });
 
         buttonRemove.setOnAction(e -> {
             label.setText("");
             pane.setStyle("-fx-background-color: transparent");
-            pane.setOnMouseExited(mouseEvent -> pane.setStyle("-fx-background-color: transparent"));
+            pane.setOnMouseExited(mouseEvent -> {
+                pane.setStyle("-fx-background-color: transparent");
+            });
             dialog.close();
         });
     }
@@ -322,14 +356,38 @@ public class WatchViewController {
     }
 
 
+    /**
+     * Shows the watch options menu controlled by {@link WatchOptionsController}
+     * @throws IOException Thrown by {@code FXMLLoader}
+     */
+    private void showOptions() throws IOException {
 
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
+        Parent watchView = loader.load();
+        Stage stage = new Stage();
+        stage.setOnCloseRequest(e -> { //TODO: maybe change this
+            watch.setWatchID(watchOptionsController.getWatchID());
+            watch.setWatchName(watchOptionsController.getWatchName());
+            dbManager.setWatchName(watchOptionsController.getWatchID(), watchOptionsController.getWatchName());
+
+            System.out.println("Setting watch info: " + watch.getWatchID() + " " + watch.getWatchName());
+        });
+        stage.setTitle("Watch Options");
+        stage.setScene(new Scene(watchView));
+        stage.setResizable(false);
+        watchOptionsController = loader.getController();
+        watchOptionsController.setWatchData(watch.getWatchID(), watch.getWatchName());
+
+        stage.show();
+    }
 
 
     /**
      * Event for the options button
+     * @throws IOException Thrown by {@link WatchViewController#showOptions()}
      */
-    public void optionsPressed() {
-        primaryController.showOptions(watch);
+    public void optionsPressed() throws IOException {
+        showOptions();
     }
 
 
@@ -338,9 +396,10 @@ public class WatchViewController {
      * to remove the watch
      */
     public void disconnectButtonPressed() {
-        Alert alert = Util.printChoiceBox("Disconnecting watch...",
-                                        "This will remove ALL data about the watch",
-                                         "Press OK to continue");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Disconnecting watch...");
+        alert.setHeaderText("This will remove ALL data about the watch");
+        alert.setContentText("Press OK to continue");
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
@@ -360,7 +419,7 @@ public class WatchViewController {
         info.setContentText("Press OK to continue");
         Optional<ButtonType> result = info.showAndWait();
         if (result.get() == ButtonType.OK) {
-            CSV_writer writer = new CSV_writer("filename.csv", watch);
+            var writer = new CSVWriter("filename.csv", watch);
             writer.WriteFile();
         }
     }
@@ -380,10 +439,9 @@ public class WatchViewController {
         Stage stage = new Stage();
         File selectedFile = fileChooser.showOpenDialog(stage);
 
-        if(selectedFile != null){
-            readComments(selectedFile);
-            setComments();
-        }
+        readComments(selectedFile);
+
+        setComments();
     }
 
 
@@ -416,12 +474,9 @@ public class WatchViewController {
      */
     private void readComments(File file){
         // todo: store old comments to restore if new file is empty or invalid
-        // clear comments and commentbox before reading in a new file
-        var comments = watch.getComments();
-
+        // clear comments and commentsbox before reading in a new file
         if (!comments.isEmpty()) {
-            watch.getComments().clear();
-            dbManager.removeComments(watch.getWatchID());
+            comments.clear();
             commentsBox.getChildren().clear();
         }
 
@@ -437,8 +492,8 @@ public class WatchViewController {
                 }
 
                 try {
-                    LocalTime t1 = LocalTime.parse(record[0].trim());
-                    LocalTime t2 = LocalTime.parse(record[1].trim());
+                    Date t1 = new SimpleDateFormat("kk:mm:ss").parse(record[0].trim());
+                    Date t2 = new SimpleDateFormat("kk:mm:ss").parse(record[1].trim());
                     // todo: also require date?
                     String body = record[2].trim();
                     String type = record[3].trim();
@@ -448,8 +503,7 @@ public class WatchViewController {
                     comment.setEndTime(t2);
                     comment.setCommentBody(body);
                     comment.setCommentType(type);
-                    watch.addComment(comment);
-                    dbManager.addComment(watch.getWatchID(), comment);
+                    comments.add(comment);
 
                 } catch (IllegalArgumentException | NullPointerException e) {
                     // todo: notify user of invalid input file
@@ -463,16 +517,15 @@ public class WatchViewController {
 
 
     /**
-     * Places the comments from {@link Smartwatch#comments} into {@link WatchViewController#commentsBox} to display them on the screen
+     * Places the comments from {@link WatchViewController#comments} into {@link WatchViewController#commentsBox} to display them on the screen
      */
     private void setComments() {
-        var comments = watch.getComments();
-
         for (Comment comment : comments) {
-            LocalTime t1Date = comment.getStartingTime();
-            LocalTime t2Date = comment.getEndTime();
-            String t1String = t1Date.toString();
-            String t2String = t2Date.toString();
+            Date t1Date = comment.getStartingTime();
+            Date t2Date = comment.getEndTime();
+            DateFormat timeFormat = new SimpleDateFormat("kk:mm:ss");
+            String t1String = timeFormat.format(t1Date);
+            String t2String = timeFormat.format(t2Date);
             Label t1 = new Label("  " + t1String + " - ");
             Label t2 = new Label(t2String + "\t");
 

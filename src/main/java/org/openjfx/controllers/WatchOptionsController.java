@@ -1,4 +1,4 @@
-package org.openjfx;
+package org.openjfx.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

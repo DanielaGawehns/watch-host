@@ -1,27 +1,27 @@
-package org.openjfx;
+package org.openjfx.controllers;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import util.Util;
+import org.openjfx.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 
 /**
@@ -29,7 +29,7 @@ import java.util.Optional;
  * Controller of primary.fxml
  * Houses the main components of the program
  */
-public class PrimaryController{
+public class PrimaryController {
 
     /**
      * Vbox containing the list of connected watches
@@ -71,7 +71,7 @@ public class PrimaryController{
     /**
      * Controller for watch register screen {@link WatchAddController}
      */
-    private WatchAddController watchAddController = new WatchAddController();
+    private WatchAddController watchAddController;
 
     /**
      * Which smartwatch is selected for charting
@@ -148,7 +148,7 @@ public class PrimaryController{
      */
     private void loadOverviewFXML() {
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("overview.fxml")); // load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane
@@ -164,7 +164,7 @@ public class PrimaryController{
      */
     void loadWatchFXML() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml")); // load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/watchview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
 
             watchController = loader.getController(); // set controller to controller of new file
@@ -186,7 +186,7 @@ public class PrimaryController{
      */
     private void loadMeasurementSetupFXML() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("measurement.fxml")); // load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/measurement.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             measurementController = loader.getController(); // set controller to controller of new file
             measurementController.setPrimaryController(this); // pass current Primary class to measurementController
@@ -237,10 +237,10 @@ public class PrimaryController{
         for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all folders in map 'folder'
             List<DataPoint> dataList = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
             System.out.println("Read list of size " + dataList.size());
-            Smartwatch watch = watches.getFromID(reader.getWatchNumber());
+            Smartwatch watch = watches.getWithID(reader.getWatchNumber());
             watch.addData(dataList); // add data stream to watch
             for(String sensor : watch.getSensorListFromMap()){
-                success = dbManager.insertDatalist(reader.getWatchNumber(), watches.getFromID(reader.getWatchNumber()).getSensorData(sensor));
+                success = dbManager.insertDatalist(reader.getWatchNumber(), watches.getWithID(reader.getWatchNumber()).getSensorData(sensor));
             }
             if(success == 0 && fileEntry.delete()) { // delete the file
                 System.out.println("File deleted!");
@@ -264,12 +264,11 @@ public class PrimaryController{
      */
     private void loadSideBar(){
         watchBar.getChildren().clear();
-        System.out.println("found " + watches.size() + " watches");
         for(int i = 0; i < watches.size(); i++){
             VBox vbox = new VBox();
             HBox hbox = new HBox();
             SplitMenuButton button = new SplitMenuButton();
-            Image image = new Image("/images/smartwatch.png");
+            Image image = new Image(getClass().getResource("/images/smartwatch.png").toExternalForm());
             ImageView imageView = new ImageView(image);
             int batteryLevel = watches.get(i).getBatteryPercentage();
             int batteryType;
@@ -282,32 +281,7 @@ public class PrimaryController{
                 watchlogoPressed(finalI);
             });
 
-            MenuItem options = new MenuItem("Options...");
-
-            int finalI1 = i;
-            options.setOnAction((ActionEvent event) ->{
-                System.out.println("Showing options for watch " + finalI1);
-                showOptions(watches.get(finalI1));
-            });
-
-            MenuItem disconnect = new MenuItem("Disconnect");
-
-            int finalI2 = i;
-            disconnect.setOnAction((ActionEvent event)->{
-                System.out.println("Disconnecting watch " + finalI2);
-                Alert alert = Util.printChoiceBox("Disconnecting watch...",
-                        "This will remove ALL data about the watch",
-                        "Press OK to continue");
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.get() == ButtonType.OK) {
-
-                    dbManager.removeSmartwatch(watches.get(finalI2).getWatchID());
-                    removeWatch(watches.get(finalI2).getWatchID());
-                }
-            });
-
-            button.getItems().addAll(options, disconnect);
+            button.getItems().addAll(new MenuItem("Options..."), new MenuItem("Disconnect"));
 
             if(batteryLevel < 20){
                 batteryType = 1;
@@ -317,7 +291,7 @@ public class PrimaryController{
                 batteryType = 3;
             }
 
-            Image imageBattery = new Image("/images/battery" + batteryType + ".png");
+            Image imageBattery = new Image(getClass().getResource("/images/battery" + batteryType + ".png").toExternalForm());
             ImageView imageViewBattery = new ImageView(imageBattery);
 
             Label label = new Label(batteryLevel + "%");
@@ -363,34 +337,5 @@ public class PrimaryController{
      */
     public void drawWatchAddScreen() {
         loadWatchAdd();
-    }
-
-    /**
-     * Shows the watch options menu controlled by {@link WatchOptionsController}
-     */
-    void showOptions(Smartwatch smartwatch) {
-       try {
-           FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
-           Parent watchView = loader.load();
-           WatchOptionsController watchOptionsController = loader.getController();
-           Stage stage = new Stage();
-
-           watchOptionsController.setWatchData(smartwatch);
-
-           stage.setTitle("Watch Options");
-           stage.setScene(new Scene(watchView));
-           stage.setResizable(false);
-           stage.show();
-
-           stage.setOnHiding(e -> {
-               System.out.println("CLOSED STAGE!");
-               if(currentWatch > 0 && currentWatch < watches.size()){
-                   loadWatchFXML();
-               }
-
-           });
-       }catch (IOException e){
-           e.printStackTrace();
-       }
     }
 }

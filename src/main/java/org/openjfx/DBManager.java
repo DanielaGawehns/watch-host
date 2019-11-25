@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Class for managing the connection between the front-end and the database
  */
-class DBManager {
+public class DBManager {
 
     /**
      * Set containing all the dataList ID's
@@ -193,7 +193,7 @@ class DBManager {
      * Gets all watches from the database. Used {@link DBManager#getWatch(int)}
      * @return {@link SmartwatchList} containing all the {@link Smartwatch} connected
      */
-    SmartwatchList getAllWatches(){
+    public SmartwatchList getAllWatches(){
         String command = "SELECT * FROM smartwatch";
         Connection con = null;
         PreparedStatement stmt = null;
@@ -340,7 +340,7 @@ class DBManager {
      * Inserts a new line into the {@code smartwatch} table containing the new watch info
      * @param watch Smartwatch to be added
      */
-    void insertWatch(Smartwatch watch){
+    public void insertWatch(Smartwatch watch){
         String command = "INSERT INTO smartwatch(ID, name) VALUES(?, ?)";
         Connection con = null;
         PreparedStatement stmt = null;
@@ -427,7 +427,7 @@ class DBManager {
      * @param ID Watch ID
      * @param name Watch name
      */
-    void setWatchName(int ID, String name){
+    public void setWatchName(int ID, String name){
         String command = "UPDATE smartwatch SET name = ? WHERE ID = ?";
         Connection con = null;
         PreparedStatement stmt = null;
@@ -455,7 +455,7 @@ class DBManager {
      * @param dataList {@link SensorData} holding all the data to be inserted
      * @return {@code 0} on success. {@code -1} on failure
      */
-    int insertDatalist(int ID, SensorData dataList) {
+    public int insertDatalist(int ID, SensorData dataList) {
         System.out.println("DB: insertDatalist");
         int dataID = getDatalistID(ID, dataList.getSensor()); // Check if dataListID exists
         int size = dataList.getDataFieldsNumber(); // Get size of dataList
@@ -650,7 +650,7 @@ class DBManager {
      * Removes a smartwatch from the database. Will also delete related sensors and data tables
      * @param ID watch ID
      */
-    void removeSmartwatch(int ID){
+    public void removeSmartwatch(int ID){
         System.out.println("DB: removeSmartwatch");
         String command = "DELETE FROM smartwatch WHERE ID = ?";
         List<String> sensorList = getSensorList(ID);
@@ -684,7 +684,7 @@ class DBManager {
      * @param IDList List of ID's of the watches to add the measurement to
      * @param measurement The measurement to add
      */
-    void addMeasurement(List<Integer> IDList, Measurement measurement){
+    public void addMeasurement(List<Integer> IDList, Measurement measurement){
         int measurementID = getNewDataID(measurementIDList);
 
         createMeasurementTable(measurementID);
@@ -781,7 +781,7 @@ class DBManager {
      * Disconnects a measurement from a watch. The measurement Table will NOT be deleted
      * @param ID Watch ID
      */
-    void removeMeasurementFromWatch(int ID){
+    public void removeMeasurementFromWatch(int ID){
         String command = "DELETE FROM measurements WHERE ID = ?";
         int measurementID = getMeasurementID(ID);
         Connection con = null;

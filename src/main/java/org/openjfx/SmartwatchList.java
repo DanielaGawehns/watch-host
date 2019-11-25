@@ -1,64 +1,57 @@
 package org.openjfx;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Class holding a list of {@link Smartwatch}
  */
-class SmartwatchList {
+public class SmartwatchList extends ArrayList<Smartwatch> {
+
+    public SmartwatchList() {
+        super();
+    }
 
     /**
-     * List of smartwatches connected {@link Smartwatch}
+     * Find the index of the watch per its ID.
+     * @param id The ID of the watch to find.
+     * @return -1 if the watch is not found, it's index in the list othewise.
      */
-    private static List<Smartwatch> watches = new ArrayList<>();
-
-
-    /**
-     * Add to the list
-     */
-    void add(Smartwatch watch){ watches.add(watch); }
-
-
-    /**
-     * Get from the list
-     * @param i Index
-     */
-    Smartwatch get(int i){ return watches.get(i); }
-
+    private int findWithID(int id) {
+        for (int i = 0; i < this.size(); i++) {
+            if (this.get(i).getWatchID() == id) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /**
      * Get from list
-     * @param ID Watch ID
+     * @param id Watch ID
      */
-    Smartwatch getFromID(int ID){
-        for(Smartwatch watch : watches){
-            if(watch.getWatchID() == ID){
-               // System.out.println("Watch's data set has size " + watch.getSensorData("HRM").size());
-                return watch;
-            }
+    public Smartwatch getWithID(int id){
+        int index = this.findWithID(id);
+        if (index == -1) {
+            return null;
         }
-        return null;
+
+        return this.get(index);
     }
 
-
     /**
-     * Size of the list
-     * @return Size as Integer
+     * Removes the watch with the given ID from the list.
+     * @param id The ID of the watch to remove.
+     * @throws IllegalArgumentException Throws illegal argument exception when there is no watch found with the given ID.
      */
-    int size(){ return watches.size(); }
-
-
-    /**
-     * Remove watch from list
-     * @param ID Watch ID
-     */
-    void remove(int ID){
-        for(int i = 0; i < size(); i++){
-            if(get(i).getWatchID() == ID){
-                watches.remove(i);
-                return;
-            }
+    public void removeWithID(int id) throws IllegalArgumentException {
+        int index = this.findWithID(id);
+        if (index == -1) {
+            throw new IllegalArgumentException("no watch found with given id");
         }
+
+        this.remove(index);
     }
 }

@@ -4,7 +4,7 @@ package org.openjfx;
 /**
  * Class for storing technical information about a smartwatch
  */
-class WatchData {
+public class WatchData {
 
     /**
      * The ID of the watch
@@ -48,7 +48,7 @@ class WatchData {
     /**
      * Constructor
      */
-    WatchData(int _watchID){
+    public WatchData(int _watchID){
         watchID = _watchID;
     }
 

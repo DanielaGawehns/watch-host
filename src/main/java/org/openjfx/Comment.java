@@ -1,21 +1,23 @@
 package org.openjfx;
 
-import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Class for storing comments about specific measurements of a specific watch
  */
-class Comment {
+public class Comment {
 
     /**
      * Stores the starting times from the comments
      */
-    private LocalTime startingTime;
+    private Date startingTime;
 
     /**
      * Stores the end times from the comments
      */
-    private LocalTime endTime;
+    private Date endTime;
 
     /**
      * Stores the text from the comments
@@ -31,46 +33,46 @@ class Comment {
     /**
      * Getter for {@link Comment#startingTime}
      */
-    LocalTime getStartingTime() { return startingTime; }
+    public Date getStartingTime() { return startingTime; }
 
 
     /**
      * Getter for {@link Comment#endTime}
      */
-    LocalTime getEndTime() { return endTime; }
+    public Date getEndTime() { return endTime; }
 
 
     /**
      * Getter for {@link Comment#commentBody}
      */
-    String getCommentBody() { return commentBody; }
+    public String getCommentBody() { return commentBody; }
 
 
     /**
      * Setter for {@link Comment#commentType}
      */
-    String getCommentType() { return commentType; }
+    public String getCommentType() { return commentType; }
 
     /**
      * Setter for {@link Comment#startingTime}
      */
-    void setStartingTime(LocalTime st) { this.startingTime = st; }
+    public void setStartingTime(Date st) { this.startingTime = st; }
 
 
     /**
      * Setter for {@link Comment#endTime}
      */
-    void setEndTime(LocalTime et) { this.endTime = et; }
+    public void setEndTime(Date et) { this.endTime = et; }
 
 
     /**
      * Setter for {@link Comment#commentBody}
      */
-    void setCommentBody(String cb) { this.commentBody = cb; }
+    public void setCommentBody(String cb) { this.commentBody = cb; }
 
 
     /**
      * Setter for {@link Comment#commentType}
      */
-    void setCommentType(String ct) { this.commentType = ct; }
+    public void setCommentType(String ct) { this.commentType = ct; }
 }

@@ -8,7 +8,7 @@ import java.util.List;
  * For storing a data point gathered from a sensor
  * Uses the format: SENSORNAME, DATE, TIME, Double(s)
  */
-class DataPoint {
+public class DataPoint {
 
     /**
      * Name of the sensor from which the data came

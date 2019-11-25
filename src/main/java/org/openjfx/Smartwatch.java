@@ -14,7 +14,7 @@ import java.util.TreeSet;
 /**
  * Class holding all smartwatch data
  */
-class Smartwatch {
+public class Smartwatch {
 
     /**
      * Data about the watch {@link WatchData}
@@ -32,14 +32,9 @@ class Smartwatch {
     private String watchName = "NONAME";
 
     /**
-     * List of {@link SensorData} containing data of all the sensors available
+     * Map to map sensor name string to a {@link SensorData} instance containing data of all the sensors available
      */
-    private List<SensorData> sensorDataList = new ArrayList<>();
-
-    /**
-     * Map to map sensor name string to integer index for {@link Smartwatch#sensorDataList}
-     */
-    private Map<String, Integer> sensorMap = new HashMap<>();
+    private Map<String, SensorData> sensorMap = new HashMap<>();
 
     /**
      * The current measurement which is being performed by the watch
@@ -55,7 +50,7 @@ class Smartwatch {
     /**
      * Constructor
      */
-    Smartwatch(WatchData _data, String _name){
+    public Smartwatch(WatchData _data, String _name){
         System.out.println("making smartwatch");
         watchData = _data;
         if(!_name.isEmpty()){
@@ -75,7 +70,7 @@ class Smartwatch {
      * @return The {@link SensorData} corresponding the the sensor name
      */
     public SensorData getSensorData(String sensor){
-        return sensorDataList.get(sensorMap.get(sensor));
+        return sensorMap.get(sensor);
     }
 
 
@@ -83,7 +78,7 @@ class Smartwatch {
      * Gets {@link WatchData#watchID} from {@link Smartwatch#watchData}
      * @return {@link WatchData#watchID} as a integer
      */
-    int getWatchID() {
+    public int getWatchID() {
         return watchData.getWatchID();
     }
 
@@ -92,51 +87,51 @@ class Smartwatch {
      * Sets {@link WatchData#watchID} from {@link Smartwatch#watchData}
      * @param ID The value to set {@link WatchData#watchID}
      */
-    void setWatchID(int ID) { watchData.setWatchID(ID); }
+    public void setWatchID(int ID) { watchData.setWatchID(ID); }
 
 
     /**
      * Gets {@link WatchData#batteryPercentage} from {@link Smartwatch#watchData}
      * @return {@link WatchData#batteryPercentage} as a integer
      */
-    int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
+    public int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
 
 
     /**
      * Getter for {@link Smartwatch#watchData}
      */
-    WatchData getWatchData() { return watchData; }
+    public WatchData getWatchData() { return watchData; }
 
 
     /**
      * Getter for {@link Smartwatch#watchData}
      */
-    String getWatchName() { return watchName; }
+    public String getWatchName() { return watchName; }
 
 
     /**
      * Setter for {@link Smartwatch#watchName}
      */
-    void setWatchName(String name) { watchName = name; }
+    public void setWatchName(String name) { watchName = name; }
 
 
     /**
      * Setter for {@link Smartwatch#measurement}
      */
-    void setMeasurement(Measurement m) { measurement = m; }
+    public void setMeasurement(Measurement m) { measurement = m; }
 
 
     /**
      * Getter for {@link Smartwatch#measurement}
      */
-    Measurement getMeasurement() { return measurement; }
+    public Measurement getMeasurement() { return measurement; }
 
 
     /**
      * Adds new {@link DataPoint}(s) to the right {@link SensorData#records} in {@link Smartwatch#sensorDataList}
      * @param dataList List of {@link DataPoint}(s) to be added. The points can be from any supported sensor.
      */
-    void addData(List<DataPoint> dataList){
+    public void addData(List<DataPoint> dataList){
         SortedSet<String> sensorDataEdited = new TreeSet<>();
         String sensor;
 
@@ -145,15 +140,19 @@ class Smartwatch {
                 System.out.println("Added sensor: " + dataPoint.getSensorName() + " for watch " + getWatchID());
                 addSensor(dataPoint.getSensorName());
             }
-            if(!sensorDataList.get(sensorMap.get(dataPoint.getSensorName())).contains(dataPoint.getDate(), dataPoint.getTime())){
-                sensorDataList.get(sensorMap.get(dataPoint.getSensorName())).add(dataPoint);
+
+            var sensorData = sensorMap.get(dataPoint.getSensorName());
+            if (!sensorData.contains(dataPoint.getDate(), dataPoint.getTime())) {
+                sensorData.add(dataPoint);
                 sensorDataEdited.add(dataPoint.getSensorName());
             }
         }
 
-        for(int i = 0; i < sensorDataEdited.size(); i++){
+        // ?!?!?!?!?!?
+
+        for (int i = 0; i < sensorDataEdited.size(); i++){
             sensor = sensorDataEdited.first();
-            sensorDataList.get(sensorMap.get(sensor)).mergeDuplicates();
+            sensorMap.get(sensor).mergeDuplicates();
             sensorDataEdited.remove(sensor);
         }
     }
@@ -164,7 +163,7 @@ class Smartwatch {
      * @param dataList Data that will be set
      */
     void setData(SensorData dataList){
-        sensorDataList.set(sensorMap.get(dataList.getSensor()), dataList);
+        sensorMap.put(dataList.getSensor(), dataList);
     }
 
 
@@ -172,7 +171,7 @@ class Smartwatch {
      * Get a list with sensors from the watch
      * @return List of Strings containing names of the sensors
      */
-    List<String> getSensorListFromMap(){
+    public List<String> getSensorListFromMap(){
         return new ArrayList<>(sensorMap.keySet());
     }
 
@@ -182,10 +181,10 @@ class Smartwatch {
      * @param sensor Name of the sensor
      */
     void addSensor(String sensor){
-        if(!sensorMap.containsKey(sensor)) {
-            sensorMap.put(sensor, sensorMap.size());
+        if (!sensorMap.containsKey(sensor)) {
             System.out.println("Put sensor " + sensor + " place " + (sensorMap.size() - 1));
-            sensorDataList.add(new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor))); // TODO: get the datalist size from input file
+            var data = new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor));
+            sensorMap.put(sensor, data);
         }
     }
 
@@ -208,37 +207,3 @@ class Smartwatch {
      */
     void setComments(List<Comment> _comments){ comments = _comments; }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
