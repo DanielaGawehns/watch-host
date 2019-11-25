@@ -3,6 +3,8 @@ package org.openjfx.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.openjfx.DBManager;
+import org.openjfx.Smartwatch;
 import util.Util;
 
 

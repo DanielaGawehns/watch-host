@@ -6,10 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Separator;
-import javafx.scene.control.SplitMenuButton;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -17,11 +14,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.openjfx.*;
+import util.Util;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 /**
@@ -29,7 +28,7 @@ import java.util.Objects;
  * Controller of primary.fxml
  * Houses the main components of the program
  */
-public class PrimaryController {
+public class PrimaryController{
 
     /**
      * Vbox containing the list of connected watches
@@ -71,7 +70,7 @@ public class PrimaryController {
     /**
      * Controller for watch register screen {@link WatchAddController}
      */
-    private WatchAddController watchAddController;
+    private WatchAddController watchAddController = new WatchAddController();
 
     /**
      * Which smartwatch is selected for charting
@@ -121,7 +120,7 @@ public class PrimaryController {
      * Removes a watch from {@link PrimaryController#watches} and reloads the sideBar to update
      * @param ID Watch ID
      */
-    void removeWatch(int ID){
+    public void removeWatch(int ID){
         watches.remove(ID);
         loadSideBar();
     }
@@ -133,8 +132,8 @@ public class PrimaryController {
      * @return True if ID is not used. False if the ID is already in use
      */
     boolean idNotUsed(int ID){
-        for (int i = 0; i < watches.size(); i++) {
-            if (watches.get(i).getWatchID() == ID) {
+        for (Smartwatch watch : watches) {
+            if (watch.getWatchID() == ID) {
                 return false;
             }
         }
@@ -162,7 +161,7 @@ public class PrimaryController {
      * Loads the watch view (watchView.fxml) into the {@link PrimaryController#view}.
      * Also binds the width of the overview to the {@link PrimaryController#view} and sends the {@link Smartwatch} data to be displayed to the {@link WatchViewController}
      */
-    void loadWatchFXML() {
+    public void loadWatchFXML() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/watchview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
@@ -281,7 +280,32 @@ public class PrimaryController {
                 watchlogoPressed(finalI);
             });
 
-            button.getItems().addAll(new MenuItem("Options..."), new MenuItem("Disconnect"));
+            MenuItem options = new MenuItem("Options...");
+
+            int finalI1 = i;
+            options.setOnAction((ActionEvent event) ->{
+                System.out.println("Showing options for watch " + finalI1);
+                showOptions(watches.get(finalI1));
+            });
+
+            MenuItem disconnect = new MenuItem("Disconnect");
+
+            int finalI2 = i;
+            disconnect.setOnAction((ActionEvent event)->{
+                System.out.println("Disconnecting watch " + finalI2);
+                Alert alert = Util.printChoiceBox("Disconnecting watch...",
+                        "This will remove ALL data about the watch",
+                        "Press OK to continue");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+
+                    dbManager.removeSmartwatch(watches.get(finalI2).getWatchID());
+                    removeWatch(watches.get(finalI2).getWatchID());
+                }
+            });
+
+            button.getItems().addAll(options, disconnect);
 
             if(batteryLevel < 20){
                 batteryType = 1;
@@ -337,5 +361,34 @@ public class PrimaryController {
      */
     public void drawWatchAddScreen() {
         loadWatchAdd();
+    }
+
+    /**
+     * Shows the watch options menu controlled by {@link WatchOptionsController}
+     */
+    public void showOptions(Smartwatch smartwatch) {
+       try {
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
+           Parent watchView = loader.load();
+           WatchOptionsController watchOptionsController = loader.getController();
+           Stage stage = new Stage();
+
+           watchOptionsController.setWatchData(smartwatch);
+
+           stage.setTitle("Watch Options");
+           stage.setScene(new Scene(watchView));
+           stage.setResizable(false);
+           stage.show();
+
+           stage.setOnHiding(e -> {
+               System.out.println("CLOSED STAGE!");
+               if(currentWatch > 0 && currentWatch < watches.size()){
+                   loadWatchFXML();
+               }
+
+           });
+       }catch (IOException e){
+           e.printStackTrace();
+       }
     }
 }

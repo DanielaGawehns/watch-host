@@ -192,14 +192,14 @@ public class Smartwatch {
     /**
      * Getter for {@link Smartwatch#comments}
      */
-    List<Comment> getComments(){ return comments; }
+    public List<Comment> getComments(){ return comments; }
 
 
     /**
      * Adds comment to the list
      * @param comment Comment to be stored
      */
-    void addComment(Comment comment){ comments.add(comment); }
+    public void addComment(Comment comment){ comments.add(comment); }
 
 
     /**
