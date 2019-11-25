@@ -95,7 +95,7 @@ class CSV_writer {
               e.printStackTrace();
             } finally {
                 try {
-                  fileWriter.flush();
+                    fileWriter.flush();
                   fileWriter.close();
                 } catch (IOException e) {
                   System.out.println("Error while flushing/closing fileWriter !!!");
