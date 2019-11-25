@@ -148,7 +148,7 @@ public class PrimaryController {
      */
     private void loadOverviewFXML() {
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("overview.fxml")); // load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane
@@ -164,7 +164,7 @@ public class PrimaryController {
      */
     void loadWatchFXML() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("watchview.fxml")); // load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/watchview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
 
             watchController = loader.getController(); // set controller to controller of new file
@@ -186,7 +186,7 @@ public class PrimaryController {
      */
     private void loadMeasurementSetupFXML() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("measurement.fxml")); // load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/measurement.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             measurementController = loader.getController(); // set controller to controller of new file
             measurementController.setPrimaryController(this); // pass current Primary class to measurementController

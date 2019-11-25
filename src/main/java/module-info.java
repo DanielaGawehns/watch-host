@@ -6,5 +6,6 @@ module org.openjfx {
     requires org.jetbrains.annotations;
 
     opens org.openjfx to javafx.fxml;
+    opens org.openjfx.controllers to javafx.fxml;
     exports org.openjfx;
 }

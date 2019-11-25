@@ -21,7 +21,7 @@
                <children>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../images/smartwatch.png" />
+                        <Image url="@images/smartwatch.png" />
                      </image>
                      <HBox.margin>
                         <Insets />
@@ -38,7 +38,7 @@
                   </VBox>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../images/battery3.png" />
+                        <Image url="@images/battery3.png" />
                      </image>
                      <HBox.margin>
                         <Insets left="60.0" />
