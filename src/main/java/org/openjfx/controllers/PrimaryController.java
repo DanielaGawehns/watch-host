@@ -268,7 +268,7 @@ public class PrimaryController {
             VBox vbox = new VBox();
             HBox hbox = new HBox();
             SplitMenuButton button = new SplitMenuButton();
-            Image image = new Image("/images/smartwatch.png");
+            Image image = new Image(getClass().getResource("/images/smartwatch.png").toExternalForm());
             ImageView imageView = new ImageView(image);
             int batteryLevel = watches.get(i).getBatteryPercentage();
             int batteryType;
@@ -291,7 +291,7 @@ public class PrimaryController {
                 batteryType = 3;
             }
 
-            Image imageBattery = new Image("/images/battery" + batteryType + ".png");
+            Image imageBattery = new Image(getClass().getResource("/images/battery" + batteryType + ".png").toExternalForm());
             ImageView imageViewBattery = new ImageView(imageBattery);
 
             Label label = new Label(batteryLevel + "%");
