@@ -14,7 +14,7 @@ import java.util.TreeSet;
 /**
  * Class holding all smartwatch data
  */
-class Smartwatch {
+public class Smartwatch {
 
     /**
      * Data about the watch {@link WatchData}
@@ -45,7 +45,7 @@ class Smartwatch {
     /**
      * Constructor
      */
-    Smartwatch(WatchData _data, String _name){
+    public Smartwatch(WatchData _data, String _name){
         System.out.println("making smartwatch");
         watchData = _data;
         if(!_name.isEmpty()){
@@ -73,7 +73,7 @@ class Smartwatch {
      * Gets {@link WatchData#watchID} from {@link Smartwatch#watchData}
      * @return {@link WatchData#watchID} as a integer
      */
-    int getWatchID() {
+    public int getWatchID() {
         return watchData.getWatchID();
     }
 
@@ -82,51 +82,51 @@ class Smartwatch {
      * Sets {@link WatchData#watchID} from {@link Smartwatch#watchData}
      * @param ID The value to set {@link WatchData#watchID}
      */
-    void setWatchID(int ID) { watchData.setWatchID(ID); }
+    public void setWatchID(int ID) { watchData.setWatchID(ID); }
 
 
     /**
      * Gets {@link WatchData#batteryPercentage} from {@link Smartwatch#watchData}
      * @return {@link WatchData#batteryPercentage} as a integer
      */
-    int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
+    public int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
 
 
     /**
      * Getter for {@link Smartwatch#watchData}
      */
-    WatchData getWatchData() { return watchData; }
+    public WatchData getWatchData() { return watchData; }
 
 
     /**
      * Getter for {@link Smartwatch#watchData}
      */
-    String getWatchName() { return watchName; }
+    public String getWatchName() { return watchName; }
 
 
     /**
      * Setter for {@link Smartwatch#watchName}
      */
-    void setWatchName(String name) { watchName = name; }
+    public void setWatchName(String name) { watchName = name; }
 
 
     /**
      * Setter for {@link Smartwatch#measurement}
      */
-    void setMeasurement(Measurement m) { measurement = m; }
+    public void setMeasurement(Measurement m) { measurement = m; }
 
 
     /**
      * Getter for {@link Smartwatch#measurement}
      */
-    Measurement getMeasurement() { return measurement; }
+    public Measurement getMeasurement() { return measurement; }
 
 
     /**
      * Adds new {@link DataPoint}(s) to the right {@link SensorData#records} in {@link Smartwatch#sensorDataList}
      * @param dataList List of {@link DataPoint}(s) to be added. The points can be from any supported sensor.
      */
-    void addData(List<DataPoint> dataList){
+    public void addData(List<DataPoint> dataList){
         SortedSet<String> sensorDataEdited = new TreeSet<>();
         String sensor;
 
@@ -166,7 +166,7 @@ class Smartwatch {
      * Get a list with sensors from the watch
      * @return List of Strings containing names of the sensors
      */
-    List<String> getSensorListFromMap(){
+    public List<String> getSensorListFromMap(){
         return new ArrayList<>(sensorMap.keySet());
     }
 

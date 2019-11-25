@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Class for storing information about measurements which are to be sent to watches
  */
-class Measurement {
+public class Measurement {
 
     /**
      * List of pairs of sensors which should be measured with a corresponding interval {@link Pair}
@@ -37,17 +37,17 @@ class Measurement {
     /**
      * Getter for {@link Measurement#sensors}
      */
-     List<Pair<String, Integer>> getSensors() { return sensors; }
+    public List<Pair<String, Integer>> getSensors() { return sensors; }
 
     /**
      * Getter for {@link Measurement#sensors}
      */
-    Integer getDuration() { return duration; }
+    public Integer getDuration() { return duration; }
 
 
     /**
      * Size of the {@link Measurement#sensors} list
      * @return Size as Integer
      */
-    int size(){ return sensors.size(); }
+    public int size(){ return sensors.size(); }
 }

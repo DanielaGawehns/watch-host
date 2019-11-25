@@ -1,7 +1,7 @@
 package org.openjfx;
 
 public class Sensors {
-    static String sensorNameToFriendlyString(String sensorName) {
+    public static String sensorNameToFriendlyString(String sensorName) {
         switch (sensorName) {
             case "HRM":                  return "Heart Rate BPM)";
             case "PRESSURE":             return "Pressure (Pa)";

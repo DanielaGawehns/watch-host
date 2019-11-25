@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Helper class to read and parse data from CSV files received from the watches
  */
-class CSVFileReader{
+public class CSVFileReader{
 
     private static final String COMMA_DELIMITER = ",";
 
@@ -35,7 +35,7 @@ class CSVFileReader{
      * @param path Specifies file location
      * @return List of {@link org.openjfx.DataPoint} containing the parsed data
      */
-    List<DataPoint> readFile(String path){
+    public List<DataPoint> readFile(String path){
         System.out.println("Start reading: " + path);
         List<DataPoint> dataList = new ArrayList<>();
         DataPoint point;
@@ -113,7 +113,7 @@ class CSVFileReader{
      * Getter for {@link org.openjfx.CSVFileReader#watchNumber}
      * @return Int containing the watchNumber
      */
-    int getWatchNumber() {
+    public int getWatchNumber() {
         return watchNumber;
     }
 }
