@@ -203,52 +203,7 @@ public class WatchViewController {
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Time");
         NumberAxis yAxis = new NumberAxis();
-        switch (sensorName) {
-            case "HRM":
-                yAxis.setLabel("Heart Rate (BPM)");
-                break;
-            case "PRESSURE":
-                yAxis.setLabel("Pressure (Pa)");
-                break;
-            case "ACCELEROMETER":
-                yAxis.setLabel("Accelerometer (XX)");
-                break;
-            case "GRAVITY":
-                yAxis.setLabel("Gravity (XX)");
-                break;
-            case "LINEAR ACCELERATION":
-                yAxis.setLabel("Linear Acceleration (XX)");
-                break;
-            case "MAGNETIC":
-                yAxis.setLabel("Magnetic (XX)");
-                break;
-            case "ROTATION VECTOR":
-                yAxis.setLabel("Rotation Vector (XX)");
-                break;
-            case "ORIENTATION":
-                yAxis.setLabel("Orientation (XX)");
-                break;
-            case "GYROSCOPE":
-                yAxis.setLabel("Gyroscope (XX)");
-                break;
-            case "LIGHT":
-                yAxis.setLabel("Light (XX)");
-                break;
-            case "PROXIMITY":
-                yAxis.setLabel("Proximity (XX)");
-                break;
-            case "ULTRAVIOLET":
-                yAxis.setLabel("Ultraviolet (XX)");
-                break;
-            case "TEMPERATURE":
-                yAxis.setLabel("Temperature (XX)");
-                break;
-            case "HUMIDITY":
-                yAxis.setLabel("Humidity (XX)");
-                break;
-            default:
-                // todo: throw exception for invalid sensor?
-        }
+        yAxis.setLabel(Sensors.sensorNameToFriendlyString(sensorName));
 
         LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
         fillChart(chart, sensorName);
@@ -463,7 +418,7 @@ public class WatchViewController {
         info.setContentText("Press OK to continue");
         Optional<ButtonType> result = info.showAndWait();
         if (result.get() == ButtonType.OK) {
-            CSV_writer writer = new CSV_writer("filename.csv", watch);
+            var writer = new CSVWriter("filename.csv", watch);
             writer.WriteFile();
         }
     }
