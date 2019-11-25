@@ -77,9 +77,6 @@
                      </VBox.margin>
                   </Separator>
                </children>
-               <padding>
-                  <Insets bottom="5.0" />
-               </padding>
             </VBox>
          </top>
          <center>

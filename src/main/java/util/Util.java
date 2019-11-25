@@ -26,6 +26,17 @@ public class Util {
         alert.showAndWait();
     }
 
+    public static Alert printChoiceBox(String title, String header, String body){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        //alert.setTitle("Disconnecting watch...");
+        //alert.setHeaderText("This will remove ALL data about the watch");
+        //alert.setContentText("Press OK to continue");
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(body);
+        return alert;
+    }
+
 
     /**
      * Closes a stage
