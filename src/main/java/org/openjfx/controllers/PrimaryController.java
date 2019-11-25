@@ -1,4 +1,4 @@
-package org.openjfx;
+package org.openjfx.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,9 +16,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.openjfx.*;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,7 +29,7 @@ import java.util.Objects;
  * Controller of primary.fxml
  * Houses the main components of the program
  */
-public class PrimaryController{
+public class PrimaryController {
 
     /**
      * Vbox containing the list of connected watches

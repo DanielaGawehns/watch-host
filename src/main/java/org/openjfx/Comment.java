@@ -33,46 +33,46 @@ public class Comment {
     /**
      * Getter for {@link Comment#startingTime}
      */
-    Date getStartingTime() { return startingTime; }
+    public Date getStartingTime() { return startingTime; }
 
 
     /**
      * Getter for {@link Comment#endTime}
      */
-    Date getEndTime() { return endTime; }
+    public Date getEndTime() { return endTime; }
 
 
     /**
      * Getter for {@link Comment#commentBody}
      */
-    String getCommentBody() { return commentBody; }
+    public String getCommentBody() { return commentBody; }
 
 
     /**
      * Setter for {@link Comment#commentType}
      */
-    String getCommentType() { return commentType; }
+    public String getCommentType() { return commentType; }
 
     /**
      * Setter for {@link Comment#startingTime}
      */
-    void setStartingTime(Date st) { this.startingTime = st; }
+    public void setStartingTime(Date st) { this.startingTime = st; }
 
 
     /**
      * Setter for {@link Comment#endTime}
      */
-    void setEndTime(Date et) { this.endTime = et; }
+    public void setEndTime(Date et) { this.endTime = et; }
 
 
     /**
      * Setter for {@link Comment#commentBody}
      */
-    void setCommentBody(String cb) { this.commentBody = cb; }
+    public void setCommentBody(String cb) { this.commentBody = cb; }
 
 
     /**
      * Setter for {@link Comment#commentType}
      */
-    void setCommentType(String ct) { this.commentType = ct; }
+    public void setCommentType(String ct) { this.commentType = ct; }
 }

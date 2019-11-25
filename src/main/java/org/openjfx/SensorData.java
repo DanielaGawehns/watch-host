@@ -102,7 +102,7 @@ public class SensorData {
     /**
      * Getter for {@link SensorData#sensor}
      */
-    String getSensor() {
+    public String getSensor() {
         return sensor;
     }
 
@@ -191,7 +191,7 @@ public class SensorData {
      * @param i The {@link DataPoint} to get
      * @return A {@link XYChart.Data} containing {@link DataPoint#time} and the first item of {@link DataPoint#dataList}
      */
-    XYChart.Data<String, Number> getDataPoint(int i) {
+    public XYChart.Data<String, Number> getDataPoint(int i) {
         return new XYChart.Data<>(records.get(i).getTime().toString(), records.get(i).getDataList().get(0));
     }
 }

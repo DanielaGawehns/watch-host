@@ -1,4 +1,4 @@
-package org.openjfx;
+package org.openjfx.controllers;
 
 
 import javafx.fxml.FXML;
@@ -21,6 +21,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.openjfx.*;
 
 import java.io.IOException;
 import java.util.Optional;

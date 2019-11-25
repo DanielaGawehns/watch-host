@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * CSV format: WatchID,Sensor,Date,Time,Double(s)
  */
-class CSVWriter {
+public class CSVWriter {
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_SEPARATOR = "\n";
     //private static final String FILE_HEADER = "WatchID,Sensor,Date,Time,Data1,Data2,Data3";
