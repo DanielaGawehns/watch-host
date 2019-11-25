@@ -106,4 +106,14 @@ public class MessageParameter {
         bb.put(this.bytes);
         return bb.array();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!MessageParameter.class.isAssignableFrom(obj.getClass())) return false;
+
+        final MessageParameter other = (MessageParameter)obj;
+        return other.type == this.type && other.bytes.equals(this.bytes);
+    }
 }

@@ -64,4 +64,22 @@ public class Message {
 
         return bb.toByteArray();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!Message.class.isAssignableFrom(obj.getClass())) return false;
+
+        final Message other = (Message)obj;
+        if (other.parameters.length != this.parameters.length) {
+            return false;
+        }
+        for (int i = 0; i < this.parameters.length; i++) {
+            if (other.parameters[i].equals(this.parameters[i])) {
+                return false;
+            }
+        }
+        return other.type == this.type;
+    }
 }

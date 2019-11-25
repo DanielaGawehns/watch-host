@@ -4,6 +4,7 @@ module org.openjfx {
     requires java.sql;
     requires com.google.common;
     requires org.jetbrains.annotations;
+    requires junit;
 
     opens org.openjfx to javafx.fxml;
     opens org.openjfx.controllers to javafx.fxml;
