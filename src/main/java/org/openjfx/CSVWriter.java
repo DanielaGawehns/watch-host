@@ -39,27 +39,27 @@ class CSVWriter {
         watch = _Watch;
     }
 
-
     public void WriteFile() {
-
         FileWriter fileWriter = null;
         StringBuilder sb = new StringBuilder();
-        int maxsize = 0; //size of data point
+        int maxDim = 0; // maximum dimensionality of data point
 
         try {
             fileWriter = new FileWriter(filename);
 
             for (int i = 0; i < allSensors.size(); i++) {
                 SensorData _SensorData = watch.getSensorData(allSensors.get(i));
+                if (_SensorData == null) continue;
                 List<DataPoint> _DataPoint = _SensorData.getRecords();
                 for (int j = 0; j < _SensorData.size(); j++) {
-                    if (_DataPoint.get(j).getDataList().size() > maxsize) {
-                        maxsize = _DataPoint.get(j).getDataList().size();
+                    var dataPointDim = _DataPoint.get(j).getDataList().size();
+                    if (dataPointDim > maxDim) {
+                        maxDim = dataPointDim;
                     }
                 }
             }
             sb.append("WatchID,Sensor,Date,Time");
-            for (int i = 1; i < maxsize + 1; i++) {
+            for (int i = 1; i < maxDim + 1; i++) {
                 sb.append(COMMA_DELIMITER);
                 sb.append("data");
                 sb.append(i);
@@ -69,20 +69,21 @@ class CSVWriter {
             sb.setLength(0);
             fileWriter.append(NEW_LINE_SEPARATOR);
 
-            for (int i = 0; i < allSensors.size(); i++) {
-                SensorData _SensorData = watch.getSensorData(allSensors.get(i));
-                List<DataPoint> _DataPoint = _SensorData.getRecords();
-                for (int j = 0; j < _SensorData.size(); j++) {
+            for (var sensor : allSensors) {
+                var sensorData = watch.getSensorData(sensor);
+                if (sensorData == null) continue;
+                List<DataPoint> datapoints = sensorData.getRecords();
+                for (var datapoint : datapoints) {
                     sb.append(watch.getWatchID());
                     sb.append(COMMA_DELIMITER);
-                    sb.append(_DataPoint.get(j).getSensorName());     // is datapoint gelijk te zetten in csv?
+                    sb.append(datapoint.getSensorName());     // is datapoint gelijk te zetten in csv?
                     sb.append(COMMA_DELIMITER);
-                    sb.append(_DataPoint.get(j).getDate());
+                    sb.append(datapoint.getDate());
                     sb.append(COMMA_DELIMITER);
-                    sb.append(_DataPoint.get(j).getTime());
-                    for (int k = 0; k < _DataPoint.get(j).getDataList().size(); k++) {
+                    sb.append(datapoint.getTime());
+                    for (int i = 0; i < datapoint.getDataList().size(); i++) {
                         sb.append(COMMA_DELIMITER);
-                        sb.append(_DataPoint.get(j).getDataList().get(k));
+                        sb.append(datapoint.getDataList().get(i));
                     }
 
                     fileWriter.append(sb);
