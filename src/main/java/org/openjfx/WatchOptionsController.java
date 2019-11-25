@@ -1,7 +1,9 @@
 package org.openjfx;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import util.Util;
 
 
 /**
@@ -14,50 +16,31 @@ public class WatchOptionsController {
      * Field for filling the watch ID
      */
     @FXML
-    public TextField textfieldWatchID;
+    private Label labelWatchID;;
 
     /**
      * Field for filling the watch name
      */
     @FXML
-    public TextField textfieldWatchName;
+    private TextField textfieldWatchName;
+
 
     /**
-     * ID of the watch
+     * The watch of which we are changing options
      */
-    private int watchID;
+    private Smartwatch watch;
 
-    /**
-     * Name of the watch
-     */
-    private String watchName;
+    private DBManager dbManager = new DBManager();
 
 
     /**
      * Constructor
      */
-    void setWatchData(int _watchID, String _watchName){
-        watchID = _watchID;
-        watchName = _watchName;
+    void setWatchData(Smartwatch _watch){
+        watch = _watch;
 
-        textfieldWatchID.setText(watchID + "");
-        textfieldWatchName.setText(watchName);
-    }
-
-
-    /**
-     * Getter for {@link WatchOptionsController#watchID}
-     */
-    public int getWatchID() {
-        return watchID;
-    }
-
-
-    /**
-     * Getter for {@link WatchOptionsController#watchName}
-     */
-    public String getWatchName() {
-        return watchName;
+        labelWatchID.setText(watch.getWatchID() + "");
+        textfieldWatchName.setText(watch.getWatchName());
     }
 
 
@@ -66,8 +49,11 @@ public class WatchOptionsController {
      * Saves the values inserted into the Textfields
      */
     public void saveOptions() {
-        watchID = Integer.parseInt(textfieldWatchID.getText());
-        watchName = textfieldWatchName.getText();
-        //Util.closeStage(textfieldWatchID);
+
+        if(!textfieldWatchName.getText().equals(watch.getWatchName())){
+            watch.setWatchName(textfieldWatchName.getText());
+            dbManager.setWatchName(watch.getWatchID(), watch.getWatchName());
+        }
+        Util.closeStage(textfieldWatchName);
     }
 }

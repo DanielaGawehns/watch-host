@@ -48,11 +48,12 @@
                 <configuration>
                     <mainClass>org.openjfx.App</mainClass>
                     <stripDebug>false</stripDebug>
-                    <compress>2</compress>
-                    <noHeaderFiles>true</noHeaderFiles>
-                    <noManPages>true</noManPages>
+                    <compress>0</compress>
+                    <noHeaderFiles>false</noHeaderFiles>
+                    <noManPages>false</noManPages>
                     <launcher>watch-host</launcher>
                     <jlinkImageName>hello</jlinkImageName>
+                    <jlinkZipName>hellozip</jlinkZipName>
                 </configuration>
             </plugin>
         </plugins>

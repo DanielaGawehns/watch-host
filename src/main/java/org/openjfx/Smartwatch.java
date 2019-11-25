@@ -46,6 +46,11 @@ class Smartwatch {
      */
     private Measurement measurement;
 
+    /**
+     * Stores comments about the current watch and measurement using {@link Comment}
+     */
+    private List<Comment> comments = new ArrayList<>();
+
 
     /**
      * Constructor
@@ -183,6 +188,25 @@ class Smartwatch {
             sensorDataList.add(new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor))); // TODO: get the datalist size from input file
         }
     }
+
+
+    /**
+     * Getter for {@link Smartwatch#comments}
+     */
+    List<Comment> getComments(){ return comments; }
+
+
+    /**
+     * Adds comment to the list
+     * @param comment Comment to be stored
+     */
+    void addComment(Comment comment){ comments.add(comment); }
+
+
+    /**
+     * Setter for {@link Smartwatch#comments}
+     */
+    void setComments(List<Comment> _comments){ comments = _comments; }
 }
 
 
