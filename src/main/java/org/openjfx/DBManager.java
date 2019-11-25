@@ -939,7 +939,7 @@ public class DBManager {
     }
 
 
-    void addComment(int ID, org.openjfx.Comment comment){
+    public void addComment(int ID, org.openjfx.Comment comment){
         String command = "INSERT INTO comments VALUES(?, ?, ?, ?, ?)";
         Connection con = null;
         PreparedStatement stmt = null;
@@ -999,7 +999,7 @@ public class DBManager {
      * Removes all the comments associated to a watch
      * @param ID Watch ID
      */
-    void removeComments(int ID){
+    public void removeComments(int ID){
         String command = "DELETE FROM comments WHERE ID = ?";
         Connection con = null;
         PreparedStatement stmt = null;

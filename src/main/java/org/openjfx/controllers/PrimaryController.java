@@ -1,7 +1,6 @@
 package org.openjfx.controllers;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -15,12 +14,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.openjfx.*;
-
 import util.Util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -123,7 +120,7 @@ public class PrimaryController{
      * Removes a watch from {@link PrimaryController#watches} and reloads the sideBar to update
      * @param ID Watch ID
      */
-    void removeWatch(int ID){
+    public void removeWatch(int ID){
         watches.remove(ID);
         loadSideBar();
     }
@@ -135,8 +132,8 @@ public class PrimaryController{
      * @return True if ID is not used. False if the ID is already in use
      */
     boolean idNotUsed(int ID){
-        for (int i = 0; i < watches.size(); i++) {
-            if (watches.get(i).getWatchID() == ID) {
+        for (Smartwatch watch : watches) {
+            if (watch.getWatchID() == ID) {
                 return false;
             }
         }
@@ -164,7 +161,7 @@ public class PrimaryController{
      * Loads the watch view (watchView.fxml) into the {@link PrimaryController#view}.
      * Also binds the width of the overview to the {@link PrimaryController#view} and sends the {@link Smartwatch} data to be displayed to the {@link WatchViewController}
      */
-    void loadWatchFXML() {
+    public void loadWatchFXML() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/watchview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
@@ -369,7 +366,7 @@ public class PrimaryController{
     /**
      * Shows the watch options menu controlled by {@link WatchOptionsController}
      */
-    void showOptions(Smartwatch smartwatch) {
+    public void showOptions(Smartwatch smartwatch) {
        try {
            FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
            Parent watchView = loader.load();

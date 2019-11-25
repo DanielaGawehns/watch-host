@@ -1,11 +1,9 @@
-package org.openjfx;
+package org.openjfx.controllers;
 
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -21,22 +19,15 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import util.Util;
 import org.openjfx.*;
-
-import java.io.IOException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import util.Util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.text.DateFormat;
+import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalTime;
+import java.util.Optional;
 
 
 /**
@@ -145,7 +136,7 @@ public class WatchViewController {
      * Sets {@link WatchViewController#watch} and fills the charts using {@link WatchViewController#fillChart(LineChart, String)}
      * @param _watch The {@link Smartwatch} which data will be shown
      */
-    void setWatch(Smartwatch _watch, PrimaryController controller){
+    public void setWatch(Smartwatch _watch, PrimaryController controller){
         System.out.println("Setting watch...");
         watch = _watch;
         primaryController = controller;

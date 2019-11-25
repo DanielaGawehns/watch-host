@@ -19,7 +19,7 @@ public class Message {
      */
     public MessageParameter[] parameters;
 
-    Message() {
+    public Message() {
     }
 
     /**

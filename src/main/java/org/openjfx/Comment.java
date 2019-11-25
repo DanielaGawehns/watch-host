@@ -5,7 +5,7 @@ import java.time.LocalTime;
 /**
  * Class for storing comments about specific measurements of a specific watch
  */
-class Comment {
+public class Comment {
 
     /**
      * Stores the starting times from the comments
@@ -31,13 +31,13 @@ class Comment {
     /**
      * Getter for {@link Comment#startingTime}
      */
-    LocalTime getStartingTime() { return startingTime; }
+    public LocalTime getStartingTime() { return startingTime; }
 
 
     /**
      * Getter for {@link Comment#endTime}
      */
-    LocalTime getEndTime() { return endTime; }
+    public LocalTime getEndTime() { return endTime; }
 
 
     /**
@@ -54,13 +54,13 @@ class Comment {
     /**
      * Setter for {@link Comment#startingTime}
      */
-    void setStartingTime(LocalTime st) { this.startingTime = st; }
+    public void setStartingTime(LocalTime st) { this.startingTime = st; }
 
 
     /**
      * Setter for {@link Comment#endTime}
      */
-    void setEndTime(LocalTime et) { this.endTime = et; }
+    public void setEndTime(LocalTime et) { this.endTime = et; }
 
 
     /**
