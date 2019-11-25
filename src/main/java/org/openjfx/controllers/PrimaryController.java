@@ -237,10 +237,10 @@ public class PrimaryController {
         for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all folders in map 'folder'
             List<DataPoint> dataList = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
             System.out.println("Read list of size " + dataList.size());
-            Smartwatch watch = watches.getFromID(reader.getWatchNumber());
+            Smartwatch watch = watches.getWithID(reader.getWatchNumber());
             watch.addData(dataList); // add data stream to watch
             for(String sensor : watch.getSensorListFromMap()){
-                success = dbManager.insertDatalist(reader.getWatchNumber(), watches.getFromID(reader.getWatchNumber()).getSensorData(sensor));
+                success = dbManager.insertDatalist(reader.getWatchNumber(), watches.getWithID(reader.getWatchNumber()).getSensorData(sensor));
             }
             if(success == 0 && fileEntry.delete()) { // delete the file
                 System.out.println("File deleted!");
