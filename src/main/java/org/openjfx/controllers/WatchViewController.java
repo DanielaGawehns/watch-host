@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 
+
 /**
  * Class for controlling functions from the watchView screen
  * Controlling watchview.fxml
@@ -370,6 +371,32 @@ public class WatchViewController {
      */
 
     public void exportCSVButtonPressed(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save file as");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        Stage stage = new Stage();
+        File selectedFile = fileChooser.showSaveDialog(stage);
+        if(selectedFile != null) {
+            var writer = new CSVWriter(selectedFile, watch);
+            writer.WriteFromDB();
+
+        }
+
+        /*
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        File selectedFile = fileChooser.showOpenDialog(stage);
+        if(selectedFile != null){
+            CSVWriter Writer = new CSVWriter(selectedFile, watch);
+            Writer.WriteFile();
+        }
+
         Alert info = new Alert(Alert.AlertType.CONFIRMATION);
         info.setTitle("Exporting to a CSV file...");
         info.setHeaderText("This will store all the data in a CSV file");
@@ -378,7 +405,7 @@ public class WatchViewController {
         if (result.get() == ButtonType.OK) {
             var writer = new CSVWriter("filename.csv", watch);
             writer.WriteFile();
-        }
+        }*/
     }
 
 
