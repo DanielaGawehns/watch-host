@@ -368,7 +368,7 @@ public class PrimaryController{
      */
     public void showOptions(Smartwatch smartwatch) {
        try {
-           FXMLLoader loader = new FXMLLoader(getClass().getResource("watchoptions.fxml"));
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("/watchoptions.fxml"));
            Parent watchView = loader.load();
            WatchOptionsController watchOptionsController = loader.getController();
            Stage stage = new Stage();
