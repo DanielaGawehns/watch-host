@@ -9,4 +9,5 @@ module org.openjfx {
     opens org.openjfx to javafx.fxml;
     opens org.openjfx.controllers to javafx.fxml;
     exports org.openjfx;
+    exports nl.liacs.watch.protocol.server;
 }

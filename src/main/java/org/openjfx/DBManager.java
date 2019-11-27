@@ -962,6 +962,11 @@ public class DBManager {
     }
 
 
+    /**
+     * Gets a list of comments from a watch
+     * @param ID Watch ID
+     * @return List of {@link Comment}
+     */
     List<Comment> getComments(int ID){
         String command = "SELECT * FROM comments WHERE ID = ?";
         Connection con = null;
@@ -994,7 +999,6 @@ public class DBManager {
     }
 
 
-    // TODO test this function
     /**
      * Removes all the comments associated to a watch
      * @param ID Watch ID

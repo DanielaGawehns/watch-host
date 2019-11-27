@@ -98,6 +98,7 @@ public class Util {
     public static final Map<String, Integer> sensorDataListSize = new HashMap<>(); // TODO: remove this and get datalist size from input file
     static{
         sensorDataListSize.put("HRM", 1);
+        sensorDataListSize.put("PRESSURE", 1);
     }
 
 }

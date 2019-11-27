@@ -20,7 +20,7 @@ public class App extends Application {
     /**
      * The global connection manager for watch communication.
      */
-    static ConnectionManager connectionManager;
+    private static ConnectionManager connectionManager;
     /**
      * @return The global connection manager for watch communication.
      */

@@ -120,7 +120,7 @@ public class PrimaryController{
      * Removes a watch from {@link PrimaryController#watches} and reloads the sideBar to update
      * @param ID Watch ID
      */
-    public void removeWatch(int ID){
+    void removeWatch(int ID){
         watches.remove(ID);
         loadSideBar();
     }
@@ -161,7 +161,7 @@ public class PrimaryController{
      * Loads the watch view (watchView.fxml) into the {@link PrimaryController#view}.
      * Also binds the width of the overview to the {@link PrimaryController#view} and sends the {@link Smartwatch} data to be displayed to the {@link WatchViewController}
      */
-    public void loadWatchFXML() {
+    void loadWatchFXML() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/watchview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
@@ -366,7 +366,7 @@ public class PrimaryController{
     /**
      * Shows the watch options menu controlled by {@link WatchOptionsController}
      */
-    public void showOptions(Smartwatch smartwatch) {
+    void showOptions(Smartwatch smartwatch) {
        try {
            FXMLLoader loader = new FXMLLoader(getClass().getResource("/watchoptions.fxml"));
            Parent watchView = loader.load();
