@@ -694,7 +694,7 @@ public class DBManager {
         }
 
         for(Integer ID : IDList){
-            insertMeasurement(ID, measurement.getDuration(), measurementID);
+            insertMeasurement(ID, measurement, measurementID);
         }
     }
 
@@ -706,7 +706,7 @@ public class DBManager {
      * @param pollRate Polling rate of said sensor
      */
     private void addToSensorTable(int measurementID, String sensor, Integer pollRate){
-        String command = "INSERT INTO measurement" + measurementID + "(sensor, polling_rate) VALUES(?, ?)";
+        String command = "INSERT INTO measurement" + measurementID + " VALUES(?, ?)";
         Connection con = null;
         PreparedStatement stmt = null;
 
@@ -753,11 +753,11 @@ public class DBManager {
     /**
      * Inserts line into measurements table to link measurement to a watch
      * @param ID Watch ID
-     * @param duration Duration of measurement
+     * @param measurement The measurement to be added
      * @param measurementID ID of measurement table
      */
-    private void insertMeasurement(int ID, int duration, int measurementID){
-        String command = "INSERT INTO measurements(ID, duration, measurement_ID) VALUES(?, ?, ?) ";
+    private void insertMeasurement(int ID, Measurement measurement, int measurementID){
+        String command = "INSERT INTO measurements VALUES(?, ?, ?, ?)";
         Connection con = null;
         PreparedStatement stmt = null;
 
@@ -766,8 +766,9 @@ public class DBManager {
             stmt = con.prepareStatement(command);
 
             stmt.setInt(1, ID);
-            stmt.setInt(2, duration);
-            stmt.setInt(3, measurementID);
+            stmt.setTime(2, Time.valueOf(measurement.getTimeStart()));
+            stmt.setTime(3, Time.valueOf(measurement.getTimeEnd()));
+            stmt.setInt(4, measurementID);
             stmt.executeUpdate();
         }catch (SQLException e){
             System.out.println(e.getMessage());
@@ -834,11 +835,12 @@ public class DBManager {
      * @param measurementID Measurement ID
      * @return Duration as an Integer. -1 if measurement is not found
      */
-    private int getMeasurementDuration(int measurementID){
+    private List<LocalTime> getMeasurementTimes(int measurementID){
         String command = "SELECT * FROM measurements WHERE measurement_ID = ?";
         int duration = -1;
         Connection con = null;
         PreparedStatement stmt = null;
+        List<LocalTime> times = new ArrayList<>();
 
         System.out.println(command + " -" + measurementID);
         try{
@@ -848,7 +850,8 @@ public class DBManager {
             ResultSet rs = stmt.executeQuery();
 
             if(rs.next()){
-                duration = rs.getInt("duration");
+                times.add(rs.getTime("time_start").toLocalTime());
+                times.add(rs.getTime("time_end").toLocalTime());
             }
             rs.close();
         }catch(SQLException e){
@@ -857,7 +860,7 @@ public class DBManager {
             cleanup(con, stmt);
         }
         System.out.println("Found duration " + duration);
-        return duration;
+        return times;
     }
 
 
@@ -888,8 +891,18 @@ public class DBManager {
         }finally {
             cleanup(con, stmt);
         }
+
+        var times = getMeasurementTimes(measurementID);
+
+        if(times.size() != 2){
+            System.out.println("ERROR: incorrect times amount");
+            return null;
+        }
+
         measurement.setSensors(values);
-        measurement.setDuration(getMeasurementDuration(measurementID));
+        measurement.setTimeStart(times.get(0));
+        measurement.setTimeEnd(times.get(1));
+
         return measurement;
     }
 
@@ -939,6 +952,11 @@ public class DBManager {
     }
 
 
+    /**
+     * Adds a comment to a watch
+     * @param ID Watch ID
+     * @param comment {@link Comment} to be added
+     */
     public void addComment(int ID, org.openjfx.Comment comment){
         String command = "INSERT INTO comments VALUES(?, ?, ?, ?, ?)";
         Connection con = null;
