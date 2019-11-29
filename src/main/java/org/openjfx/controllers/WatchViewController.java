@@ -367,10 +367,9 @@ public class WatchViewController {
     }
 
     /**
-     * Event for Export button.
+     * Event for Export from one watch button.
      */
-
-    public void exportCSVButtonPressed(){
+    public void exportOneCSVButtonPressed(){
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save file as");
         fileChooser.getExtensionFilters().addAll(
@@ -380,32 +379,25 @@ public class WatchViewController {
         File selectedFile = fileChooser.showSaveDialog(stage);
         if(selectedFile != null) {
             var writer = new CSVWriter(selectedFile, watch);
-            writer.WriteFromDB();
-
+            writer.WriteOne();
         }
+    }
 
-        /*
+    /**
+     * Event for Export from all watches button.
+     */
+    public void exportAllCSVButtonPressed(){
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Resource File");
+        fileChooser.setTitle("Save file as");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
-
-        File selectedFile = fileChooser.showOpenDialog(stage);
-        if(selectedFile != null){
-            CSVWriter Writer = new CSVWriter(selectedFile, watch);
-            Writer.WriteFile();
+        Stage stage = new Stage();
+        File selectedFile = fileChooser.showSaveDialog(stage);
+        if(selectedFile != null) {
+            var writer = new CSVWriter(selectedFile, watch);
+            writer.WriteAll();
         }
-
-        Alert info = new Alert(Alert.AlertType.CONFIRMATION);
-        info.setTitle("Exporting to a CSV file...");
-        info.setHeaderText("This will store all the data in a CSV file");
-        info.setContentText("Press OK to continue");
-        Optional<ButtonType> result = info.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            var writer = new CSVWriter("filename.csv", watch);
-            writer.WriteFile();
-        }*/
     }
 
 
