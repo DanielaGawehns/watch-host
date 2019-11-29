@@ -925,7 +925,7 @@ public class DBManager {
             ResultSet rs = stmt.executeQuery();
 
             if(rs.next()){
-                measurementID = rs.getInt(3);
+                measurementID = rs.getInt("measurement_ID");
             }
             rs.close();
         }catch(SQLException e){
