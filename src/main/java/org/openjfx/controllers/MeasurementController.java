@@ -28,6 +28,8 @@ import java.util.List;
  * Controller for measurement.fxml
  */
 public class MeasurementController {
+
+    // Field to fill in any elements
     @FXML
     private HBox endTimeHbox;
     @FXML
@@ -38,8 +40,6 @@ public class MeasurementController {
     private VBox watchVbox2;
     @FXML
     private VBox watchVbox3;
-
-
     @FXML
     private VBox sensorVbox1;
     @FXML
@@ -47,6 +47,9 @@ public class MeasurementController {
     @FXML
     private VBox sensorVbox3;
 
+    /**
+     * Manager to deal with Database operations
+     */
     private DBManager dbManager = new DBManager();
 
     /**
@@ -71,42 +74,6 @@ public class MeasurementController {
         }
     };
 
-    // todo: make this a single list which is automatically split
-    /**
-     * VBox containing the first third of the list of available sensors
-     */
-    @FXML
-    private VBox sensorList;
-
-    /**
-     * VBox containing the second third of the list of available sensors
-     */
-    @FXML
-    private VBox sensorList2;
-
-    /**
-     * VBox containing the third third of the list of available sensors
-     */
-    @FXML
-    private VBox sensorList3;
-
-    /**
-     * HBox containing the TextField in which the user can enter the duration of the measurement
-     */
-    @FXML
-    private HBox durationHBox;
-
-    /**
-     * TextField in which the user can enter the desired measurement duration
-     */
-    private TextField durationTextField = new TextField();
-
-    /**
-     * VBox containing the list of connected watches
-     */
-    @FXML
-    private VBox connectedWatches;
-
     /**
      * List containing the connected watches
      */
@@ -122,26 +89,11 @@ public class MeasurementController {
      */
     private List<Smartwatch> selectedWatches = new ArrayList<>();
 
-    /**
-     * List of the TextFields for all the intervals entered by the user
-     */
-   // private List<TextField> intervalFields = new ArrayList<>();
 
     /**
      * Instance of {@link Measurement}
      */
     private Measurement measurement = new Measurement();
-
-    /**
-     * Instance of {@link PrimaryController}
-     */
-    private PrimaryController primaryController;
-
-
-    /**
-     * Setter for {@link MeasurementController#primaryController}
-     */
-    void setPrimaryController(PrimaryController controller) { primaryController = controller; }
 
 
     /**
@@ -199,7 +151,8 @@ public class MeasurementController {
 
 
     /**
-     * Loads the connected watches in {@link MeasurementController#connectedWatches} which contains a list of connected watches from {@link MeasurementController#connectedWatchesList}
+     * Creates the input field for selecting the watches needed for the measurement. Loads the selected watches in
+     * {@link MeasurementController#connectedWatchesList}
      */
     void loadWatches() {
         connectedWatchesList = PrimaryController.getWatches();
@@ -269,6 +222,13 @@ public class MeasurementController {
         TextField field = new TextField("00");
         field.setPrefWidth(size);
 
+        TextField finalField = field;
+        field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal && finalField.getText().length() == 1){
+                finalField.setText( "0" + finalField.getText());
+            }
+        });
+
         hbox.getChildren().addAll(label, field);
 
         // More textfields
@@ -276,6 +236,14 @@ public class MeasurementController {
             label = new Label(":");
             field = new TextField("00");
             field.setPrefWidth(size);
+
+
+            TextField finalField1 = field;
+            field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal && finalField1.getText().length() == 1){
+                    finalField1.setText( "0" + finalField1.getText());
+                }
+            });
             hbox.getChildren().addAll(label, field);
         }
         label = new Label("hh:mm:ss");
@@ -376,7 +344,6 @@ public class MeasurementController {
      * Afterwards runs {@link Util#closeStage(Node)} to close the window
      */
     public void startMeasurement() {
-        // todo: check if there is no active measurement
         List<Pair<String, Integer>> sensorList = new ArrayList<>();
         LocalTime startTime, endTime;
 
@@ -432,6 +399,16 @@ public class MeasurementController {
         measurement.setSensors(sensorList);
         measurement.setTimeStart(startTime);
         measurement.setTimeEnd(endTime);
+
+
+
+        // Check for double measurements
+        for(Smartwatch curr : selectedWatches){
+            if(curr.getMeasurement() != null){
+                Util.printErrorDialog("Watch error", "Watch " + curr.getWatchName() + " already has an active measurement!");
+                return;
+            }
+        }
 
         // todo: send signal to watches
         // save measurement for each selected watch

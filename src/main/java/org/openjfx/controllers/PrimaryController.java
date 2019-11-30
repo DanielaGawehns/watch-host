@@ -188,7 +188,6 @@ public class PrimaryController{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/measurement.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             measurementController = loader.getController(); // set controller to controller of new file
-            measurementController.setPrimaryController(this); // pass current Primary class to measurementController
             measurementController.loadSensors();
             measurementController.loadWatches();
             measurementController.loadTimesField();
