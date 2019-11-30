@@ -2,8 +2,8 @@ package org.openjfx;
 
 import util.Pair;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,9 +17,15 @@ public class Measurement {
     private List<Pair<String, Integer>> sensors = new ArrayList<>();
 
     /**
-     * The duration of the measurement in minutes
+     * The starting time of the measurement
      */
-    private int duration = 0;
+    private LocalTime timeStart;
+
+
+    /**
+     * The ending time of the measurement
+     */
+    private LocalTime timeEnd;
 
 
     /**
@@ -28,21 +34,11 @@ public class Measurement {
     public void setSensors(List<Pair<String, Integer>> list) { sensors = list; }
 
 
-    /**
-     * Setter for {@link Measurement#duration}
-     */
-    public void setDuration(int x) { duration = x; }
-
 
     /**
      * Getter for {@link Measurement#sensors}
      */
     public List<Pair<String, Integer>> getSensors() { return sensors; }
-
-    /**
-     * Getter for {@link Measurement#sensors}
-     */
-    public Integer getDuration() { return duration; }
 
 
     /**
@@ -50,4 +46,20 @@ public class Measurement {
      * @return Size as Integer
      */
     public int size(){ return sensors.size(); }
+
+    public LocalTime getTimeStart() {
+        return timeStart;
+    }
+
+    public void setTimeStart(LocalTime timeStart) {
+        this.timeStart = timeStart;
+    }
+
+    public LocalTime getTimeEnd() {
+        return timeEnd;
+    }
+
+    public void setTimeEnd(LocalTime timeEnd) {
+        this.timeEnd = timeEnd;
+    }
 }

@@ -137,7 +137,7 @@ public class WatchViewController {
      * Sets {@link WatchViewController#watch} and fills the charts using {@link WatchViewController#fillChart(LineChart, String)}
      * @param _watch The {@link Smartwatch} which data will be shown
      */
-    public void setWatch(Smartwatch _watch, PrimaryController controller){
+    void setWatch(Smartwatch _watch, PrimaryController controller){
         System.out.println("Setting watch...");
         watch = _watch;
         primaryController = controller;
@@ -333,9 +333,8 @@ public class WatchViewController {
             label = new Label(text);
             measurementLabels.getChildren().add(label);
         }
-        String duration = "For: " + measurement.getDuration() + " minutes";
+        String duration = "From " + measurement.getTimeStart() + " to " + measurement.getTimeEnd();
         durationLabel.setText(duration);
-        // TODO: check this
     }
 
 
