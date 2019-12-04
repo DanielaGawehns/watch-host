@@ -196,9 +196,16 @@ public class PrimaryController{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/measurement.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             measurementController = loader.getController(); // set controller to controller of new file
-            measurementController.setPrimaryController(this); // pass current Primary class to measurementController
-            newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
-            view.setCenter(newPane); // set newPane as center of borderPane
+            measurementController.loadSensors();
+            measurementController.loadWatches();
+            measurementController.loadTimesField();
+            //newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
+            //view.setCenter(newPane); // set newPane as center of borderPane
+            Stage stage = new Stage();
+            stage.setTitle("Register watch");
+            stage.setScene(new Scene(newPane));
+            stage.setResizable(true);
+            stage.show();
         }catch (IOException e){
             System.out.println(e.getMessage());
         }
@@ -229,9 +236,6 @@ public class PrimaryController{
      */
     public void switchToMeasurementSetup() {
         loadMeasurementSetupFXML();
-        measurementController.loadSensors();
-        measurementController.loadWatches();
-        measurementController.loadDurationField();
     }
 
 
@@ -347,7 +351,7 @@ public class PrimaryController{
      */
     private void loadWatchAdd() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("watchadd.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/watchadd.fxml"));
             Parent watchView = loader.load();
             watchAddController = loader.getController();
             watchAddController.setPrimaryController(this);

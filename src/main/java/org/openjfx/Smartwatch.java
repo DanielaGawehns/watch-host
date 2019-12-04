@@ -24,7 +24,7 @@ public class Smartwatch {
     /**
      * Data about subject {@link SubjectData}
      */
-    private SubjectData subjectData = null;
+    private SubjectData subjectData = null; // TODO: do something with this
 
     /**
      * Nickname for the watch specified by the user

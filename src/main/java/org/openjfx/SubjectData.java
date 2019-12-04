@@ -3,7 +3,7 @@ package org.openjfx;
 /**
  * Class holding information about a subject wearing a watch
  */
-public class SubjectData {
+public class SubjectData { // TODO: do something with this
 
     /**
      * The ID of the subject

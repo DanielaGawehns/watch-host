@@ -2,9 +2,16 @@ package org.openjfx.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import org.openjfx.DBManager;
 import org.openjfx.Measurement;
 import org.openjfx.Smartwatch;
@@ -12,6 +19,7 @@ import org.openjfx.SmartwatchList;
 import util.Pair;
 import util.Util;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +28,28 @@ import java.util.List;
  * Controller for measurement.fxml
  */
 public class MeasurementController {
-    
+
+    // Field to fill in any elements
+    @FXML
+    private HBox endTimeHbox;
+    @FXML
+    private HBox startTimeHbox;
+    @FXML
+    private VBox watchVbox1;
+    @FXML
+    private VBox watchVbox2;
+    @FXML
+    private VBox watchVbox3;
+    @FXML
+    private VBox sensorVbox1;
+    @FXML
+    private VBox sensorVbox2;
+    @FXML
+    private VBox sensorVbox3;
+
+    /**
+     * Manager to deal with Database operations
+     */
     private DBManager dbManager = new DBManager();
 
     /**
@@ -45,42 +74,6 @@ public class MeasurementController {
         }
     };
 
-    // todo: make this a single list which is automatically split
-    /**
-     * VBox containing the first third of the list of available sensors
-     */
-    @FXML
-    private VBox sensorList;
-
-    /**
-     * VBox containing the second third of the list of available sensors
-     */
-    @FXML
-    private VBox sensorList2;
-
-    /**
-     * VBox containing the third third of the list of available sensors
-     */
-    @FXML
-    private VBox sensorList3;
-
-    /**
-     * HBox containing the TextField in which the user can enter the duration of the measurement
-     */
-    @FXML
-    private HBox durationHBox;
-
-    /**
-     * TextField in which the user can enter the desired measurement duration
-     */
-    private TextField durationTextField = new TextField();
-
-    /**
-     * VBox containing the list of connected watches
-     */
-    @FXML
-    private VBox connectedWatches;
-
     /**
      * List containing the connected watches
      */
@@ -89,177 +82,285 @@ public class MeasurementController {
     /**
      * List of sensors which are selected
      */
-    private List<Pair<String, Integer>> selectedSensors = new ArrayList<>();
+    private List<Pair<String, TextField>> selectedSensors = new ArrayList<>();
 
     /**
      * List of {@link Smartwatch} which are selected to perform the measurement
      */
     private List<Smartwatch> selectedWatches = new ArrayList<>();
 
-    /**
-     * List of the TextFields for all the intervals entered by the user
-     */
-    private List<TextField> intervalFields = new ArrayList<>();
 
     /**
      * Instance of {@link Measurement}
      */
     private Measurement measurement = new Measurement();
 
-    /**
-     * Instance of {@link PrimaryController}
-     */
-    private PrimaryController primaryController;
-
 
     /**
-     * Setter for {@link MeasurementController#primaryController}
-     */
-    void setPrimaryController(PrimaryController controller) { primaryController = controller; }
-
-
-    /**
-     * Loads the sensors into {@link MeasurementController#sensorList}, {@link MeasurementController#sensorList2} and {@link MeasurementController#sensorList3} which contains a list of all sensors from {@link MeasurementController#allSensors}
+     * Loads the sensors into {@link MeasurementController#sensorVbox1}, {@link MeasurementController#sensorVbox2} and {@link MeasurementController#sensorVbox3} which contain a list of all sensors from {@link MeasurementController#allSensors}
      */
     void loadSensors() {
-        final ToggleGroup tg = new ToggleGroup(); // needed to make selection of ToggleButtons work
+        HBox hbox;
+        CheckBox checkBox;
+        int rowCount = allSensors.size() / 3 + 1;
+        VBox vbox = sensorVbox1;
 
-        // place all sensors
         for(int i = 0; i < allSensors.size(); i++){
-            String currentSensor = allSensors.get(i);
+            var sensor = allSensors.get(i);
+            checkBox = new CheckBox(sensor);
 
-            VBox vbox = new VBox();
-            HBox hbox = new HBox();
+            if(i ==  rowCount){ // Switch column
+                vbox = sensorVbox2;
+            }
+            if(i == rowCount * 2 ){ // Switch column
+                vbox = sensorVbox3;
+            }
+            hbox = new HBox(checkBox);
+            hbox.setSpacing(10);
+            hbox.setAlignment(Pos.CENTER_LEFT);
 
-            ToggleButton button = new ToggleButton(); // Button to select the sensor
-            button.setText(currentSensor);
-            button.setStyle("-fx-font-size:10");
+            // Region to space Textfield
+            Region region = new Region();
+            HBox.setHgrow(region, Priority.ALWAYS);
 
-            // TextField to enter the interval for how often the sensor must be polled
-            TextField interval = new TextField("100"); // todo: set more sensible default values
-            interval.setMaxWidth(55.0);
+            TextField field = new TextField("100");
+            field.setPrefWidth(50);
+            field.setDisable(true);
 
-            // ensures that the interval TextfField is aligned with the right of the HBox
-            Region filler = new Region();
-            HBox.setHgrow(filler, Priority.ALWAYS);
+            hbox.getChildren().addAll(region, field, new Label("ms"));
 
-            Label ms = new Label("ms");
-
-            // whitespace between the field for the current sensor and the one to the right
-            Region endFiller = new Region();
-            endFiller.setMinWidth(15.0);
-
-            // handle selection of button
-            // interval is set once the Start Measurement button is pressed, initially it is set to 0
-            Pair<String, Integer> sensor = new Pair<>(currentSensor, 0);
-            button.setOnAction((ActionEvent event) -> { // If clicked
-                if (button.isSelected()) {
-                    selectedSensors.add(sensor);
-                    intervalFields.add(interval);
-                } else {
-                    selectedSensors.remove(sensor);
-                    intervalFields.remove(interval);
+            // Event for checkBoxes
+            CheckBox finalCheckBox = checkBox;
+            var sensorPair = new Pair<>(sensor, field);
+            checkBox.setOnAction((ActionEvent event) -> {
+                if(finalCheckBox.isSelected()){
+                    System.out.println("Sensor " + sensor + " is selected!");
+                    selectedSensors.add(sensorPair);
+                    field.setDisable(false);
+                }else{
+                    System.out.println("Sensor " + sensor + " is deselected!");
+                    selectedSensors.remove(sensorPair);
+                    field.setDisable(true);
                 }
             });
 
-            hbox.getChildren().addAll(button, filler, interval, ms, endFiller);
-            hbox.setAlignment(Pos.CENTER_LEFT);
-
-            vbox.getChildren().addAll(hbox);
-            vbox.setAlignment(Pos.CENTER);
-
-            // divide sensors over the 3 sensorLists
-            if (i < Math.ceil(allSensors.size()/3.0)) {
-                sensorList.getChildren().add(vbox);
-            } else if (i < 2 * Math.ceil(allSensors.size()/3.0)) {
-                sensorList2.getChildren().add(vbox);
-            } else {
-                sensorList3.getChildren().add(vbox);
-            }
+            // Add all hboxes
+            vbox.getChildren().add(hbox);
         }
     }
 
 
     /**
-     * Loads the connected watches in {@link MeasurementController#connectedWatches} which contains a list of connected watches from {@link MeasurementController#connectedWatchesList}
+     * Creates the input field for selecting the watches needed for the measurement. Loads the selected watches in
+     * {@link MeasurementController#connectedWatchesList}
      */
     void loadWatches() {
         connectedWatchesList = PrimaryController.getWatches();
 
-        final ToggleGroup tg = new ToggleGroup(); // needed to make selection of ToggleButtons work
+        HBox hbox;
+        CheckBox checkBox;
+        int rowCount = connectedWatchesList.size() / 3 + 1;
+        VBox vbox = watchVbox1;
 
-        // place all connected watches
-        for (int i = 0; i < connectedWatchesList.size(); i++){
-            Smartwatch watch = connectedWatchesList.get(i);
+        for(int i = 0; i < connectedWatchesList.size(); i++){
+            var watch = connectedWatchesList.get(i);
+            checkBox = new CheckBox(watch.getWatchName());
 
-            VBox vbox = new VBox();
-            HBox hbox = new HBox();
+            if(i ==  rowCount){ // Switch column
+                vbox = watchVbox2;
+            }
+            if(i == rowCount * 2 ){ // Switch column
+                vbox = watchVbox3;
+            }
+            hbox = new HBox(checkBox);
+            hbox.setSpacing(10);
+            hbox.setAlignment(Pos.CENTER_LEFT);
 
-            ToggleButton button = new ToggleButton();
-
-            String watchID = Integer.toString(watch.getWatchID());
-            Label id = new Label( "id: " + watchID);
+            String watchID = watch.getWatchID() + "";
+            Label id = new Label("ID: " + watchID);
             id.setStyle("-fx-font-size:10");
             id.setStyle("-fx-padding: 5 10 5 10;");
 
-            String watchName = watch.getWatchName();
-            button.setText(watchName);
-            button.setStyle("-fx-font-size:10");
+            // Region to space Label
+            Region region = new Region();
+            HBox.setHgrow(region, Priority.ALWAYS);
+            hbox.getChildren().addAll(region, id);
 
-            // handle selection of button
-            button.setOnAction((ActionEvent event) -> { // If clicked
-                if (button.isSelected()) {
+            // Event for checkBoxes
+            CheckBox finalCheckBox = checkBox;
+            checkBox.setOnAction((ActionEvent event) -> {
+                if(finalCheckBox.isSelected()){
+                    System.out.println("Watch " + watch.getWatchID() + " is selected!");
                     selectedWatches.add(watch);
-                } else {
-                    selectedWatches.remove(watch);
+                }else{
+                    System.out.println("Watch " + watch.getWatchID() + " is deselected!");
+                   selectedWatches.remove(watch);
                 }
             });
 
-            hbox.getChildren().addAll(button, id);
-            hbox.setAlignment(Pos.CENTER_LEFT);
-
-            vbox.getChildren().addAll(hbox);
-            vbox.setAlignment(Pos.CENTER);
-
-            connectedWatches.getChildren().add(vbox);
+            // Add all hboxes
+            vbox.getChildren().add(hbox);
         }
     }
 
 
     /**
-     * Loads the {@link MeasurementController#durationTextField} into {@link MeasurementController#durationHBox}
+     * Loads a timefield (3 TextFields + labels) into a HBox
+     * @param msg Message in front of the TextFields
+     * @param hbox HBox to store the elements in
      */
-    void loadDurationField() {
-        VBox vbox = new VBox();
-        HBox hbox = new HBox();
+    private void loadTimeField(String msg, HBox hbox){
+        int size = 50;
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setSpacing(5);
 
-        durationTextField.setMaxWidth(60.0);
-        Label minutes = new Label("minutes");
+        // Label with msg
+        Label label = new Label(msg);
+        label.setPadding(new Insets(0, 20, 0, 0));
 
-        hbox.getChildren().addAll(durationTextField, minutes);
-        hbox.setAlignment(Pos.CENTER_LEFT);
+        // Textfield with standard value 00
+        TextField field = new TextField("00");
+        field.setPrefWidth(size);
 
-        vbox.getChildren().addAll(hbox);
-        vbox.setAlignment(Pos.CENTER);
+        TextField finalField = field;
+        field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal && finalField.getText().length() == 1){
+                finalField.setText( "0" + finalField.getText());
+            }
+        });
 
-        durationHBox.getChildren().add(vbox);
+        hbox.getChildren().addAll(label, field);
+
+        // More textfields
+        for(int i = 1; i < 3; i++){
+            label = new Label(":");
+            field = new TextField("00");
+            field.setPrefWidth(size);
+
+
+            TextField finalField1 = field;
+            field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal && finalField1.getText().length() == 1){
+                    finalField1.setText( "0" + finalField1.getText());
+                }
+            });
+            hbox.getChildren().addAll(label, field);
+        }
+        label = new Label("hh:mm:ss");
+        label.setPadding(new Insets(0, 0, 0, 20));
+        hbox.getChildren().add(label);
+    }
+
+
+    /**
+     * Loads the start and end time fields using {@link MeasurementController#loadTimeField(String, HBox)}
+     */
+    void loadTimesField() {
+        loadTimeField("start: ", startTimeHbox);
+        loadTimeField("end: ", endTimeHbox);
+    }
+
+
+    /**
+     * Parses the value of a string and checks if it is a valid Minute/Second value (between 0 and 59)
+     * @param field Input to be parsed
+     * @return Value of the string. {@code -1} on error
+     */
+    private int parseMinSecField(String field){
+        int value;
+        try{
+            value = Integer.parseInt(field);
+        }catch (NumberFormatException e){ // Parse error
+            e.printStackTrace();
+            Util.printErrorDialog("Time value error", "The chosen hour value is not valid. Choose another value to continue");
+            return -1;
+        }
+        if(value < 0 || value > 59){ // Check if the value is valid
+            Util.printErrorDialog("Time value error", "The chosen hour value is not valid. Choose another value to continue");
+            return -1;
+        }
+
+        return value;
+    }
+
+
+    /**
+     * Parses the value of a string and checks if it is a valid Hour value (between 0 and 23)
+     * @param field Input to be parsed
+     * @return Value of the string. {@code -1} on error
+     */
+    private int parseHoursField(String field){
+        int value;
+        try{
+            value = Integer.parseInt(field);
+        }catch (NumberFormatException e){ // Parse error
+            e.printStackTrace();
+            Util.printErrorDialog("Hour value error", "The chosen hour value is not valid. Choose another value to continue");
+            return -1;
+        }
+        if(value < 0 || value > 23){ // Check if the value is valid
+            Util.printErrorDialog("Hour value error", "The chosen hour value is not valid. Choose another value to continue");
+            return -1;
+        }
+
+        return value;
+    }
+
+
+    /**
+     * Parses a timeField (hh:mm:ss) and checks if the values are valid using {@link MeasurementController#parseHoursField(String)}
+     * and {@link MeasurementController#parseMinSecField(String)}
+     * @param hbox HBox containing the timeField
+     * @return List of 3 integers containing valid time values. {@code null} on error
+     */
+    private List<Integer> parseTimeField(HBox hbox){
+        List<Integer> timeList = new ArrayList<>();
+        TextField field = (TextField) hbox.getChildren().get(1);
+        int value = parseHoursField(field.getText());
+        if(value != -1){
+            timeList.add(value);
+        }else{
+            return null;
+        }
+
+        for(int i = 1; i < 3; i++){
+            field = (TextField) hbox.getChildren().get(i * 2 + 1);
+            value = parseMinSecField(field.getText());
+            if(value != -1){
+                timeList.add(value);
+            }else{
+                return null;
+            }
+        }
+
+        return timeList;
     }
 
 
     /**
      * Event for the Start Measurement button. First checks if all data for the measurement is valid
-     * If this is the case runs {@link Measurement#setSensors(List)} and {@link Measurement#setDuration(Integer)} to store the measurement information
+     * If this is the case runs {@link Measurement#setSensors(List)}, {@link Measurement#setTimeStart(LocalTime)} and {@link Measurement#setTimeEnd(LocalTime)} to store the measurement information
      * All the data on the measurement is sent to the selected watches
-     * Afterwards run {@link PrimaryController#switchToOverview()} to return to the overview screen
+     * Afterwards runs {@link Util#closeStage(Node)} to close the window
      */
     public void startMeasurement() {
-        // todo: check if there is no active measurement
+        List<Pair<String, Integer>> sensorList = new ArrayList<>();
+        LocalTime startTime, endTime;
+
+
+        if(selectedSensors.size() < 1){
+            Util.printErrorDialog("Sensor error", "No sensor selected. Please choose more sensors to continue.");
+            return;
+        }
+
+        if(selectedWatches.size() < 1){
+            Util.printErrorDialog("Watch error", "No watch selected. Please choose more watches to continue.");
+            return;
+        }
 
         // check if the user given interval is valid for each selected sensor
-        for (int i = 0; i < selectedSensors.size(); i++) {
-            Pair<String, Integer> currentSensor = selectedSensors.get(i);
-
-            TextField currentInterval = intervalFields.get(i);
+        for (Pair<String, TextField> currentSensor : selectedSensors) {
+            TextField currentInterval = currentSensor.second();
             Integer interval;
             try {
                 interval = Integer.parseInt(currentInterval.getText());
@@ -271,32 +372,43 @@ public class MeasurementController {
 
             // check if the user given interval is valid for the current sensor
             if (interval > 0) { // todo: more rigorous checking based on type of sensor
-                currentSensor.setSecond(interval); // interval is valid, store the value
+                sensorList.add(new Pair<>(currentSensor.first(), interval)); // interval is valid, store the value
             } else {
                 Util.printErrorDialog("Interval error", "Chosen interval is not valid. Please choose another one to continue.");
                 return; // interval not valid, cannot start a measurement
             }
         }
 
-        // check if the given duration is a valid number
-        int duration;
-        try {
-            duration = Integer.parseInt(durationTextField.getText());
-        } catch (NumberFormatException ex) {
-            ex.printStackTrace();
-            durationTextField.setStyle("-fx-text-inner-color: red;");
-            durationTextField.setText("integer expected");
+        // check if the given start and end times are valid
+        var timeFields = parseTimeField(startTimeHbox);
+        if(timeFields != null){
+            startTime = LocalTime.of(timeFields.get(0), timeFields.get(1), timeFields.get(2));
+        }else{
             return;
         }
 
-        // check if given duration is valid
-        if (duration <= 0) {
+        timeFields = parseTimeField(endTimeHbox);
+        if(timeFields != null){
+           endTime = LocalTime.of(timeFields.get(0), timeFields.get(1), timeFields.get(2));
+        }else{
             return;
         }
+
 
         // store all values for the measurement
-        measurement.setSensors(selectedSensors);
-        measurement.setDuration(duration);
+        measurement.setSensors(sensorList);
+        measurement.setTimeStart(startTime);
+        measurement.setTimeEnd(endTime);
+
+
+
+        // Check for double measurements
+        for(Smartwatch curr : selectedWatches){
+            if(curr.getMeasurement() != null){
+                Util.printErrorDialog("Watch error", "Watch " + curr.getWatchName() + " already has an active measurement!");
+                return;
+            }
+        }
 
         // todo: send signal to watches
         // save measurement for each selected watch
@@ -307,7 +419,7 @@ public class MeasurementController {
         }
         dbManager.addMeasurement(IDList, measurement);
 
-        // the measurement has started, switch to the overview tab
-        primaryController.switchToOverview();
+        // the measurement has started, close window
+        Util.closeStage(watchVbox1);
     }
 }
