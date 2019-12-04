@@ -12,10 +12,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.openjfx.DBManager;
 import org.openjfx.Measurement;
 import org.openjfx.Smartwatch;
 import org.openjfx.SmartwatchList;
+import org.openjfx.DBManager;
 import util.Pair;
 import util.Util;
 
