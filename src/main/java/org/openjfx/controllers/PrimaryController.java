@@ -73,6 +73,13 @@ public class PrimaryController{
     private WatchAddController watchAddController = new WatchAddController();
 
     /**
+     * Controller for overview screen {@link OverviewController}
+     *
+     */
+    private OverviewController overviewController = new OverviewController();
+
+
+    /**
      * Which smartwatch is selected for charting
      */
     private int currentWatch;
@@ -149,6 +156,7 @@ public class PrimaryController{
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
+
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane
         }catch (IOException e){

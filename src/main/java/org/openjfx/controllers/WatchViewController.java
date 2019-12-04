@@ -378,27 +378,12 @@ public class WatchViewController {
         Stage stage = new Stage();
         File selectedFile = fileChooser.showSaveDialog(stage);
         if(selectedFile != null) {
-            var writer = new CSVWriter(selectedFile, watch);
-            writer.WriteOne();
+            var writer = new CSVWriter(selectedFile);
+            writer.WriteOne(watch, true);
         }
     }
 
-    /**
-     * Event for Export from all watches button.
-     */
-    public void exportAllCSVButtonPressed(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save file as");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
-                new FileChooser.ExtensionFilter("All Files", "*.*"));
-        Stage stage = new Stage();
-        File selectedFile = fileChooser.showSaveDialog(stage);
-        if(selectedFile != null) {
-            var writer = new CSVWriter(selectedFile, watch);
-            writer.WriteAll();
-        }
-    }
+
 
 
     /**
