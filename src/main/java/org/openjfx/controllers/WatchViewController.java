@@ -375,6 +375,7 @@ public class WatchViewController {
      * Event for Export from one watch button.
      */
     public void exportOneCSVButtonPressed(){
+        CSVWriter writer = new CSVWriter();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save file as");
         fileChooser.getExtensionFilters().addAll(
@@ -383,8 +384,7 @@ public class WatchViewController {
         Stage stage = new Stage();
         File selectedFile = fileChooser.showSaveDialog(stage);
         if(selectedFile != null) {
-            var writer = new CSVWriter(selectedFile);
-            writer.WriteOne(watch, true);
+            writer.WriteOne(watch, selectedFile, true);
         }
     }
 

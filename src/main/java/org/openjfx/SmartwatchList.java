@@ -1,6 +1,7 @@
 package org.openjfx;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class holding a list of {@link Smartwatch}
@@ -68,5 +69,13 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
             }
         }
         return count;
+    }
+
+    public List<SensorData> getAllSensorData(){
+        List<SensorData> totalDataList = new ArrayList<>();
+        for(Smartwatch watch : this){
+            totalDataList.addAll(watch.getAllSensorData());
+        }
+        return totalDataList;
     }
 }

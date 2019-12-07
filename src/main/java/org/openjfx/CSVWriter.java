@@ -12,15 +12,15 @@ import java.io.File;
 public class CSVWriter {
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_SEPARATOR = "\n";
-    private File filename;
-   // private Smartwatch watch;
+
+    private FileWriter fileWriter = null;
+
 
     /**
      * Constructor
      */
-    public CSVWriter(File _filename) {
-        filename = _filename;
-        //watch = _Watch;
+    public CSVWriter() {
+
     }
 
 
@@ -28,22 +28,32 @@ public class CSVWriter {
      * Retrieve data from one watch fom database and writes into a CSV file
      * @throws IOException If it is not able to write a CSV file
      */
-    public void WriteOne(Smartwatch watch, boolean header) {
-        FileWriter _FileWriter = null;
+    public void WriteOne(Smartwatch watch, File filename, boolean header) {
+       // FileWriter _FileWriter = null;
         StringBuilder sb = new StringBuilder();
         DBManager DB = new DBManager();
         int maxDim = 0; // maximum dimensionality of data point
+        boolean skip = true;
        // int id = watch.getWatchID();
        // List<SensorData> sensorDataList = DB.getAllDataLists(id);
 
+
+
         try {
-            _FileWriter = new FileWriter(filename);
+            if(fileWriter == null) {
+                fileWriter = new FileWriter(filename);
+                skip = false;
+            }
+           // _FileWriter = new FileWriter(filename);
             int id = watch.getWatchID();
             List<SensorData> sensorDataList = DB.getAllDataLists(id);
 
             if ( header ) {
                 for (SensorData sensorData : sensorDataList) {
-                    if (sensorData == null) continue;
+                    if (sensorData == null) {
+                        System.err.println("ERROR: sensordata is null");
+                        continue;
+                    }
                     List<DataPoint> _DataPoint = sensorData.getRecords();
                     for (int j = 0; j < sensorData.size(); j++) {
                         var dataPointDim = _DataPoint.get(j).getDataList().size();
@@ -59,15 +69,18 @@ public class CSVWriter {
                     sb.append(i);
                 }
 
-                _FileWriter.append(sb);
+                fileWriter.append(sb);
                 sb.setLength(0);
-                _FileWriter.append(NEW_LINE_SEPARATOR);
+                fileWriter.append(NEW_LINE_SEPARATOR);
 
             }
 
 
             for (SensorData sensorData : sensorDataList) {
-                if (sensorData == null) continue;
+                if (sensorData == null) {
+                    System.err.println("ERROR: sensordata is null");
+                    continue;
+                }
                 List<DataPoint> datapoints = sensorData.getRecords();
                 for (var datapoint : datapoints) {
                     sb.append(watch.getWatchID());
@@ -81,9 +94,9 @@ public class CSVWriter {
                         sb.append(COMMA_DELIMITER);
                         sb.append(datapoint.getDataList().get(i));
                     }
-                    _FileWriter.append(sb);
+                    fileWriter.append(sb);
                     sb.setLength(0);
-                    _FileWriter.append(NEW_LINE_SEPARATOR);
+                    fileWriter.append(NEW_LINE_SEPARATOR);
                 }
             }
         }catch (Exception e) {
@@ -91,8 +104,10 @@ public class CSVWriter {
             e.printStackTrace();
         } finally {
             try {
-                _FileWriter.flush();
-                _FileWriter.close();
+                if(!skip){
+                    fileWriter.flush();
+                    fileWriter.close();
+                }
             } catch (IOException e) {
                 System.out.println("Error while flushing/closing fileWriter !!!");
                 e.printStackTrace();
@@ -106,18 +121,28 @@ public class CSVWriter {
      * Retrieve data from all the watches fom database and writes into a CSV file
      * @throws IOException If it is not able to write a CSV file
      */
-    public void WriteAll() {
+    public void WriteAll(File filename) {
         DBManager DB = new DBManager();
         boolean header = true;
-        try {
-            for (Smartwatch _watch : DB.getAllWatches()) {
 
-                    WriteOne(_watch, header);
-                    header = false;
+        try {
+            fileWriter = new FileWriter(filename);
+            for (Smartwatch _watch : DB.getAllWatches()) {
+                System.out.println("Writing data for watch " + _watch.getWatchID());
+                WriteOne(_watch, filename, header);
+                header = false;
             }
         } catch (Exception e) {
             System.out.println("Error in CsvFileAllWriter !!!");
             e.printStackTrace();
+        }finally {
+            try {
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                System.out.println("Error while flushing/closing fileWriter !!!");
+                e.printStackTrace();
+            }
         }
     }
 }

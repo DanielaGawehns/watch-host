@@ -141,42 +141,46 @@ public class SensorData {
     /**
      * Merges duplicates ({@link DataPoint} with the same {@link DataPoint#time}) by averaging the {@link DataPoint#dataList} values
      */
-    void mergeDuplicates(){
+    void mergeDuplicates() {
         List<DataPoint> mergedRecords = new ArrayList<>();
         List<Double> totalValues = new ArrayList<>();
-        double duplicateCounter = 1d;
+        double duplicateCounter = 0d;
 
         System.out.println("SensorData: start merge");
 
-        if(records.size() > 0){
-            DataPoint old = records.get(0);
-
-            for(int j = 0; j < old.getDataList().size(); j++){ // add old data to totalValues
-                totalValues.add(0d);
-            }
-
-            for(int i = 1; i < records.size(); i++){
-                DataPoint record = records.get(i);
-                Util.addDoubleLists(totalValues, old.getDataList());
-
-                if(old.getTime().equals(record.getTime())){ // if times are the same
-                    duplicateCounter++;
-                }else{ // add point to records
-                    Util.divideDoubleList(totalValues, duplicateCounter);
-                    old.setDataList(totalValues); // set the data list to calculated values
-                    mergedRecords.add(old);
-
-                    totalValues = new ArrayList<>();
-                    for(int j = 0; j < old.getDataList().size(); j++){
-                        totalValues.add(0d);
-                    }
-                    duplicateCounter = 1;
-
-                }
-
-                old = record;
-            }
+        if (records.size() <= 0) {
+            return;
         }
+
+        DataPoint old = records.get(0);
+
+        for (int j = 0; j < old.getDataList().size(); j++) { // add old data to totalValues
+            totalValues.add(0d);
+        }
+
+        for (int i = 1; i < records.size(); i++) {
+            DataPoint record = records.get(i);
+            Util.addDoubleLists(totalValues, old.getDataList());
+
+            if (old.getTime().equals(record.getTime())) { // if times are the same
+                duplicateCounter++;
+            } else { // add point to records
+                Util.divideDoubleList(totalValues, duplicateCounter);
+                old.setDataList(totalValues); // set the data list to calculated values
+                mergedRecords.add(old);
+
+                totalValues = new ArrayList<>();
+                for (int j = 0; j < old.getDataList().size(); j++) {
+                    totalValues.add(0d);
+                }
+                duplicateCounter = 1;
+
+            }
+
+            old = record;
+        }
+
+
         System.out.println("Merged records have size " + mergedRecords.size());
         records = mergedRecords;
         printRecords();

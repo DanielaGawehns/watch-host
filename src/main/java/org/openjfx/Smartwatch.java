@@ -3,12 +3,7 @@ package org.openjfx;
 
 import util.Util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 
 /**
@@ -73,6 +68,10 @@ public class Smartwatch {
         return sensorMap.get(sensor);
     }
 
+    List<SensorData> getAllSensorData(){
+        return new ArrayList<>(sensorMap.values());
+    }
+
 
     /**
      * Gets {@link WatchData#watchID} from {@link Smartwatch#watchData}
@@ -131,8 +130,8 @@ public class Smartwatch {
      * Adds new {@link DataPoint}(s) to the right {@link SensorData#records} in {@link Smartwatch#sensorDataList}
      * @param dataList List of {@link DataPoint}(s) to be added. The points can be from any supported sensor.
      */
-    public void addData(List<DataPoint> dataList){
-        SortedSet<String> sensorDataEdited = new TreeSet<>();
+    public List<String> addData(List<DataPoint> dataList){
+        LinkedHashSet<String> sensorDataEdited = new LinkedHashSet<>();
         String sensor;
 
         for (DataPoint dataPoint : dataList) {
@@ -149,12 +148,14 @@ public class Smartwatch {
         }
 
         // ?!?!?!?!?!?
+        // TODO: if data also gives ms this is not needed. For now we have to filter duplicates as we get multiple
+        //  datapoint with the same time
 
-        for (int i = 0; i < sensorDataEdited.size(); i++){
-            sensor = sensorDataEdited.first();
-            sensorMap.get(sensor).mergeDuplicates();
-            sensorDataEdited.remove(sensor);
-        }
+        // TODO merging seems broken but maybe its not needed as seen above ^
+       /* for (String s : sensorDataEdited) {
+            sensorMap.get(s).mergeDuplicates();
+        }*/
+        return new ArrayList<>(sensorDataEdited);
     }
 
 
@@ -182,7 +183,7 @@ public class Smartwatch {
      */
     void addSensor(String sensor){
         if (!sensorMap.containsKey(sensor)) {
-            System.out.println("Put sensor " + sensor + " place " + (sensorMap.size() - 1));
+            System.out.println("Put sensor " + sensor + " place " + sensorMap.size());
             var data = new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor));
             sensorMap.put(sensor, data);
         }

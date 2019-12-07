@@ -54,6 +54,7 @@ public class DBManager {
             random = new Random().nextInt(Integer.MAX_VALUE);
             if(!IDList.contains(random)){
                 IDList.add(random);
+                System.out.println("Got new Data ID: " + random);
                 return random;
             }
         }
@@ -99,6 +100,8 @@ public class DBManager {
         StringBuilder command = new StringBuilder("INSERT INTO datalists(ID, sensor_name, data_ID) VALUES(?, ?, ?)");
         Connection con = null;
         PreparedStatement stmt = null;
+
+        System.out.println("Inserting new sensor " + sensor + " with ID " + dataID);
 
         try{
             con = connect();

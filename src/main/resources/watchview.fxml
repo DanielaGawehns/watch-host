@@ -10,6 +10,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane fx:id="view" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.controllers.WatchViewController">
@@ -25,6 +26,7 @@
          <children>
             <HBox alignment="CENTER">
                <children>
+                  <Region HBox.hgrow="ALWAYS" />
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@images/smartwatch.png" />
@@ -69,6 +71,7 @@
                         <Insets left="60.0" />
                      </HBox.margin>
                   </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
                   <VBox alignment="CENTER" spacing="5.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#optionsPressed" prefHeight="25.0" prefWidth="75.0" text="Options" />

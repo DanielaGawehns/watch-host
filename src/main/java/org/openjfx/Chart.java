@@ -16,6 +16,9 @@ import java.util.List;
  */
 public class Chart {
 
+
+    private LineChart<String, Number> chart;
+
     /**
      * List of data to print in a chart. One sensorData depicts one line in the chart
      */
@@ -55,7 +58,7 @@ public class Chart {
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel(Sensors.sensorNameToFriendlyString(sensorName));
 
-        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart = new LineChart<>(xAxis, yAxis);
         fillChart(chart, sensorName);
         charts.getChildren().add(chart);
         //charts.getChildren().add(commentsBox);
@@ -68,7 +71,7 @@ public class Chart {
      * @param sensor The sensor that is used
      */
     private void fillChart(LineChart<String, Number> chart, String sensor) {
-        XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
+
         System.out.println("Fill Chart for sensor " + sensor);
         SensorData sensorData = dataList.get(0); // get data of the right sensor
 
@@ -76,18 +79,39 @@ public class Chart {
         chart.getData().clear();
         chart.setDisable(false); // turn on chart
 
-        series.setName(sensorData.getSensor()); // set title of line for legend
-        chart.getData().add(series); // add series to chart
+        for(SensorData data : dataList){
+            chart.getData().add(fillSeries(data)); // add series to chart
+        }
+
         chart.setTitle(sensorData.getSensor()); // set title of chart
 
         System.out.println("Data size is " + sensorData.size());
 
+
+    }
+
+    private XYChart.Series<String, Number> fillSeries(SensorData sensorData){
+        XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
+
+        series.setName(sensorData.getSensor()); // set title of line for legend
         for(int i = 0; i < sensorData.size(); i += 1){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
-
-            //temp.setNode(createDataNode());
             series.getData().add(temp); // add datapoint to series
         }
+
+        return series;
+    }
+
+    public String getSensor() { return sensor; }
+
+    public void addData(SensorData data){
+        if(!data.getSensor().equals(sensor)){
+            System.err.println("ERROR: sensor of added data does not match chart sensor!");
+            return;
+        }
+        dataList.add(data);
+        chart.getData().add(fillSeries(data));
+
     }
 
 }

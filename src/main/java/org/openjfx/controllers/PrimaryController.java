@@ -157,7 +157,7 @@ public class PrimaryController{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             overviewController = loader.getController();
-            overviewController.setLabels(watches.size(), watches.getNumberOfMeasurements());
+            overviewController.setup(watches.getAllSensorData(), watches.size(), watches.getNumberOfMeasurements());
 
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane
@@ -248,13 +248,16 @@ public class PrimaryController{
      */
     private void syncFiles(File folder) {
         int success = 1;
-        for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all folders in map 'folder'
+        List<String> editedSensors;
+        for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all files in map 'folder'
             List<DataPoint> dataList = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
             System.out.println("Read list of size " + dataList.size());
             Smartwatch watch = watches.getWithID(reader.getWatchNumber());
-            watch.addData(dataList); // add data stream to watch
-            for(String sensor : watch.getSensorListFromMap()){
+            editedSensors = watch.addData(dataList); // add data stream to watch
+            for(String sensor : editedSensors){
                 success = dbManager.insertDatalist(reader.getWatchNumber(), watches.getWithID(reader.getWatchNumber()).getSensorData(sensor));
+                if(success != 0)
+                    break;
             }
             if(success == 0 && fileEntry.delete()) { // delete the file
                 System.out.println("File deleted!");
