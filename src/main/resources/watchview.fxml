@@ -16,7 +16,7 @@
    <center>
       <ScrollPane fx:id="scrollMain" fitToWidth="true" hbarPolicy="NEVER" BorderPane.alignment="CENTER">
          <content>
-            <VBox fx:id="charts" alignment="CENTER" />
+            <VBox fx:id="chartsBox" alignment="CENTER" />
          </content>
       </ScrollPane>
    </center>
@@ -74,7 +74,6 @@
                         <Button mnemonicParsing="false" onAction="#optionsPressed" prefHeight="25.0" prefWidth="75.0" text="Options" />
                         <Button mnemonicParsing="false" onAction="#disconnectButtonPressed" text="Disconnect" />
                         <Button mnemonicParsing="false" onAction="#exportOneCSVButtonPressed" text="Export this watch to CSV" />
-                        <Button mnemonicParsing="false" onAction="#exportAllCSVButtonPressed" text="Export all watches to CSV" />
                         <Button mnemonicParsing="false" onAction="#addComments" text="Add Comments" />
                      </children>
                      <HBox.margin>

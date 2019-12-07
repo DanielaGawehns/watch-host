@@ -1,19 +1,13 @@
 package org.openjfx.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import org.openjfx.Smartwatch;
-
-
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
-
 import javafx.stage.Stage;
 import org.openjfx.CSVWriter;
 
 import java.io.File;
 
-// Class for controlling function for the overview screen
-// Controller for overview.fxml
 
 /**
  * Class for controlling function for the overview screen
@@ -21,21 +15,36 @@ import java.io.File;
  */
 public class OverviewController {
 
+    /**
+     * Label for count of connected watches
+     */
+    @FXML
+    private Label labelWatchConnected;
+
 
     /**
-     * The {@link Smartwatch} of which the overview is showed
+     * Label for count of active measurements
      */
-    private Smartwatch watch;
+    @FXML
+    private Label labelActiveMeasurements;
+
 
     /**
-     * Controller of {@link PrimaryController}
+     * Sets {@link OverviewController#labelWatchConnected} and {@link OverviewController#labelActiveMeasurements}
+     * @param watches value to set {@link OverviewController#labelWatchConnected}
+     * @param measurements value to set {@link OverviewController#labelActiveMeasurements}
      */
-    //private PrimaryController primaryController;
+    void setLabels(int watches, int measurements){
+        labelWatchConnected.setText(watches + "");
+        labelActiveMeasurements.setText(measurements + "");
+    }
+
 
     /**
      * Event for Export from all watches button.
      */
-    public void exportButton() {
+    @FXML
+    private void exportButton() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save file as");
         fileChooser.getExtensionFilters().addAll(

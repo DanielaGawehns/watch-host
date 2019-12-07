@@ -68,15 +68,15 @@ public class PrimaryController{
     private MeasurementController measurementController;
 
     /**
+     * Controller for overview screen {@link OverviewController}
+     */
+    private OverviewController overviewController;
+
+    /**
      * Controller for watch register screen {@link WatchAddController}
      */
     private WatchAddController watchAddController = new WatchAddController();
 
-    /**
-     * Controller for overview screen {@link OverviewController}
-     *
-     */
-    private OverviewController overviewController = new OverviewController();
 
 
     /**
@@ -156,6 +156,8 @@ public class PrimaryController{
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
+            overviewController = loader.getController();
+            overviewController.setLabels(watches.size(), watches.getNumberOfMeasurements());
 
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane
@@ -175,6 +177,7 @@ public class PrimaryController{
             BorderPane newPane = loader.load(); // load file into replacement pane
 
             watchController = loader.getController(); // set controller to controller of new file
+            System.out.println("Setting watch on place " + (currentWatch - 1));
             watchController.setWatch(watches.get(currentWatch - 1), this); // send Data of the watch being viewed to the controller
 
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one

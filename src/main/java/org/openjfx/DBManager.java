@@ -838,7 +838,6 @@ public class DBManager {
      */
     private List<LocalTime> getMeasurementTimes(int measurementID){
         String command = "SELECT * FROM measurements WHERE measurement_ID = ?";
-        int duration = -1;
         Connection con = null;
         PreparedStatement stmt = null;
         List<LocalTime> times = new ArrayList<>();
@@ -860,7 +859,7 @@ public class DBManager {
         }finally {
             cleanup(con, stmt);
         }
-        System.out.println("Found duration " + duration);
+        System.out.println("Got start and end times: " + times.get(0) + ", " + times.get(1));
         return times;
     }
 

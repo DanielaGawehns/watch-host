@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -103,7 +105,10 @@ public class WatchViewController {
      * VBox to contain the charts and comments
      */
     @FXML
-    private VBox charts;
+    private VBox chartsBox;
+
+
+    private List<Chart> charts = new ArrayList<>();
 
 
     /**
@@ -138,7 +143,7 @@ public class WatchViewController {
      * @param _watch The {@link Smartwatch} which data will be shown
      */
     void setWatch(Smartwatch _watch, PrimaryController controller){
-        System.out.println("Setting watch...");
+        System.out.println("Setting watch... with id " + _watch.getWatchID());
         watch = _watch;
         primaryController = controller;
 
@@ -146,7 +151,8 @@ public class WatchViewController {
 
         try {
             for (String sensor : watch.getSensorListFromMap()) {
-                placeChartOnScreen(sensor);
+               // placeChartOnScreen(sensor);
+                charts.add(new Chart(watch.getSensorData(sensor), chartsBox));
             }
             setComments();
         }catch (Exception e){ // if data is not found
@@ -157,118 +163,118 @@ public class WatchViewController {
     }
 
 
-    // TODO: Make this work with all types of charts
-    /**
-     * Fills a Linechart with data
-     * @param chart The Linechart to be filled
-     * @param sensor The sensor that is used
-     */
-    private void fillChart(LineChart<String, Number> chart, String sensor) {
-        XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
-        System.out.println("Fill Chart for watch: " + watch.getWatchID() + " and sensor " + sensor);
-        SensorData sensorData = watch.getSensorData(sensor); // get data of the right sensor
-
-        chart.setAnimated(false); // disable animation for clearing
-        chart.getData().clear();
-        chart.setDisable(false); // turn on chart
-
-        series.setName(sensorData.getSensor()); // set title of line for legend
-        chart.getData().add(series); // add series to chart
-        chart.setTitle(sensorData.getSensor()); // set title of chart
-
-        System.out.println("Data size is " + sensorData.size());
-
-        for(int i = 0; i < sensorData.size(); i += 1){ //TODO: find more robust way to remove unnecessary nodes
-            XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
-
-            //temp.setNode(createDataNode());
-            series.getData().add(temp); // add datapoint to series
-        }
-    }
-
-
-    /**
-     * Creates a chart and fills it uing {@link WatchViewController#fillChart(LineChart, String)}. Then places the chart in {@link WatchViewController#charts} together with the comments from {@link WatchViewController#commentsBox} to display them on the screen
-     * @param sensorName the name of the sensor for which we want to make a chart
-     */
-    private void placeChartOnScreen(String sensorName) {
-        CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Time");
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel(Sensors.sensorNameToFriendlyString(sensorName));
-
-        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
-        fillChart(chart, sensorName);
-        charts.getChildren().add(chart);
-        charts.getChildren().add(commentsBox);
-    }
+//    // TODO: Make this work with all types of charts
+//    /**
+//     * Fills a Linechart with data
+//     * @param chart The Linechart to be filled
+//     * @param sensor The sensor that is used
+//     */
+//    private void fillChart(LineChart<String, Number> chart, String sensor) {
+//        XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
+//        System.out.println("Fill Chart for watch: " + watch.getWatchID() + " and sensor " + sensor);
+//        SensorData sensorData = watch.getSensorData(sensor); // get data of the right sensor
+//
+//        chart.setAnimated(false); // disable animation for clearing
+//        chart.getData().clear();
+//        chart.setDisable(false); // turn on chart
+//
+//        series.setName(sensorData.getSensor()); // set title of line for legend
+//        chart.getData().add(series); // add series to chart
+//        chart.setTitle(sensorData.getSensor()); // set title of chart
+//
+//        System.out.println("Data size is " + sensorData.size());
+//
+//        for(int i = 0; i < sensorData.size(); i += 1){ //TODO: find more robust way to remove unnecessary nodes
+//            XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
+//
+//            //temp.setNode(createDataNode());
+//            series.getData().add(temp); // add datapoint to series
+//        }
+//    }
 
 
-    // TODO: maybe not needed
-    /**
-     * Created a clickable node at a datapoint in a chart and creates a label that can be filled
-     * @return The {@code Node} that has been created
-     */
-    private static Node createDataNode() {
-        var label = new Label();
-
-        var pane = new Pane(label);
-        pane.setShape(new Circle(4.0));
-        pane.setScaleShape(false);
-        pane.setStyle("-fx-background-color: transparent");
-
-        pane.setOnMouseEntered(mouseEvent -> pane.setStyle("-fx-background-color: grey"));
-
-
-        pane.setOnMouseExited(mouseEvent -> {
-            pane.setStyle("-fx-background-color: transparent");
-            label.setText("");
-        });
-
-        pane.setOnMouseClicked(mouseEvent -> pinWindow(pane, label));
-
-        label.setLayoutY(-10);
-
-        return pane;
-    }
+//    /**
+//     * Creates a chart and fills it uing {@link WatchViewController#fillChart(LineChart, String)}. Then places the chart in {@link WatchViewController#charts} together with the comments from {@link WatchViewController#commentsBox} to display them on the screen
+//     * @param sensorName the name of the sensor for which we want to make a chart
+//     */
+//    private void placeChartOnScreen(String sensorName) {
+//        CategoryAxis xAxis = new CategoryAxis();
+//        xAxis.setLabel("Time");
+//        NumberAxis yAxis = new NumberAxis();
+//        yAxis.setLabel(Sensors.sensorNameToFriendlyString(sensorName));
+//
+//        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+//        fillChart(chart, sensorName);
+//        charts.getChildren().add(chart);
+//        charts.getChildren().add(commentsBox);
+//    }
 
 
-    /**
-     * Shown the pinWindow when a {@code Node} is clicked. Shows options to add or remove text to the label
-     * @param pane The pane (Node) which was clicked
-     * @param label The label that we write text to
-     */
-    private static void pinWindow(Pane pane, Label label){
-        System.out.println("Clicked");
-        final Stage dialog = new Stage();
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        VBox dialogVbox = new VBox();
-        HBox hbox = new HBox();
-        Button buttonSet = new Button("Add pin");
-        Button buttonRemove = new Button("Remove pin");
-        TextField field = new TextField();
-        field.setPromptText("Type pin name...");
-        hbox.getChildren().addAll(buttonSet, buttonRemove);
-        dialogVbox.getChildren().addAll(new Text("Add pin to this node"), field, hbox);
-        Scene dialogScene = new Scene(dialogVbox);
-        dialog.setScene(dialogScene);
-        dialog.show();
+//    // TODO: maybe not needed
+//    /**
+//     * Created a clickable node at a datapoint in a chart and creates a label that can be filled
+//     * @return The {@code Node} that has been created
+//     */
+//    private static Node createDataNode() {
+//        var label = new Label();
+//
+//        var pane = new Pane(label);
+//        pane.setShape(new Circle(4.0));
+//        pane.setScaleShape(false);
+//        pane.setStyle("-fx-background-color: transparent");
+//
+//        pane.setOnMouseEntered(mouseEvent -> pane.setStyle("-fx-background-color: grey"));
+//
+//
+//        pane.setOnMouseExited(mouseEvent -> {
+//            pane.setStyle("-fx-background-color: transparent");
+//            label.setText("");
+//        });
+//
+//        pane.setOnMouseClicked(mouseEvent -> pinWindow(pane, label));
+//
+//        label.setLayoutY(-10);
+//
+//        return pane;
+//    }
 
-        buttonSet.setOnAction(e -> {
-            label.setText(field.getText());
-            // TODO: save label to csv
-            pane.setStyle("-fx-background-color: red");
-            pane.setOnMouseExited(mouseEvent -> pane.setStyle("-fx-background-color: red"));
-            dialog.close();
-        });
 
-        buttonRemove.setOnAction(e -> {
-            label.setText("");
-            pane.setStyle("-fx-background-color: transparent");
-            pane.setOnMouseExited(mouseEvent -> pane.setStyle("-fx-background-color: transparent"));
-            dialog.close();
-        });
-    }
+//    /**
+//     * Shown the pinWindow when a {@code Node} is clicked. Shows options to add or remove text to the label
+//     * @param pane The pane (Node) which was clicked
+//     * @param label The label that we write text to
+//     */
+//    private static void pinWindow(Pane pane, Label label){
+//        System.out.println("Clicked");
+//        final Stage dialog = new Stage();
+//        dialog.initModality(Modality.APPLICATION_MODAL);
+//        VBox dialogVbox = new VBox();
+//        HBox hbox = new HBox();
+//        Button buttonSet = new Button("Add pin");
+//        Button buttonRemove = new Button("Remove pin");
+//        TextField field = new TextField();
+//        field.setPromptText("Type pin name...");
+//        hbox.getChildren().addAll(buttonSet, buttonRemove);
+//        dialogVbox.getChildren().addAll(new Text("Add pin to this node"), field, hbox);
+//        Scene dialogScene = new Scene(dialogVbox);
+//        dialog.setScene(dialogScene);
+//        dialog.show();
+//
+//        buttonSet.setOnAction(e -> {
+//            label.setText(field.getText());
+//            // TODO: save label to csv
+//            pane.setStyle("-fx-background-color: red");
+//            pane.setOnMouseExited(mouseEvent -> pane.setStyle("-fx-background-color: red"));
+//            dialog.close();
+//        });
+//
+//        buttonRemove.setOnAction(e -> {
+//            label.setText("");
+//            pane.setStyle("-fx-background-color: transparent");
+//            pane.setOnMouseExited(mouseEvent -> pane.setStyle("-fx-background-color: transparent"));
+//            dialog.close();
+//        });
+//    }
 
 
     /**
@@ -528,6 +534,7 @@ public class WatchViewController {
             vbox.setAlignment(Pos.CENTER);
 
             commentsBox.getChildren().add(vbox);
+            chartsBox.getChildren().add(commentsBox);
         }
     }
 }

@@ -1,9 +1,6 @@
 package org.openjfx;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Class holding a list of {@link Smartwatch}
@@ -13,6 +10,7 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
     public SmartwatchList() {
         super();
     }
+
 
     /**
      * Find the index of the watch per its ID.
@@ -28,6 +26,7 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
         return -1;
     }
 
+
     /**
      * Get from list
      * @param id Watch ID
@@ -41,6 +40,7 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
         return this.get(index);
     }
 
+
     /**
      * Removes the watch with the given ID from the list.
      * @param id The ID of the watch to remove.
@@ -53,5 +53,20 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
         }
 
         this.remove(index);
+    }
+
+
+    /**
+     * Goes through all the connected watches and counts how many have an measurement attached
+     * @return Number of measurements counted
+     */
+    public int getNumberOfMeasurements(){
+        int count = 0;
+        for(Smartwatch watch : this){
+            if(watch.getMeasurement() != null){
+                count++;
+            }
+        }
+        return count;
     }
 }
