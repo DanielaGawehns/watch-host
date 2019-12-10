@@ -45,7 +45,7 @@ public class WrappedConnection implements Closeable {
 
                 if (mustClose) {
                     try {
-                        this.connection.close();
+                        this.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
