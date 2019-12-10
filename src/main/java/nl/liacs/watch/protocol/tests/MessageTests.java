@@ -31,6 +31,25 @@ public class MessageTests {
         decoded.parameters[3].setType(ParameterType.DOUBLE);
         decoded.parameters[4].setType(ParameterType.DOUBLE);
 
-        Assert.assertTrue(msg.equals(decoded));
+        Assert.assertEquals(msg, decoded);
+    }
+
+    @Test
+    public void testEquals() {
+        var a = new Message(MessageType.PING);
+        var b = new Message(MessageType.PING);
+        Assert.assertEquals(a, b);
+
+        a.parameters = new MessageParameter[]{new MessageParameter(5)};
+        b.parameters = new MessageParameter[]{new MessageParameter(5)};
+        Assert.assertEquals(a, b);
+
+        a.parameters = new MessageParameter[]{new MessageParameter(5)};
+        b.parameters = new MessageParameter[]{new MessageParameter(10)};
+        Assert.assertNotEquals(a, b);
+
+        a = new Message(MessageType.INCREMENT);
+        b = new Message(MessageType.LIVE_INTERVAL);
+        Assert.assertNotEquals(a, b);
     }
 }
