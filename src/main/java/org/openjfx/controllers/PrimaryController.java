@@ -1,6 +1,7 @@
 package org.openjfx.controllers;
 
 import javafx.application.HostServices;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import nl.liacs.watch.protocol.server.ConnectionManager;
+import nl.liacs.watch.protocol.tcpserver.Server;
+import nl.liacs.watch.protocol.types.Constants;
 import org.openjfx.*;
 import util.Util;
 
@@ -22,6 +26,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -90,13 +96,37 @@ public class PrimaryController{
 
 
     /**
+     * The global connection manager for watch communication.
+     */
+    private static ConnectionManager connectionManager;
+    /**
+     * @return The global connection manager for watch communication.
+     */
+    public static ConnectionManager GetConnectionManager() {
+        return connectionManager;
+    }
+
+    /**
      * Initializes the main view by printing the sidebar and overview
      * It also gets all the data stored in the database by using {@link DBManager#getAllWatches()}
      */
-    public void initialize() {
+    public void initialize() throws IOException {
         System.out.println("INITIALIZE Primary Controller");
 
+        var server = Server.createServer(Constants.TcpPort);
+        Logger.getGlobal().log(Level.INFO, "running tcp server on port " + Constants.TcpPort);
+        connectionManager = new ConnectionManager(server);
+        connectionManager.start();
+
         watches = dbManager.getAllWatches();
+
+        connectionManager.connectionListeners.add(wrappedConnection -> {
+            var watchData = new WatchData(0);
+            var watch = new Smartwatch(watchData, "", wrappedConnection);
+            Platform.runLater(new Thread(() -> {
+                this.addWatch(watch);
+            }));
+        });
 
         currentWatch = -1;
         loadOverviewFXML();
@@ -278,6 +308,7 @@ public class PrimaryController{
      * Event for the sync button. Runs {@link PrimaryController#syncFiles(File)}
      */
     public void syncButtonPressed() {
+        System.out.println(System.getProperty("user.dir"));
         syncFiles(new File(System.getProperty("user.dir") + "/src/main/resources/input/test")); // read files in input folder
     }
 

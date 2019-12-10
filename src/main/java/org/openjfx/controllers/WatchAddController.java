@@ -93,7 +93,7 @@ public class WatchAddController {
             return;
         }
         watchData.setIpAddress(watchIP);
-        watch = new Smartwatch(watchData, watchName);
+        watch = new Smartwatch(watchData, watchName, null); // TODO: make the connection non-null
 
         // Add the watch
         primaryController.addWatch(watch);

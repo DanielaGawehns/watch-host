@@ -251,7 +251,7 @@ public class DBManager {
                 data = getWatchData(ID);
                 var sensors = getSensorList(ID);
                 if(data != null){
-                    watch = new Smartwatch(data, rs.getString(2));
+                    watch = new Smartwatch(data, rs.getString(2), null);
                     for(String sensor : sensors){
                         watch.addSensor(sensor);
                         watch.setData(getDataList(ID, sensor));
