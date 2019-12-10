@@ -77,7 +77,7 @@ public class Message {
             return false;
         }
         for (int i = 0; i < this.parameters.length; i++) {
-            if (other.parameters[i].equals(this.parameters[i])) {
+            if (!other.parameters[i].equals(this.parameters[i])) {
                 return false;
             }
         }

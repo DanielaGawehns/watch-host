@@ -5,6 +5,7 @@ import com.google.common.primitives.Doubles;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class MessageParameter {
     /**
@@ -113,7 +114,7 @@ public class MessageParameter {
         if (obj == this) return true;
         if (!MessageParameter.class.isAssignableFrom(obj.getClass())) return false;
 
-        final MessageParameter other = (MessageParameter)obj;
-        return other.type == this.type && other.bytes.equals(this.bytes);
+        final MessageParameter other = (MessageParameter) obj;
+        return other.type == this.type && Arrays.equals(other.bytes, this.bytes);
     }
 }
