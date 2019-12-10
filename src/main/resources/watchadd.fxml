@@ -20,12 +20,6 @@
             <TextField fx:id="textfieldName" />
          </children>
       </HBox>
-      <HBox alignment="CENTER_RIGHT" spacing="10.0">
-         <children>
-            <Label text="IP-address" />
-            <TextField fx:id="textfieldIP" />
-         </children>
-      </HBox>
       <Separator prefWidth="200.0" />
       <HBox alignment="CENTER_RIGHT">
          <children>

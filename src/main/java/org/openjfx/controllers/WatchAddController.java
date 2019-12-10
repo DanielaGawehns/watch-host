@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import org.openjfx.Smartwatch;
 import org.openjfx.WatchData;
-import util.IpValidator;
 import util.Util;
 
 
@@ -35,22 +34,9 @@ public class WatchAddController {
     private TextField textfieldName;
 
     /**
-     * Field for filling the IP option
-     */
-    @FXML
-    private TextField textfieldIP;
-    
-    /**
      * Instance of PrimaryController
      */
     private PrimaryController primaryController;
-
-
-    /**
-     * Validator for Ip addresses
-     */
-    private IpValidator validator = new IpValidator();
-    
 
     /**
      * Setter of {@link WatchAddController#primaryController}
@@ -58,13 +44,12 @@ public class WatchAddController {
     void setPrimaryController(PrimaryController controller) { primaryController = controller; }
 
 
-    // TODO do something with the IP field
     /**
      * Parses the input from the Text fields and adds an new watch using {@link PrimaryController#addWatch(Smartwatch)}
      */
     private void parseInput(){
         int watchID;
-        String watchName = textfieldName.getText(), watchIP = textfieldIP.getText();
+        String watchName = textfieldName.getText();
         WatchData watchData;
         Smartwatch watch;
 
@@ -87,13 +72,7 @@ public class WatchAddController {
 
         watchData = new WatchData(watchID);
 
-        //TODO: parse IP field
-        if(!validator.isValid(watchIP)){
-            Util.printErrorDialog("Watch IP: " + watchIP + " is not valid!", "Please choose another IP to continue.");
-            return;
-        }
-        watchData.setIpAddress(watchIP);
-        watch = new Smartwatch(watchData, watchName, null); // TODO: make the connection non-null
+        watch = new Smartwatch(watchData, watchName, null);
 
         // Add the watch
         primaryController.addWatch(watch);

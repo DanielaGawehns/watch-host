@@ -292,7 +292,7 @@ public class DBManager {
             ResultSet rs = stmt.executeQuery();
 
            if(rs.next()){
-               data = new WatchData(ID, rs.getInt(3), rs.getFloat(4), rs.getFloat(5), rs.getString(2));
+               data = new WatchData(ID, rs.getInt(3), rs.getFloat(4), rs.getFloat(5));
            }
 
             rs.close();
@@ -379,7 +379,7 @@ public class DBManager {
             stmt = con.prepareStatement(command);
 
             stmt.setInt(1, data.getWatchID());
-            stmt.setString(2, data.getIpAddress());
+            stmt.setString(2, "");
             stmt.setInt(3, data.getBatteryPercentage());
             stmt.setFloat(4, data.getMaxStorage());
             stmt.setFloat(5, data.getUsedStorage());
