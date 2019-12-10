@@ -123,9 +123,7 @@ public class PrimaryController{
         connectionManager.connectionListeners.add(wrappedConnection -> {
             var watchData = new WatchData(0);
             var watch = new Smartwatch(watchData, "", wrappedConnection);
-            Platform.runLater(new Thread(() -> {
-                this.addWatch(watch);
-            }));
+            Platform.runLater(() -> this.addWatch(watch));
         });
 
         currentWatch = -1;

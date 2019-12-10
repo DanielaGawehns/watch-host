@@ -30,7 +30,7 @@ public class WrappedConnection implements Closeable {
         this.pool = Executors.newFixedThreadPool(1);
 
         // receive loop
-        this.pool.submit(new Thread(() -> {
+        this.pool.submit(() -> {
             while (!this.pool.isShutdown()) {
                 Boolean mustClose = false;
 
@@ -52,7 +52,7 @@ public class WrappedConnection implements Closeable {
                     return;
                 }
             }
-        }));
+        });
     }
 
     /**

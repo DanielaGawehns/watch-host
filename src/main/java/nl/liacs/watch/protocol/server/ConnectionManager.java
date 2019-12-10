@@ -38,16 +38,16 @@ public class ConnectionManager {
      */
     public void start() {
         // start broadcast handler
-        this.threadPool.submit(new Thread(() -> {
+        this.threadPool.submit(() -> {
             try {
                 this.broadcastHandler.Listen();
             } catch (IOException e) {
                 e.printStackTrace();
                 this.shutdown();
             }
-        }));
+        });
 
-        this.threadPool.submit(new Thread(() -> {
+        this.threadPool.submit(() -> {
             while (!this.threadPool.isShutdown()) {
                 try {
                     var socket = this.server.accept();
@@ -56,7 +56,7 @@ public class ConnectionManager {
                     e.printStackTrace();
                 }
             }
-        }));
+        });
 
         this.running = true;
     }
