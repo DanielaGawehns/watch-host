@@ -30,10 +30,6 @@ public class DataPoint {
      */
     private List<Double> dataList;
 
-    /**
-     * Comment added by the user
-     */
-    private String comment;
 
     /**
      * Constructor
@@ -43,7 +39,6 @@ public class DataPoint {
         date = _date;
         time = _time;
         dataList = _dataList;
-        comment = "";
     }
 
     /**
@@ -62,7 +57,6 @@ public class DataPoint {
 
     /**
      * Getter for {@link org.openjfx.DataPoint#time}
-     * @return
      */
     LocalTime getTime() {
         return time;
@@ -83,9 +77,4 @@ public class DataPoint {
         this.dataList = dataList; //TODO make size of datalist match the sensor
     }
 
-    /**
-     * Setter for {@link org.openjfx.DataPoint#comment}
-     * @param _comment String containing the comment
-     */
-    void setComment(String _comment){ comment = _comment; }
 }

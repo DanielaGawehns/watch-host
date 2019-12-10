@@ -18,7 +18,7 @@ public class WatchOptionsController {
      * Field for filling the watch ID
      */
     @FXML
-    private Label labelWatchID;;
+    private Label labelWatchID;
 
     /**
      * Field for filling the watch name
@@ -32,6 +32,10 @@ public class WatchOptionsController {
      */
     private Smartwatch watch;
 
+
+    /**
+     * Database manager {@link DBManager} for adjusting data in the database
+     */
     private DBManager dbManager = new DBManager();
 
 
@@ -48,7 +52,7 @@ public class WatchOptionsController {
 
     // TODO sanitation
     /**
-     * Saves the values inserted into the Textfields
+     * Saves the values inserted into the Textfields using {@link Smartwatch#setWatchName(String)} and {@link DBManager#setWatchName(int, String)}
      */
     public void saveOptions() {
 

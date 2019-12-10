@@ -13,38 +13,28 @@ public class CSVWriter {
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    private FileWriter fileWriter = null;
-
 
     /**
-     * Constructor
+     * {@link FileWriter} object which will write data to a file
      */
-    public CSVWriter() {
+    private FileWriter fileWriter = null;
 
-    }
 
 
     /**
      * Retrieve data from one watch fom database and writes into a CSV file
-     * @throws IOException If it is not able to write a CSV file
      */
     public void WriteOne(Smartwatch watch, File filename, boolean header) {
-       // FileWriter _FileWriter = null;
         StringBuilder sb = new StringBuilder();
         DBManager DB = new DBManager();
         int maxDim = 0; // maximum dimensionality of data point
         boolean skip = true;
-       // int id = watch.getWatchID();
-       // List<SensorData> sensorDataList = DB.getAllDataLists(id);
-
-
 
         try {
             if(fileWriter == null) {
                 fileWriter = new FileWriter(filename);
                 skip = false;
             }
-           // _FileWriter = new FileWriter(filename);
             int id = watch.getWatchID();
             List<SensorData> sensorDataList = DB.getAllDataLists(id);
 
@@ -72,9 +62,7 @@ public class CSVWriter {
                 fileWriter.append(sb);
                 sb.setLength(0);
                 fileWriter.append(NEW_LINE_SEPARATOR);
-
             }
-
 
             for (SensorData sensorData : sensorDataList) {
                 if (sensorData == null) {
@@ -113,13 +101,11 @@ public class CSVWriter {
                 e.printStackTrace();
             }
         }
-
-
     }
+
 
     /**
      * Retrieve data from all the watches fom database and writes into a CSV file
-     * @throws IOException If it is not able to write a CSV file
      */
     public void WriteAll(File filename) {
         DBManager DB = new DBManager();
@@ -146,11 +132,3 @@ public class CSVWriter {
         }
     }
 }
-/*
-aray[int] x 452678
-for (var Nummmers: x)
-
-for( watchid id : lijstwatchid){
-        writeone(id)
-        }
-*/

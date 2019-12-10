@@ -49,3 +49,7 @@
 .scroll-pane{ -fx-background-color: transparent;}
 
 .separator{-fx-background-color: #706e6e;}
+
+.body {
+    -fx-background-color: #242430;
+}

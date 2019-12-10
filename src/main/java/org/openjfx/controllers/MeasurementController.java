@@ -18,7 +18,6 @@ import org.openjfx.SmartwatchList;
 import org.openjfx.DBManager;
 import util.Pair;
 import util.Util;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -394,13 +393,10 @@ public class MeasurementController {
             return;
         }
 
-
         // store all values for the measurement
         measurement.setSensors(sensorList);
         measurement.setTimeStart(startTime);
         measurement.setTimeEnd(endTime);
-
-
 
         // Check for double measurements
         for(Smartwatch curr : selectedWatches){

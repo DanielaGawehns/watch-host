@@ -51,16 +51,11 @@ public class Smartwatch {
         if(!_name.isEmpty()){
             watchName = _name;
         }
-
-        //sensorDataList.add(new SensorData(watchData.getWatchID(), "HRM"));
-        //sensorDataList.add(new SensorData(watchData.getWatchID(), "PRESSURE"));
-        //sensorDataList.add(new SensorData(watchData.getWatchID(), "ACCELEROMETER"));
     }
 
 
-
     /**
-     * Get data of sensor {@code sensor} from {@link Smartwatch#sensorDataList}
+     * Get {@link SensorData} from {@link Smartwatch#sensorMap}
      * @param sensor The name of the sensor
      * @return The {@link SensorData} corresponding the the sensor name
      */
@@ -68,71 +63,22 @@ public class Smartwatch {
         return sensorMap.get(sensor);
     }
 
+
+    /**
+     * Gets all the {@link SensorData} available from {@link Smartwatch#sensorMap}
+     * @return A list of all the {@link SensorData}
+     */
     List<SensorData> getAllSensorData(){
         return new ArrayList<>(sensorMap.values());
     }
 
 
     /**
-     * Gets {@link WatchData#watchID} from {@link Smartwatch#watchData}
-     * @return {@link WatchData#watchID} as a integer
-     */
-    public int getWatchID() {
-        return watchData.getWatchID();
-    }
-
-
-    /**
-     * Sets {@link WatchData#watchID} from {@link Smartwatch#watchData}
-     * @param ID The value to set {@link WatchData#watchID}
-     */
-    public void setWatchID(int ID) { watchData.setWatchID(ID); }
-
-
-    /**
-     * Gets {@link WatchData#batteryPercentage} from {@link Smartwatch#watchData}
-     * @return {@link WatchData#batteryPercentage} as a integer
-     */
-    public int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
-
-
-    /**
-     * Getter for {@link Smartwatch#watchData}
-     */
-    public WatchData getWatchData() { return watchData; }
-
-
-    /**
-     * Getter for {@link Smartwatch#watchData}
-     */
-    public String getWatchName() { return watchName; }
-
-
-    /**
-     * Setter for {@link Smartwatch#watchName}
-     */
-    public void setWatchName(String name) { watchName = name; }
-
-
-    /**
-     * Setter for {@link Smartwatch#measurement}
-     */
-    public void setMeasurement(Measurement m) { measurement = m; }
-
-
-    /**
-     * Getter for {@link Smartwatch#measurement}
-     */
-    public Measurement getMeasurement() { return measurement; }
-
-
-    /**
-     * Adds new {@link DataPoint}(s) to the right {@link SensorData#records} in {@link Smartwatch#sensorDataList}
+     * Adds new {@link DataPoint}(s) to the right {@link SensorData} in {@link Smartwatch#sensorMap}
      * @param dataList List of {@link DataPoint}(s) to be added. The points can be from any supported sensor.
      */
     public List<String> addData(List<DataPoint> dataList){
         LinkedHashSet<String> sensorDataEdited = new LinkedHashSet<>();
-        String sensor;
 
         for (DataPoint dataPoint : dataList) {
             if(!sensorMap.containsKey(dataPoint.getSensorName())){
@@ -207,4 +153,57 @@ public class Smartwatch {
      * Setter for {@link Smartwatch#comments}
      */
     void setComments(List<Comment> _comments){ comments = _comments; }
+
+
+    /**
+     * Gets the ID of the watch using {@link WatchData#getWatchID()}
+     * @return ID as a integer
+     */
+    public int getWatchID() {
+        return watchData.getWatchID();
+    }
+
+
+    /**
+     * Sets the ID of the watch using {@link WatchData#setWatchID(int)}
+     * @param ID The value to set the ID to
+     */
+    public void setWatchID(int ID) { watchData.setWatchID(ID); }
+
+
+    /**
+     * Gets the battery percentage of the watch using {@link WatchData#getBatteryPercentage()}
+     * @return Battery percentage as an integer
+     */
+    public int getBatteryPercentage(){ return watchData.getBatteryPercentage(); }
+
+
+    /**
+     * Getter for {@link Smartwatch#watchData}
+     */
+    public WatchData getWatchData() { return watchData; }
+
+
+    /**
+     * Getter for {@link Smartwatch#watchData}
+     */
+    public String getWatchName() { return watchName; }
+
+
+    /**
+     * Setter for {@link Smartwatch#watchName}
+     */
+    public void setWatchName(String name) { watchName = name; }
+
+
+    /**
+     * Setter for {@link Smartwatch#measurement}
+     */
+    public void setMeasurement(Measurement m) { measurement = m; }
+
+
+    /**
+     * Getter for {@link Smartwatch#measurement}
+     */
+    public Measurement getMeasurement() { return measurement; }
 }

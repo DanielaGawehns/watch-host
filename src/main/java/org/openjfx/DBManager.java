@@ -1,17 +1,16 @@
 package org.openjfx;
 
 import util.Pair;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
 
-//TODO maybe add finally blocks to close connections in case of exceptions
 
 /**
  * Class for managing the connection between the front-end and the database
+ * For the database sqlite and jdbc are used
  */
 public class DBManager {
 
@@ -34,7 +33,7 @@ public class DBManager {
         String databaseLoc = "jdbc:sqlite:" + System.getProperty("user.dir") + "/database.sqlite";
         try{
             connection = DriverManager.getConnection(databaseLoc);
-            connection.createStatement().execute("PRAGMA foreign_keys = ON");
+            connection.createStatement().execute("PRAGMA foreign_keys = ON"); // Make sure foreign keys are enforced
             System.out.println("DB: Connected database");
         }catch (SQLException e){
             System.out.println(e.getMessage());
@@ -63,10 +62,10 @@ public class DBManager {
 
 
     /**
-     * Runs {@link DBManager#insertSensor(int, String, int, int)} with {@link DBManager#getNewDataID()} as {@code dataID}
+     * Runs {@link DBManager#insertSensor(int, String, int, int)} with {@link DBManager#getNewDataID(Set)} as {@code dataID}
      * @param ID Watch ID
      * @param sensor Sensor name
-     * @param dataListSize Amount of columns of the {@link DataPoint#dataList}
+     * @param dataListSize Amount of columns of the dataLists of the {@link DataPoint}
      */
     private void insertSensor(int ID, String sensor, int dataListSize){
         insertSensor(ID, sensor, dataListSize, getNewDataID(dataIDList));
@@ -93,7 +92,7 @@ public class DBManager {
      * Inserts a new line into the {@code datalists} table and creates a new {@code} data table for the inserted sensor
      * @param ID Watch ID
      * @param sensor Sensor name
-     * @param dataListSize Amount of columns of the {@link DataPoint#dataList}
+     * @param dataListSize Amount of columns of the dataLists of the {@link DataPoint}
      * @param dataID The ID of the {@code data} table to be created
      */
     private void insertSensor(int ID, String sensor, int dataListSize, int dataID){
@@ -218,7 +217,6 @@ public class DBManager {
                 }else{
                     System.err.println("Smartwatch with ID: " + ID + " not found");
                 }
-
             }
             rs.close();
         }catch (SQLException e){
@@ -381,7 +379,7 @@ public class DBManager {
             stmt = con.prepareStatement(command);
 
             stmt.setInt(1, data.getWatchID());
-            stmt.setString(2, data.getIpAdress());
+            stmt.setString(2, data.getIpAddress());
             stmt.setInt(3, data.getBatteryPercentage());
             stmt.setFloat(4, data.getMaxStorage());
             stmt.setFloat(5, data.getUsedStorage());
@@ -683,6 +681,7 @@ public class DBManager {
         System.out.println("DB: Deleted watch " + ID);
     }
 
+
     /**
      * Adds a new measurement to the database
      * @param IDList List of ID's of the watches to add the measurement to
@@ -868,7 +867,7 @@ public class DBManager {
 
 
     /**
-     * Gets the measurement given its ID. Using {@link DBManager#getMeasurementDuration(int)}
+     * Gets the {@link Measurement} given its ID. Using {@link DBManager#getMeasurementTimes(int)}
      * @param measurementID Measurement ID
      * @return The measurement
      */
@@ -1040,5 +1039,4 @@ public class DBManager {
             cleanup(con, stmt);
         }
     }
-
 }

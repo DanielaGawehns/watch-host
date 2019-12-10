@@ -3,23 +3,28 @@ package org.openjfx;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
 
 /**
  * Helper class to read and parse data from CSV files received from the watches
+ * This class will be replaced by protocol classes
  */
 public class CSVFileReader{
 
+    /**
+     * Delimiter to split data values
+     */
     private static final String COMMA_DELIMITER = ",";
 
+    /**
+     * Index of where in the string array the data values start
+     */
     private static final int DATA_START = 3;
 
     /**
@@ -71,6 +76,7 @@ public class CSVFileReader{
         return dataList;
     }
 
+
     /**
      * Parses a split line into usable data
      * @param record Should contain split strings representing a line of a CSV file
@@ -108,6 +114,7 @@ public class CSVFileReader{
         }
         return new DataPoint(sensorName, date, time, data);
     }
+
 
     /**
      * Getter for {@link org.openjfx.CSVFileReader#watchNumber}

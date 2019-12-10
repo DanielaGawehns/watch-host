@@ -26,11 +26,15 @@ public class Util {
         alert.showAndWait();
     }
 
+    /**
+     * Creates a choice box window
+     * @param title Title of the window
+     * @param header Header of the box
+     * @param body Body of the box
+     * @return Alert window to be printed
+     */
     public static Alert printChoiceBox(String title, String header, String body){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        //alert.setTitle("Disconnecting watch...");
-        //alert.setHeaderText("This will remove ALL data about the watch");
-        //alert.setContentText("Press OK to continue");
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(body);
@@ -83,7 +87,7 @@ public class Util {
     /**
      * Rounds a double to an amount of decimal places
      * @param value The value to be rounded
-     * @param places The amount of decimals to be rounded to. Should >= 0
+     * @param places The amount of decimals to be rounded to. Should be equal to or greater than 0
      * @return The value with the right amount of decimal places
      */
     public static double round(double value, int places) {

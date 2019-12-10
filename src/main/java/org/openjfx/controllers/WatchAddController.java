@@ -92,7 +92,7 @@ public class WatchAddController {
             Util.printErrorDialog("Watch IP: " + watchIP + " is not valid!", "Please choose another IP to continue.");
             return;
         }
-        watchData.setIpAdress(watchIP);
+        watchData.setIpAddress(watchIP);
         watch = new Smartwatch(watchData, watchName);
 
         // Add the watch

@@ -71,6 +71,11 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
         return count;
     }
 
+
+    /**
+     * Gets a list of all the {@link SensorData} available in all {@link Smartwatch}
+     * @return The list of data
+     */
     public List<SensorData> getAllSensorData(){
         List<SensorData> totalDataList = new ArrayList<>();
         for(Smartwatch watch : this){

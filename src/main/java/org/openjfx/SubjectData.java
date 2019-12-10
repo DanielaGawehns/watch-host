@@ -2,6 +2,7 @@ package org.openjfx;
 
 /**
  * Class holding information about a subject wearing a watch
+ * THIS CLASS IS CURRENTLY NOT USED
  */
 public class SubjectData { // TODO: do something with this
 

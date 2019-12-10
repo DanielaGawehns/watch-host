@@ -30,7 +30,7 @@ public class WatchData {
     /**
      * The address of the watch
      */
-    private String ipAdress = "";
+    private String ipAddress = "";
 
 
     /**
@@ -41,7 +41,7 @@ public class WatchData {
         batteryPercentage = _batteryPercentage;
         maxStorage = _maxStorage;
         usedStorage = _usedStorage;
-        ipAdress = _ipAdress;
+        ipAddress = _ipAdress;
     }
 
 
@@ -118,13 +118,13 @@ public class WatchData {
 
 
     /**
-     * Getter for {@link WatchData#ipAdress}
+     * Getter for {@link WatchData#ipAddress}
      */
-    public String getIpAdress() { return ipAdress; }
+    public String getIpAddress() { return ipAddress; }
 
 
     /**
-     * Setter for {@link WatchData#ipAdress}
+     * Setter for {@link WatchData#ipAddress}
      */
-    public void setIpAdress(String ipAdress) { this.ipAdress = ipAdress; }
+    public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
 }

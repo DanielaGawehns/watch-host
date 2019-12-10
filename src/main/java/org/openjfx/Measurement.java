@@ -1,10 +1,10 @@
 package org.openjfx;
 
 import util.Pair;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Class for storing information about measurements which are to be sent to watches
@@ -21,7 +21,6 @@ public class Measurement {
      */
     private LocalTime timeStart;
 
-
     /**
      * The ending time of the measurement
      */
@@ -32,7 +31,6 @@ public class Measurement {
      * Setter for {@link Measurement#sensors}
      */
     public void setSensors(List<Pair<String, Integer>> list) { sensors = list; }
-
 
 
     /**
@@ -47,18 +45,34 @@ public class Measurement {
      */
     public int size(){ return sensors.size(); }
 
+
+    /**
+     * Getter for {@link Measurement#timeStart}
+     */
     public LocalTime getTimeStart() {
         return timeStart;
     }
 
+
+    /**
+     * Setter for {@link Measurement#timeStart}
+     */
     public void setTimeStart(LocalTime timeStart) {
         this.timeStart = timeStart;
     }
 
+
+    /**
+     * Getter for {@link Measurement#timeEnd}
+     */
     public LocalTime getTimeEnd() {
         return timeEnd;
     }
 
+
+    /**
+     * Setter for {@link Measurement#timeEnd}
+     */
     public void setTimeEnd(LocalTime timeEnd) {
         this.timeEnd = timeEnd;
     }

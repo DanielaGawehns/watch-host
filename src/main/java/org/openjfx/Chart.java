@@ -5,18 +5,19 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
-import org.openjfx.controllers.WatchViewController;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Class for creating charts
+ * Class for creating charts. It creates a lineChart with given {@link SensorData} and places it in a supplied vbox
  */
 public class Chart {
 
 
+    /**
+     * The chart (string, number) to fill
+     */
     private LineChart<String, Number> chart;
 
     /**
@@ -61,7 +62,6 @@ public class Chart {
         chart = new LineChart<>(xAxis, yAxis);
         fillChart(chart, sensorName);
         charts.getChildren().add(chart);
-        //charts.getChildren().add(commentsBox);
     }
 
     // TODO: Make this work with all types of charts
@@ -86,10 +86,13 @@ public class Chart {
         chart.setTitle(sensorData.getSensor()); // set title of chart
 
         System.out.println("Data size is " + sensorData.size());
-
-
     }
 
+    /**
+     * Creates a series with data taken from a sensor
+     * @param sensorData {@link SensorData} of a sensor
+     * @return Series containing the data. This series can be added to a compatible chart
+     */
     private XYChart.Series<String, Number> fillSeries(SensorData sensorData){
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
 
@@ -102,8 +105,12 @@ public class Chart {
         return series;
     }
 
-    public String getSensor() { return sensor; }
 
+    /**
+     * Adds a {@link SensorData} to the watch. This will create a new series with {@link Chart#fillSeries(SensorData)}
+     * and add it to the chart
+     * @param data The {@link SensorData} to be added
+     */
     public void addData(SensorData data){
         if(!data.getSensor().equals(sensor)){
             System.err.println("ERROR: sensor of added data does not match chart sensor!");
@@ -114,4 +121,9 @@ public class Chart {
 
     }
 
+
+    /**
+     * Getter for {@link Chart#sensor}
+     */
+    public String getSensor() { return sensor; }
 }

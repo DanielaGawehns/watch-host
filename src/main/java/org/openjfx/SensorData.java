@@ -2,7 +2,6 @@ package org.openjfx;
 
 import javafx.scene.chart.XYChart;
 import util.Util;
-
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,7 +11,7 @@ import java.util.List;
 
 
 /**
- * Class for storing {@link DataPoint} of a sensor
+ * Class for storing {@link DataPoint} of a sensor of a watch
  */
 public class SensorData {
 
@@ -27,22 +26,15 @@ public class SensorData {
     private String sensor;
 
 
+    /**
+     * Stores the amount of data columns. These only include the double values
+     */
     private int dataFieldsNumber;
 
     /**
      * Number of the watch this data belong to
      */
     private int watchNumber;
-
-    /**
-     * Format used for dates
-     */
-    private final static SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
-
-    /**
-     * Format for times
-     */
-    private final static SimpleDateFormat time = new SimpleDateFormat("hh:mm:ss");
 
 
     /**
@@ -94,7 +86,7 @@ public class SensorData {
             for (Double aDouble : list) {
                 System.out.print("," + aDouble);
             }
-            System.out.println("");
+            System.out.println();
         }
     }
 
@@ -113,13 +105,12 @@ public class SensorData {
     int getWatchNumber() {
         return watchNumber;
     }
-    
+
+
     /**
      * Getter for {@link DataPoint} containing data from sensor
     */
-    public List<DataPoint> getRecords(){return records; 
-        
-    }
+    public List<DataPoint> getRecords(){ return records; }
 
 
     /**
@@ -128,6 +119,12 @@ public class SensorData {
     int getDataFieldsNumber(){ return dataFieldsNumber; }
 
 
+    /**
+     * Checks if there is a {@link DataPoint} that has the same date and time values
+     * @param date Date of the measurement
+     * @param time Time of the measurement
+     * @return True if it contains a point with the same data and time values. False if not
+     */
     boolean contains(LocalDate date, LocalTime time){
         for(int i = 0; i < size(); i++){
             if(records.get(i).getDate().equals(date) && records.get(i).getTime().equals(time)){
@@ -138,8 +135,9 @@ public class SensorData {
     }
 
 
+    // TODO: delete this if the sensor data received from the watch can be in ms precise
     /**
-     * Merges duplicates ({@link DataPoint} with the same {@link DataPoint#time}) by averaging the {@link DataPoint#dataList} values
+     * Merges duplicates values
      */
     void mergeDuplicates() {
         List<DataPoint> mergedRecords = new ArrayList<>();
@@ -176,7 +174,6 @@ public class SensorData {
                 duplicateCounter = 1;
 
             }
-
             old = record;
         }
 
@@ -186,16 +183,21 @@ public class SensorData {
         printRecords();
     }
 
+    /**
+     * Gets the ist {@link DataPoint} from {@link SensorData#records}
+     * @param i The index of the {@link DataPoint} to get
+     * @return The {@link DataPoint} to get
+     */
     DataPoint get(int i){ return records.get(i); }
 
 
     // TODO: make this work for all types of data
     /**
      * Gets a {@link DataPoint} and converts the data to {@link XYChart.Data} for use in charts
-     * @param i The {@link DataPoint} to get
-     * @return A {@link XYChart.Data} containing {@link DataPoint#time} and the first item of {@link DataPoint#dataList}
+     * @param i The index of the {@link DataPoint} to get
+     * @return A {@link XYChart.Data} containing the time and the first data column of {@link DataPoint}
      */
-    public XYChart.Data<String, Number> getDataPoint(int i) {
+    XYChart.Data<String, Number> getDataPoint(int i) {
         return new XYChart.Data<>(records.get(i).getTime().toString(), records.get(i).getDataList().get(0));
     }
 }

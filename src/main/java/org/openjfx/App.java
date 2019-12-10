@@ -8,19 +8,23 @@ import javafx.stage.Stage;
 import nl.liacs.watch.protocol.server.ConnectionManager;
 import nl.liacs.watch.protocol.tcpserver.Server;
 import nl.liacs.watch.protocol.types.Constants;
-
+import org.openjfx.controllers.PrimaryController;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
- * Main class for loading the main screen
+ * Main class for starting the application
  */
 public class App extends Application {
+
     /**
      * The global connection manager for watch communication.
      */
     private static ConnectionManager connectionManager;
+
+
     /**
      * @return The global connection manager for watch communication.
      */
@@ -28,33 +32,28 @@ public class App extends Application {
         return connectionManager;
     }
 
+
     /**
      * Start function
      * @param stage Stage to load scene into
-     * @throws IOException Thrown by {@link App#loadFXML(String)}
+     * @throws IOException Thrown by {@link FXMLLoader}
      */
     @Override
     public void start(Stage stage) throws IOException {
-        Scene scene = new Scene(loadFXML("primary"));
-        stage.setScene(scene);
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/primary.fxml"));
+        Parent root = fxmlLoader.load();
+        PrimaryController controller = fxmlLoader.getController();
+        controller.setHostServices(getHostServices());
+        stage.setScene(new Scene(root));
+        stage.setTitle("Watchboard");
         stage.show();
     }
 
 
     /**
-     * Loads a fxml file
-     * @param fxml File to load. Should not include the .fxml extension
-     * @return Loaded fxml file as Parent
-     * @throws IOException Thrown by {@code FXMLLoader}
-     */
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/" + fxml + ".fxml"));
-        return fxmlLoader.load();
-    }
-
-    /**
      * Main function
-     * @param args Unused launch arguments
+     * @param args Unused arguments
+     * @throws IOException Thrown by {@link Server#createServer(int)}
      */
     public static void main(String[] args) throws IOException {
         var server = Server.createServer(Constants.TcpPort);
@@ -63,5 +62,4 @@ public class App extends Application {
 
         launch();
     }
-
 }

@@ -1,5 +1,6 @@
 package org.openjfx.controllers;
 
+import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -77,16 +78,20 @@ public class PrimaryController{
      */
     private WatchAddController watchAddController = new WatchAddController();
 
-
-
     /**
      * Which smartwatch is selected for charting
      */
     private int currentWatch;
 
+    /**
+     * Service for launching the about web page
+     */
+    private HostServices hostServices ;
+
 
     /**
      * Initializes the main view by printing the sidebar and overview
+     * It also gets all the data stored in the database by using {@link DBManager#getAllWatches()}
      */
     public void initialize() {
         System.out.println("INITIALIZE Primary Controller");
@@ -112,7 +117,8 @@ public class PrimaryController{
 
 
     /**
-     * Adds a new {@link Smartwatch} to the {@link PrimaryController#watches} list. Then inserts that watch into the database using {@link DBManager#insertWatch(int, String)}
+     * Adds a new {@link Smartwatch} to the {@link PrimaryController#watches} list. Then inserts that watch into the
+     * database using {@link DBManager#insertWatch(Smartwatch)}
      * Also reloads the sideBar to show added watch
      * @param watch The watch to be added
      */
@@ -381,6 +387,7 @@ public class PrimaryController{
         loadWatchAdd();
     }
 
+
     /**
      * Shows the watch options menu controlled by {@link WatchOptionsController}
      */
@@ -409,4 +416,26 @@ public class PrimaryController{
            e.printStackTrace();
        }
     }
+
+
+    /**
+     * Event for the wiki button in the Menubar
+     */
+    public void menuWikiPressed() {
+        hostServices.showDocument("https://git.liacs.nl/softwareengineering_wearables/watch-host");
+    }
+
+
+    /**
+     * Event for the Watch Add button in Menubar
+     */
+    public void menuAddPressed() {
+        loadWatchAdd();
+    }
+
+
+    /**
+     * Setter for {@link PrimaryController#hostServices}
+     */
+    public void setHostServices(HostServices hostServices) { this.hostServices = hostServices ; }
 }
