@@ -14,8 +14,7 @@ import java.io.IOException;
 public class MessageTests {
     @Test
     public void testMessageEncode() throws IOException {
-        var msg = new Message();
-        msg.type = MessageType.INCREMENT;
+        var msg = new Message(MessageType.INCREMENT);
         msg.parameters = new MessageParameter[5];
         msg.parameters[0] = new MessageParameter("accel");
         msg.parameters[1] = new MessageParameter(100);

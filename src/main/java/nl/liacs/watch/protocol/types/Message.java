@@ -19,7 +19,8 @@ public class Message {
      */
     public MessageParameter[] parameters;
 
-    public Message() {
+    public Message(MessageType type) {
+        this.type = type;
     }
 
     /**
@@ -29,8 +30,8 @@ public class Message {
      */
     @org.jetbrains.annotations.NotNull
     public static Message decode(DataInputStream s) throws IOException {
-        var msg = new Message();
-        msg.type = MessageType.values()[s.readUnsignedByte()];
+        var type = MessageType.values()[s.readUnsignedByte()];
+        var msg = new Message(type);
 
         msg.parameters = new MessageParameter[s.readUnsignedByte()];
         for (int i = 0; i < msg.parameters.length; i++) {
