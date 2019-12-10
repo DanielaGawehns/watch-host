@@ -61,7 +61,7 @@ public class Message {
     public byte[] encode() throws IllegalStateException {
         ByteArrayDataOutput bb = ByteStreams.newDataOutput();
 
-        bb.writeByte(type.ordinal());
+        bb.writeByte(type.getId());
         bb.writeByte(parameters.length);
 
         for (MessageParameter parameter : parameters) {
