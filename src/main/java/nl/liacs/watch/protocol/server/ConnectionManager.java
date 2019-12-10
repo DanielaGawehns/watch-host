@@ -6,10 +6,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.BlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Consumer;
 
 /**
  * Class that handles all the protocol connections.
@@ -17,9 +18,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Wraps an already started TCP server and handles new connections by wrapped it into a {@link WrappedConnection}.
  */
 public class ConnectionManager {
+    public final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
     private final BroadcastHandler broadcastHandler;
-    private final ExecutorService threadPool;
-    private final BlockingQueue<WrappedConnection> wrappedConnections;
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
     private final ServerSocket server;
     private boolean running = false;
 
@@ -30,8 +31,6 @@ public class ConnectionManager {
     public ConnectionManager(ServerSocket server) throws SocketException {
         this.broadcastHandler = new BroadcastHandler();
         this.server = server;
-        this.threadPool = Executors.newCachedThreadPool();
-        this.wrappedConnections = new LinkedBlockingQueue<>();
     }
 
     /**
@@ -86,6 +85,8 @@ public class ConnectionManager {
      */
     private void handleSocket(Socket socket) throws IOException, UnknownProtocolException {
         var wrappedConnection = new WrappedConnection(socket);
-        this.wrappedConnections.add(wrappedConnection); // REVIEW: add or another function?
+        for (var consumer : this.connectionListeners) {
+            consumer.accept(wrappedConnection);
+        }
     }
 }
