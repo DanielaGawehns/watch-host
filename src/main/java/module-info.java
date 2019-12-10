@@ -11,4 +11,6 @@ module org.openjfx {
 
     exports org.openjfx;
     exports nl.liacs.watch.protocol.server;
+    exports nl.liacs.watch.protocol.tcpserver;
+    exports nl.liacs.watch.protocol.types;
 }

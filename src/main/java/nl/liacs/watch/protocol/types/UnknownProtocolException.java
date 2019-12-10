@@ -1,5 +1,8 @@
 package nl.liacs.watch.protocol.types;
 
+/**
+ * Exception when the protocol (version) is unknown
+ */
 public class UnknownProtocolException extends Exception {
     private final int protocolVersion;
 

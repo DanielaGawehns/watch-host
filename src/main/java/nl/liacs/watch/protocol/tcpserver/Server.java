@@ -7,7 +7,7 @@ public class Server {
     /**
      * @param port The port to bind the server to.
      * @return A newly created ServerSocket.
-     * @throws IOException IO error when creating the server fails.
+     * @throws IOException              IO error when creating the server fails.
      * @throws IllegalArgumentException Illegal arugment error when the port is negative
      */
     static public ServerSocket createServer(int port) throws IOException, IllegalArgumentException {

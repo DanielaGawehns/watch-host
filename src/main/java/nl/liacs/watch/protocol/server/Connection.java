@@ -19,8 +19,9 @@ public class Connection implements nl.liacs.watch.protocol.types.Connection, Clo
 
     /**
      * Create a new Connection using the given socket and does a version handshake.
+     *
      * @param socket The socket to wrap.
-     * @throws IOException IO error when failing to read from or send to the socket.
+     * @throws IOException              IO error when failing to read from or send to the socket.
      * @throws UnknownProtocolException When the protocol version is unknown to the server.
      */
     public Connection(Socket socket) throws IOException, UnknownProtocolException {
@@ -58,7 +59,7 @@ public class Connection implements nl.liacs.watch.protocol.types.Connection, Clo
      * @inheritDoc
      */
     @Override
-    public void send(Message message) throws Exception {
+    public void send(Message message) throws IOException {
         this.os.write(message.encode());
     }
 

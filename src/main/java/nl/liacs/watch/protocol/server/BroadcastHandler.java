@@ -19,6 +19,7 @@ public class BroadcastHandler {
 
     /**
      * Create a new broadcast handler using the default ports.
+     *
      * @throws SocketException Socket exception when creating a datagram server fails, for example, if the port is already in use.
      */
     public BroadcastHandler() throws SocketException {
@@ -27,6 +28,7 @@ public class BroadcastHandler {
 
     /**
      * Listen to broadcasts from watches and reply to them.
+     *
      * @throws IOException IO error when listening or sending fails.
      */
     public void Listen() throws IOException {
@@ -42,10 +44,10 @@ public class BroadcastHandler {
             }
 
             packet = new DatagramPacket(
-                answerBytes,
-                answerBytes.length,
-                packet.getAddress(),
-                Constants.BroadcastWatchPort
+                    answerBytes,
+                    answerBytes.length,
+                    packet.getAddress(),
+                    Constants.BroadcastWatchPort
             );
             this.server.send(packet);
         }

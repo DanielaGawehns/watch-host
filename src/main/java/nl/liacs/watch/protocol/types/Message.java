@@ -19,6 +19,11 @@ public class Message {
      */
     public MessageParameter[] parameters;
 
+    /**
+     * Create a new {@link Message} with the given type.
+     *
+     * @param type The type for the message to have.
+     */
     public Message(MessageType type) {
         this.type = type;
     }
@@ -72,7 +77,7 @@ public class Message {
         if (obj == this) return true;
         if (!Message.class.isAssignableFrom(obj.getClass())) return false;
 
-        final Message other = (Message)obj;
+        final Message other = (Message) obj;
         if (other.parameters.length != this.parameters.length) {
             return false;
         }

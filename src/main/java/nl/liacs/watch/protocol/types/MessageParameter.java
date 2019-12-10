@@ -86,6 +86,7 @@ public class MessageParameter {
 
     /**
      * Set the type of this parameter.
+     *
      * @param type The type to set to.
      */
     public void setType(ParameterType type) {

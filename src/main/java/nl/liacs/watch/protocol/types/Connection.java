@@ -1,7 +1,5 @@
 package nl.liacs.watch.protocol.types;
 
-import nl.liacs.watch.protocol.types.Message;
-
 import java.io.IOException;
 
 public interface Connection {
@@ -18,12 +16,13 @@ public interface Connection {
 
     /**
      * @param message The message to send.
-     * @throws Exception General error when sending failed.
+     * @throws IOException IO error when sending failed.
      */
-    void send(Message message) throws Exception;
+    void send(Message message) throws IOException;
 
     /**
      * Closes the connection.
+     *
      * @throws IOException IO error when closing failed due to socket failure.
      */
     void close() throws IOException;

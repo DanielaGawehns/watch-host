@@ -12,11 +12,11 @@ public enum MessageType {
     PONG,
 
     /**
-     *  an incremental data update for the dashboard, used in live views.
+     * an incremental data update for the dashboard, used in live views.
      */
     INCREMENT,
     /**
-     *  older collected data to be send to the dashboard.
+     * older collected data to be send to the dashboard.
      */
     PLAYBACK,
 
