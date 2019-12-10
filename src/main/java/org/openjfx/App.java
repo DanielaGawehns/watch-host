@@ -60,6 +60,7 @@ public class App extends Application {
         var server = Server.createServer(Constants.TcpPort);
         Logger.getGlobal().log(Level.INFO, "running tcp server on port " + Constants.TcpPort);
         connectionManager = new ConnectionManager(server);
+        connectionManager.start();
 
         launch();
     }
