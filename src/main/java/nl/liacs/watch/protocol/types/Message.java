@@ -17,7 +17,7 @@ public class Message {
     /**
      * Every parameter of the message.
      */
-    public MessageParameter[] parameters;
+    public MessageParameter[] parameters = new MessageParameter[0];
 
     /**
      * Create a new {@link Message} with the given type.
