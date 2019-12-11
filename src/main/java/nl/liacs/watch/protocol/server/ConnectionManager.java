@@ -9,8 +9,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -19,47 +17,41 @@ import java.util.function.Consumer;
  * Wraps an already started TCP server and handles new connections by wrapped it into a {@link WrappedConnection}.
  */
 public class ConnectionManager implements Closeable {
-    private final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
     private final ServerSocket server;
+    private final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
+    private BroadcastHandler broadcastHandler;
+    private Thread serverThread;
     private boolean running = false;
 
     /**
      * @param server The TCP server to wrap.
-     * @throws SocketException Socket error when failing to create the broadcast handler.
      */
-    public ConnectionManager(ServerSocket server) throws SocketException {
+    public ConnectionManager(ServerSocket server) {
         this.server = server;
     }
 
     /**
      * Start the connection manager.
+     *
+     * @throws IOException IO error when failing to start the broadcast handler.
      */
-    public void start() {
+    public void start() throws IOException {
         // start broadcast handler
-        this.threadPool.submit(() -> {
-            try {
-                BroadcastHandler.Listen();
-            } catch (IOException e) {
-                e.printStackTrace();
-                try {
-                    this.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
+        this.broadcastHandler = new BroadcastHandler();
 
-        this.threadPool.submit(() -> {
-            while (!this.threadPool.isShutdown()) {
+        this.serverThread = new Thread(() -> {
+            while (this.running) {
                 try {
                     var socket = this.server.accept();
                     this.handleSocket(socket);
+                } catch (SocketException e) {
+                    return;
                 } catch (IOException | UnknownProtocolException e) {
                     e.printStackTrace();
                 }
             }
         });
+        this.serverThread.start();
 
         this.running = true;
     }
@@ -76,6 +68,22 @@ public class ConnectionManager implements Closeable {
     }
 
     /**
+     * Shut down the connection manager.
+     * This stops listening for new sockets and replying to broadcasts.
+     * This does _not_ close any created sockets.
+     *
+     * @throws IOException IO error when closing the server failed.
+     */
+    @Override
+    public void close() throws IOException {
+        this.broadcastHandler.close();
+        this.server.close();
+
+        this.serverThread.interrupt();
+        this.running = false;
+    }
+
+    /**
      * @param socket The socket to wrap and notify listeners of.
      * @throws IOException              IO error when failing to communicate.
      * @throws UnknownProtocolException Unknown protocol error when the client is running an unsupported protocol version.
@@ -85,19 +93,5 @@ public class ConnectionManager implements Closeable {
         for (var consumer : this.connectionListeners) {
             consumer.accept(wrappedConnection);
         }
-    }
-
-    /**
-     * Shut down the connection manager.
-     * This stops listening for new sockets and replying to broadcasts.
-     * This does _not_ close any created sockets.
-     *
-     * @throws IOException IO error when closing the server failed.
-     */
-    @Override
-    public void close() throws IOException {
-        this.threadPool.shutdownNow();
-        this.server.close();
-        this.running = false;
     }
 }
