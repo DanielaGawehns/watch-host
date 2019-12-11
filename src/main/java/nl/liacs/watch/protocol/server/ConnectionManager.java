@@ -2,6 +2,7 @@ package nl.liacs.watch.protocol.server;
 
 import nl.liacs.watch.protocol.types.UnknownProtocolException;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
  * Starts a {@link BroadcastHandler} to reply to host discovery requests.
  * Wraps an already started TCP server and handles new connections by wrapped it into a {@link WrappedConnection}.
  */
-public class ConnectionManager {
+public class ConnectionManager implements Closeable {
     private final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
     private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
     private final ServerSocket server;
@@ -41,7 +42,11 @@ public class ConnectionManager {
                 BroadcastHandler.Listen();
             } catch (IOException e) {
                 e.printStackTrace();
-                this.shutdown();
+                try {
+                    this.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -57,16 +62,6 @@ public class ConnectionManager {
         });
 
         this.running = true;
-    }
-
-    /**
-     * Shut down the connection manager.
-     * This stops listening for new sockets and replying to broadcasts.
-     * This does _not_ close any created sockets.
-     */
-    public void shutdown() {
-        this.threadPool.shutdownNow();
-        this.running = false;
     }
 
     /**
@@ -90,5 +85,19 @@ public class ConnectionManager {
         for (var consumer : this.connectionListeners) {
             consumer.accept(wrappedConnection);
         }
+    }
+
+    /**
+     * Shut down the connection manager.
+     * This stops listening for new sockets and replying to broadcasts.
+     * This does _not_ close any created sockets.
+     *
+     * @throws IOException IO error when closing the server failed.
+     */
+    @Override
+    public void close() throws IOException {
+        this.threadPool.shutdownNow();
+        this.server.close();
+        this.running = false;
     }
 }

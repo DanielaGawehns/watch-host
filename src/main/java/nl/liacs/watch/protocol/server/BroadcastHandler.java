@@ -5,6 +5,7 @@ import nl.liacs.watch.protocol.types.Constants;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -14,6 +15,7 @@ import java.util.Arrays;
 public class BroadcastHandler {
     private static final byte[] listenBytes = "HelloWorld!\0".getBytes();
     private static final byte[] answerBytes = "WatchSrvrPing\0".getBytes();
+    private static final int timeout = 500; // in milliseconds
 
     /**
      * Listen to broadcasts from watches and reply to them.
@@ -22,11 +24,18 @@ public class BroadcastHandler {
      */
     public static void Listen() throws IOException {
         DatagramSocket server = new DatagramSocket();
+        server.setSoTimeout(timeout);
 
-        while (true) {
+        while (!Thread.interrupted()) {
             var bytes = new byte[listenBytes.length];
             var packet = new DatagramPacket(bytes, bytes.length);
-            server.receive(packet);
+            try {
+                server.receive(packet);
+            } catch (SocketTimeoutException e) {
+                continue;
+            } catch (Exception e) {
+                throw e;
+            }
 
             if (!Arrays.equals(bytes, listenBytes)) {
                 var rec = new String(listenBytes, StandardCharsets.US_ASCII);

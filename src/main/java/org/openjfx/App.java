@@ -11,12 +11,24 @@ import nl.liacs.watch.protocol.types.Constants;
 import org.openjfx.controllers.PrimaryController;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
  * Main class for starting the application
  */
 public class App extends Application {
+    /**
+     * The global connection manager for watch communication.
+     */
+    private static ConnectionManager connectionManager;
+    /**
+     * @return The global connection manager for watch communication.
+     */
+    public static ConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
 
     /**
      * Start function
@@ -40,6 +52,13 @@ public class App extends Application {
      * @throws IOException Thrown by {@link Server#createServer(int)}
      */
     public static void main(String[] args) throws IOException {
+        var server = Server.createServer(Constants.TcpPort);
+        Logger.getGlobal().log(Level.INFO, "running tcp server on port " + Constants.TcpPort);
+        App.connectionManager = new ConnectionManager(server);
+        App.connectionManager.start();
+
         launch();
+
+        App.connectionManager.close();
     }
 }
