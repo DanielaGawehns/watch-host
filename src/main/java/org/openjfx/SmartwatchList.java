@@ -18,9 +18,9 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
      * @param id The ID of the watch to find.
      * @return -1 if the watch is not found, it's index in the list othewise.
      */
-    private int findWithID(int id) {
+    private int findWithID(String id) {
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i).getWatchID() == id) {
+            if (this.get(i).getWatchID().equals(id)) {
                 return i;
             }
         }
@@ -32,7 +32,7 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
      * Get from list
      * @param id Watch ID
      */
-    public Smartwatch getWithID(int id){
+    public Smartwatch getWithID(String id){
         int index = this.findWithID(id);
         if (index == -1) {
             return null;
@@ -47,7 +47,7 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
      * @param id The ID of the watch to remove.
      * @throws IllegalArgumentException Throws illegal argument exception when there is no watch found with the given ID.
      */
-    public void removeWithID(int id) throws IllegalArgumentException {
+    public void removeWithID(String id) throws IllegalArgumentException {
         int index = this.findWithID(id);
         if (index == -1) {
             throw new IllegalArgumentException("no watch found with given id");

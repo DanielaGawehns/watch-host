@@ -404,7 +404,7 @@ public class MeasurementController {
 
         // todo: send signal to watches
         // save measurement for each selected watch
-        List<Integer> IDList = new ArrayList<>();
+        List<String> IDList = new ArrayList<>();
         for (Smartwatch curr : selectedWatches) {
             curr.setMeasurement(measurement);
             IDList.add(curr.getWatchID());

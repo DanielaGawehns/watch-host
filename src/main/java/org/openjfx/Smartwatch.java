@@ -208,9 +208,9 @@ public class Smartwatch {
 
     /**
      * Gets the ID of the watch using {@link WatchData#getWatchID()}
-     * @return ID as a integer
+     * @return ID as a string
      */
-    public int getWatchID() {
+    public String getWatchID() {
         return watchData.getWatchID();
     }
 
@@ -219,7 +219,7 @@ public class Smartwatch {
      * Sets the ID of the watch using {@link WatchData#setWatchID(int)}
      * @param ID The value to set the ID to
      */
-    public void setWatchID(int ID) { watchData.setWatchID(ID); }
+    public void setWatchID(String ID) { watchData.setWatchID(ID); }
 
 
     /**

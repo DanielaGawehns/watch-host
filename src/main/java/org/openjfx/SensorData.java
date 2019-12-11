@@ -2,7 +2,7 @@ package org.openjfx;
 
 import javafx.scene.chart.XYChart;
 import util.Util;
-import java.text.SimpleDateFormat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -32,18 +32,18 @@ public class SensorData {
     private int dataFieldsNumber;
 
     /**
-     * Number of the watch this data belong to
+     * ID of the watch this data belong to
      */
-    private int watchNumber;
+    private String watchID;
 
 
     /**
      * Constructor
      */
-    SensorData(int _watchNumber, String _sensor, int _dataFieldsNumber){
+    SensorData(String _watchID, String _sensor, int _dataFieldsNumber){
         records = new ArrayList<>();
         sensor = _sensor;
-        watchNumber = _watchNumber;
+        watchID = _watchID;
         dataFieldsNumber = _dataFieldsNumber;
     }
 
@@ -100,10 +100,10 @@ public class SensorData {
 
 
     /**
-     * Getter for {@link SensorData#watchNumber}
+     * Getter for {@link SensorData#watchID}
      */
-    int getWatchNumber() {
-        return watchNumber;
+    String getWatchID() {
+        return watchID;
     }
 
 

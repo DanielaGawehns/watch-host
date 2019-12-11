@@ -9,7 +9,7 @@ public class WatchData {
     /**
      * The ID of the watch
      */
-    private int watchID;
+    private String watchID;
 
     /**
      * The battery level of the watch
@@ -30,7 +30,7 @@ public class WatchData {
     /**
      * Constructor
      */
-    WatchData(int _watchID, int _batteryPercentage, float _maxStorage, float _usedStorage){
+    WatchData(String _watchID, int _batteryPercentage, float _maxStorage, float _usedStorage){
         watchID = _watchID;
         batteryPercentage = _batteryPercentage;
         maxStorage = _maxStorage;
@@ -41,7 +41,7 @@ public class WatchData {
     /**
      * Constructor
      */
-    public WatchData(int _watchID){
+    public WatchData(String _watchID){
         watchID = _watchID;
     }
 
@@ -49,7 +49,7 @@ public class WatchData {
     /**
      * Getter for {@link WatchData#watchID}
      */
-    public int getWatchID() {
+    public String getWatchID() {
         return watchID;
     }
 
@@ -57,7 +57,7 @@ public class WatchData {
     /**
      * Setter for {@link WatchData#watchID}
      */
-    public void setWatchID(int watchID) {
+    public void setWatchID(String watchID) {
         this.watchID = watchID;
     }
 

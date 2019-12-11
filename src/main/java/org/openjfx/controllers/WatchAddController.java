@@ -48,21 +48,10 @@ public class WatchAddController {
      * Parses the input from the Text fields and adds an new watch using {@link PrimaryController#addWatch(Smartwatch)}
      */
     private void parseInput(){
-        int watchID;
+        String watchID = textfieldID.getText();
         String watchName = textfieldName.getText();
         WatchData watchData;
         Smartwatch watch;
-
-        // Parse ID field
-        try{
-           watchID = Integer.parseInt(textfieldID.getText());
-           if(watchID < 0){
-               throw new NumberFormatException();
-           }
-        }catch (NumberFormatException e){
-            Util.printErrorDialog("Watch ID: " + textfieldID.getText() + " is not valid!", "Please choose another ID to continue.");
-            return;
-        }
 
         // Check the ID
         if(!primaryController.idNotUsed(watchID)){

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -98,7 +99,7 @@ public class PrimaryController{
         watches = App.getDbManager().getAllWatches();
 
         App.getConnectionManager().addConnectionHandler(wrappedConnection -> {
-            var watchData = new WatchData(0);
+            var watchData = new WatchData(UUID.randomUUID().toString()); // TODO
             var watch = new Smartwatch(watchData, "", wrappedConnection);
 
             this.watchUpdateLoops.submit(() -> {
@@ -147,7 +148,7 @@ public class PrimaryController{
      * Removes a watch from {@link PrimaryController#watches} and reloads the sideBar to update
      * @param ID Watch ID
      */
-    void removeWatch(int ID){
+    void removeWatch(String ID){
         watches.removeWithID(ID);
         loadSideBar();
     }
@@ -158,9 +159,9 @@ public class PrimaryController{
      * @param ID The ID to be checked
      * @return True if ID is not used. False if the ID is already in use
      */
-    boolean idNotUsed(int ID){
+    boolean idNotUsed(String ID){
         for (Smartwatch watch : watches) {
-            if (watch.getWatchID() == ID) {
+            if (watch.getWatchID().equals(ID)) {
                 return false;
             }
         }
@@ -272,10 +273,10 @@ public class PrimaryController{
         for(final File fileEntry : Objects.requireNonNull(folder.listFiles())){ // for all files in map 'folder'
             List<DataPoint> dataList = reader.readFile(fileEntry.getAbsolutePath()); // read sensorData
             System.out.println("Read list of size " + dataList.size());
-            Smartwatch watch = watches.getWithID(reader.getWatchNumber());
+            Smartwatch watch = watches.getWithID(reader.getWatchID());
             editedSensors = watch.addData(dataList); // add data stream to watch
             for(String sensor : editedSensors){
-                success = App.getDbManager().insertDatalist(reader.getWatchNumber(), watches.getWithID(reader.getWatchNumber()).getSensorData(sensor));
+                success = App.getDbManager().insertDatalist(reader.getWatchID(), watches.getWithID(reader.getWatchID()).getSensorData(sensor));
                 if(success != 0)
                     break;
             }

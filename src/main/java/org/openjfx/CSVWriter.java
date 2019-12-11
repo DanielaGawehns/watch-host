@@ -35,7 +35,7 @@ public class CSVWriter {
                 fileWriter = new FileWriter(filename);
                 skip = false;
             }
-            int id = watch.getWatchID();
+            String id = watch.getWatchID();
             List<SensorData> sensorDataList = DB.getAllDataLists(id);
 
             if ( header ) {

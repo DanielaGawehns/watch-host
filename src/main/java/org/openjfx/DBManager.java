@@ -83,7 +83,7 @@ public class DBManager implements Closeable {
      * @param sensor       Sensor name
      * @param dataListSize Amount of columns of the dataLists of the {@link DataPoint}
      */
-    private void insertSensor(int ID, String sensor, int dataListSize) {
+    private void insertSensor(String ID, String sensor, int dataListSize) {
         insertSensor(ID, sensor, dataListSize, getNewDataID(dataIDList));
     }
 
@@ -96,13 +96,13 @@ public class DBManager implements Closeable {
      * @param dataListSize Amount of columns of the dataLists of the {@link DataPoint}
      * @param dataID       The ID of the {@code data} table to be created
      */
-    private void insertSensor(int ID, String sensor, int dataListSize, int dataID) {
+    private void insertSensor(String ID, String sensor, int dataListSize, int dataID) {
         StringBuilder command = new StringBuilder("INSERT INTO datalists(ID, sensor_name, data_ID) VALUES(?, ?, ?)");
 
         System.out.println("Inserting new sensor " + sensor + " with ID " + dataID);
 
         try (var stmt = this.connection.prepareStatement(command.toString())) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             stmt.setString(2, sensor);
             stmt.setInt(3, dataID);
             stmt.executeUpdate();
@@ -133,14 +133,14 @@ public class DBManager implements Closeable {
      * @param sensor Sensor Name
      * @return DataListID as Integer
      */
-    private int getDatalistID(int ID, String sensor) {
+    private int getDatalistID(String ID, String sensor) {
         System.out.println("DB: getDatalistID with ID " + ID + " and sensor " + sensor);
         String command = "SELECT * FROM datalists WHERE ID is ? AND sensor_name is ?";
         int dataID = -1;
 
         try (var stmt = this.connection.prepareStatement(command)) {
             System.out.println(stmt);
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             stmt.setString(2, sensor);
 
             ResultSet rs = stmt.executeQuery();
@@ -186,13 +186,13 @@ public class DBManager implements Closeable {
         String command = "SELECT * FROM smartwatch";
         Smartwatch watch;
         SmartwatchList list = new SmartwatchList();
-        int ID;
+        String ID;
 
         try (var stmt = this.connection.prepareStatement(command)) {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                ID = rs.getInt(1);
+                ID = rs.getString(1);
                 watch = getWatch(ID);
                 if (watch != null) {
                     list.add(watch);
@@ -215,13 +215,13 @@ public class DBManager implements Closeable {
      * @param ID Watch ID
      * @return The watch {@link Smartwatch}
      */
-    Smartwatch getWatch(int ID) {
+    Smartwatch getWatch(String ID) {
         String command = "SELECT * FROM smartwatch WHERE ID = ?";
         Smartwatch watch = null;
         WatchData data;
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -255,16 +255,16 @@ public class DBManager implements Closeable {
      * @param ID Watch ID
      * @return The WatchData
      */
-    private WatchData getWatchData(int ID) {
+    private WatchData getWatchData(String ID) {
         String command = "SELECT * FROM watch_data WHERE ID = ?";
         WatchData data = null;
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                data = new WatchData(ID, rs.getInt(3), rs.getFloat(4), rs.getFloat(5));
+                data = new WatchData(ID, rs.getInt(2), rs.getFloat(3), rs.getFloat(4));
             }
 
             rs.close();
@@ -282,12 +282,12 @@ public class DBManager implements Closeable {
      * @param ID The ID of the watch
      * @return A list of Strings containing the name of a sensor
      */
-    List<String> getSensorList(int ID) {
+    List<String> getSensorList(String ID) {
         String command = "SELECT sensor_name FROM datalists WHERE ID = ?";
         List<String> sensorNameList = new ArrayList<>();
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
 
             ResultSet rs = stmt.executeQuery();
 
@@ -313,7 +313,7 @@ public class DBManager implements Closeable {
 
         try (var stmt = this.connection.prepareStatement(command)) {
 
-            stmt.setInt(1, watch.getWatchID());
+            stmt.setString(1, watch.getWatchID());
             stmt.setString(2, watch.getWatchName());
             stmt.executeUpdate();
 
@@ -331,15 +331,14 @@ public class DBManager implements Closeable {
      * @param data WatchData to be added
      */
     private void insertWatchData(WatchData data) {
-        String command = "INSERT INTO watch_data VALUES(?, ?, ?, ?, ?)";
+        String command = "INSERT INTO watch_data VALUES(?, ?, ?, ?)";
 
         try (var stmt = this.connection.prepareStatement(command)) {
 
-            stmt.setInt(1, data.getWatchID());
-            stmt.setString(2, "");
-            stmt.setInt(3, data.getBatteryPercentage());
-            stmt.setFloat(4, data.getMaxStorage());
-            stmt.setFloat(5, data.getUsedStorage());
+            stmt.setString(1, data.getWatchID());
+            stmt.setInt(2, data.getBatteryPercentage());
+            stmt.setFloat(3, data.getMaxStorage());
+            stmt.setFloat(4, data.getUsedStorage());
             stmt.executeUpdate();
 
             System.out.println("DB: added watchData with ID " + data.getWatchID());
@@ -355,12 +354,12 @@ public class DBManager implements Closeable {
      * @param ID Watch ID
      * @return Name of the watch as String
      */
-    String getWatchName(int ID) {
+    String getWatchName(String ID) {
         String command = "SELECT name FROM smartwatch WHERE ID = ?";
         String name = "";
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -380,13 +379,13 @@ public class DBManager implements Closeable {
      * @param ID   Watch ID
      * @param name Watch name
      */
-    public void setWatchName(int ID, String name) {
+    public void setWatchName(String ID, String name) {
         String command = "UPDATE smartwatch SET name = ? WHERE ID = ?";
 
         try (var stmt = this.connection.prepareStatement(command)) {
 
             stmt.setString(1, name);
-            stmt.setInt(2, ID);
+            stmt.setString(2, ID);
             stmt.executeUpdate();
 
             System.out.println("DB: set name of  watch with ID " + ID + " to " + name);
@@ -403,7 +402,7 @@ public class DBManager implements Closeable {
      * @param dataList {@link SensorData} holding all the data to be inserted
      * @return {@code 0} on success. {@code -1} on failure
      */
-    public int insertDatalist(int ID, SensorData dataList) {
+    public int insertDatalist(String ID, SensorData dataList) {
         System.out.println("DB: insertDatalist");
         int dataID = getDatalistID(ID, dataList.getSensor()); // Check if dataListID exists
         int size = dataList.getDataFieldsNumber(); // Get size of dataList
@@ -490,7 +489,7 @@ public class DBManager implements Closeable {
      * @param sensor Sensor Name
      * @return {@link SensorData} containing the data
      */
-    SensorData getDataList(int ID, String sensor) {
+    SensorData getDataList(String ID, String sensor) {
         return getDataList(ID, sensor, LocalTime.MIN, LocalTime.MAX);
     }
 
@@ -502,7 +501,7 @@ public class DBManager implements Closeable {
      * @param ID Watch ID
      * @return List of {@link SensorData} containing the data
      */
-    List<SensorData> getAllDataLists(int ID) {
+    List<SensorData> getAllDataLists(String ID) {
         return getAllDataLists(ID, LocalTime.MIN, LocalTime.MAX);
     }
 
@@ -515,7 +514,7 @@ public class DBManager implements Closeable {
      * @param endTime   End time
      * @return List of {@link SensorData} containing the data
      */
-    List<SensorData> getAllDataLists(int ID, LocalTime startTime, LocalTime endTime) {
+    List<SensorData> getAllDataLists(String ID, LocalTime startTime, LocalTime endTime) {
         List<SensorData> list = new ArrayList<>();
         List<String> sensorList = getSensorList(ID);
 
@@ -535,7 +534,7 @@ public class DBManager implements Closeable {
      * @param endTime   End time
      * @return {@link SensorData} containing the data
      */
-    SensorData getDataList(int ID, String sensor, LocalTime startTime, LocalTime endTime) {
+    SensorData getDataList(String ID, String sensor, LocalTime startTime, LocalTime endTime) {
         int dataID = getDatalistID(ID, sensor);
         int columns;
         String command = "SELECT * FROM data" + dataID + " WHERE datetime BETWEEN ? AND ?";
@@ -600,7 +599,7 @@ public class DBManager implements Closeable {
      *
      * @param ID watch ID
      */
-    public void removeSmartwatch(int ID) {
+    public void removeSmartwatch(String ID) {
         System.out.println("DB: removeSmartwatch");
         String command = "DELETE FROM smartwatch WHERE ID = ?";
         List<String> sensorList = getSensorList(ID);
@@ -613,7 +612,7 @@ public class DBManager implements Closeable {
         }
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             stmt.executeUpdate();
 
             checkMeasurementClients(measurementID); // Check if measurement is dangling
@@ -630,7 +629,7 @@ public class DBManager implements Closeable {
      * @param IDList      List of ID's of the watches to add the measurement to
      * @param measurement The measurement to add
      */
-    public void addMeasurement(List<Integer> IDList, Measurement measurement) {
+    public void addMeasurement(List<String> IDList, Measurement measurement) {
         int measurementID = getNewDataID(measurementIDList);
 
         createMeasurementTable(measurementID);
@@ -639,7 +638,7 @@ public class DBManager implements Closeable {
             addToSensorTable(measurementID, sensor.first(), sensor.second());
         }
 
-        for (Integer ID : IDList) {
+        for (String ID : IDList) {
             insertMeasurement(ID, measurement, measurementID);
         }
     }
@@ -693,12 +692,12 @@ public class DBManager implements Closeable {
      * @param measurement   The measurement to be added
      * @param measurementID ID of measurement table
      */
-    private void insertMeasurement(int ID, Measurement measurement, int measurementID) {
+    private void insertMeasurement(String ID, Measurement measurement, int measurementID) {
         String command = "INSERT INTO measurements VALUES(?, ?, ?, ?)";
 
         try (var stmt = this.connection.prepareStatement(command)) {
 
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             stmt.setTime(2, Time.valueOf(measurement.getTimeStart()));
             stmt.setTime(3, Time.valueOf(measurement.getTimeEnd()));
             stmt.setInt(4, measurementID);
@@ -714,12 +713,12 @@ public class DBManager implements Closeable {
      *
      * @param ID Watch ID
      */
-    public void removeMeasurementFromWatch(int ID) {
+    public void removeMeasurementFromWatch(String ID) {
         String command = "DELETE FROM measurements WHERE ID = ?";
         int measurementID = getMeasurementID(ID);
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -828,12 +827,12 @@ public class DBManager implements Closeable {
      * @param ID Watch ID
      * @return ID of the measurement
      */
-    private int getMeasurementID(int ID) {
+    private int getMeasurementID(String ID) {
         String command = "SELECT * FROM measurements WHERE ID = ?";
         int measurementID = -1;
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -853,7 +852,7 @@ public class DBManager implements Closeable {
      * @param ID Watch ID
      * @return The measurement. {@code null} if watch has no active measurement
      */
-    Measurement getWatchMeasurement(int ID) {
+    Measurement getWatchMeasurement(String ID) {
         int measurementID = getMeasurementID(ID);
         System.out.println("Got measurement ID: " + measurementID);
         if (measurementID > -1) {
@@ -869,12 +868,12 @@ public class DBManager implements Closeable {
      * @param ID      Watch ID
      * @param comment {@link Comment} to be added
      */
-    public void addComment(int ID, org.openjfx.Comment comment) {
+    public void addComment(String ID, org.openjfx.Comment comment) {
         String command = "INSERT INTO comments VALUES(?, ?, ?, ?, ?)";
 
         try (var stmt = this.connection.prepareStatement(command)) {
 
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             stmt.setTime(2, Time.valueOf(comment.getStartingTime()));
             stmt.setTime(3, Time.valueOf(comment.getEndTime()));
             stmt.setString(4, comment.getCommentBody());
@@ -892,13 +891,13 @@ public class DBManager implements Closeable {
      * @param ID Watch ID
      * @return List of {@link Comment}
      */
-    List<Comment> getComments(int ID) {
+    List<Comment> getComments(String ID) {
         String command = "SELECT * FROM comments WHERE ID = ?";
         List<org.openjfx.Comment> comments = new ArrayList<>();
         org.openjfx.Comment comment;
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -923,11 +922,11 @@ public class DBManager implements Closeable {
      *
      * @param ID Watch ID
      */
-    public void removeComments(int ID) {
+    public void removeComments(String ID) {
         String command = "DELETE FROM comments WHERE ID = ?";
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setInt(1, ID);
+            stmt.setString(1, ID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

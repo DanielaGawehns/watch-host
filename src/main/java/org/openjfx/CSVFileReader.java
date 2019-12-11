@@ -28,9 +28,9 @@ public class CSVFileReader{
     private static final int DATA_START = 3;
 
     /**
-     * The number of the watch the file belongs to
+     * The ID of the watch the file belongs to
      */
-    private int watchNumber;
+    private String watchID;
 
 
 
@@ -45,15 +45,15 @@ public class CSVFileReader{
         List<DataPoint> dataList = new ArrayList<>();
         DataPoint point;
 
-        watchNumber = -1;
+        watchID = null;
 
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(path))) { // read in file
             String line = br.readLine();
-            if(line.startsWith("#")){ // read watchnumber
-                watchNumber = Integer.parseInt(line.substring(1));
-                System.out.println("Watch number: " + watchNumber);
+            if(line.startsWith("#")){ // read watch ID
+                watchID = line.substring(1);
+                System.out.println("Watch ID: " + watchID);
             }else{
-                System.out.println("No watch number found"); // TODO: make exception
+                System.out.println("No watch ID found"); // TODO: make exception
             }
             while ((line = br.readLine()) != null) { // go through all the lines
 
@@ -117,10 +117,10 @@ public class CSVFileReader{
 
 
     /**
-     * Getter for {@link org.openjfx.CSVFileReader#watchNumber}
+     * Getter for {@link org.openjfx.CSVFileReader#watchID}
      * @return Int containing the watchNumber
      */
-    public int getWatchNumber() {
-        return watchNumber;
+    public String getWatchID() {
+        return watchID;
     }
 }
