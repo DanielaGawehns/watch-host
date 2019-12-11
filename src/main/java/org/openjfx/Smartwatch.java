@@ -51,8 +51,6 @@ public class Smartwatch {
      */
     private List<Comment> comments = new ArrayList<>();
 
-    private final Thread thread;
-
     /**
      * Constructor
      */
@@ -65,56 +63,47 @@ public class Smartwatch {
 
         this.connection = connection;
 
-        this.thread = new Thread(() -> {
-            while (this.connection.isOpen()) {
-                Message item = null;
-                try {
-                    item = this.connection.receive();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    continue;
-                }
-
-                System.out.println("0");
-                switch (item.type) {
-                    case INCREMENT:
-                        System.out.println("1");
-                        item.parameters[0].setType(ParameterType.STRING);
-                        var sensor = item.parameters[0].getString();
-                        System.out.println(sensor);
-                        if (sensor.equals("BATTERY")) {
-                            System.out.println("2");
-                            item.parameters[2].setType(ParameterType.DOUBLE);
-                            System.out.println("3");
-                            var percentage = item.parameters[2].getDouble();
-                            System.out.println("4");
-                            System.out.println(percentage);
-                            this.watchData.setBatteryPercentage(percentage.intValue());
-                            System.out.println("battery set!");
-                            break;
-                        }
-
-                        if (!this.sensorMap.containsKey(sensor)) {
-                            var data = new SensorData(watchData.getWatchID(), sensor, item.parameters.length-2);
-                            this.sensorMap.put(sensor, data);
-                        }
-
-                        var values = Arrays.stream(item.parameters).skip(2).map((param) -> {
-                            param.setType(ParameterType.DOUBLE);
-                            return param.getDouble();
-                        }).collect(Collectors.toList());
-                        var dataPoint = new DataPoint(sensor, LocalDate.now(), LocalTime.now(), values);
-                        this.sensorMap.get(sensor).add(dataPoint);
-
-                        break;
-                }
-            }
-        });
-        if (this.connection != null) {
-            this.thread.run();
-        }
     }
 
+    public void networkLoop() throws InterruptedException {
+        while (this.connection.isOpen()) {
+            Message item = this.connection.receive();
+
+            System.out.println("0");
+            switch (item.type) {
+                case INCREMENT:
+                    System.out.println("1");
+                    item.parameters[0].setType(ParameterType.STRING);
+                    var sensor = item.parameters[0].getString();
+                    System.out.println(sensor);
+                    if (sensor.equals("BATTERY")) {
+                        System.out.println("2");
+                        item.parameters[2].setType(ParameterType.DOUBLE);
+                        System.out.println("3");
+                        var percentage = item.parameters[2].getDouble();
+                        System.out.println("4");
+                        System.out.println(percentage);
+                        this.watchData.setBatteryPercentage(percentage.intValue());
+                        System.out.println("battery set!");
+                        break;
+                    }
+
+                    if (!this.sensorMap.containsKey(sensor)) {
+                        var data = new SensorData(watchData.getWatchID(), sensor, item.parameters.length-2);
+                        this.sensorMap.put(sensor, data);
+                    }
+
+                    var values = Arrays.stream(item.parameters).skip(2).map((param) -> {
+                        param.setType(ParameterType.DOUBLE);
+                        return param.getDouble();
+                    }).collect(Collectors.toList());
+                    var dataPoint = new DataPoint(sensor, LocalDate.now(), LocalTime.now(), values);
+                    this.sensorMap.get(sensor).add(dataPoint);
+
+                    break;
+            }
+        }
+    }
 
     /**
      * Get {@link SensorData} from {@link Smartwatch#sensorMap}

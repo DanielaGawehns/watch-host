@@ -15,9 +15,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import nl.liacs.watch.protocol.server.ConnectionManager;
-import nl.liacs.watch.protocol.tcpserver.Server;
-import nl.liacs.watch.protocol.types.Constants;
 import org.openjfx.*;
 import util.Util;
 
@@ -26,8 +23,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -94,17 +91,7 @@ public class PrimaryController{
      */
     private HostServices hostServices ;
 
-
-    /**
-     * The global connection manager for watch communication.
-     */
-    private static ConnectionManager connectionManager;
-    /**
-     * @return The global connection manager for watch communication.
-     */
-    public static ConnectionManager GetConnectionManager() {
-        return connectionManager;
-    }
+    private final ExecutorService watchUpdateLoops = Executors.newCachedThreadPool();
 
     /**
      * Initializes the main view by printing the sidebar and overview
@@ -113,16 +100,20 @@ public class PrimaryController{
     public void initialize() throws IOException {
         System.out.println("INITIALIZE Primary Controller");
 
-        var server = Server.createServer(Constants.TcpPort);
-        Logger.getGlobal().log(Level.INFO, "running tcp server on port " + Constants.TcpPort);
-        connectionManager = new ConnectionManager(server);
-        connectionManager.start();
-
         watches = dbManager.getAllWatches();
 
-        connectionManager.addConnectionHandler(wrappedConnection -> {
+        App.getConnectionManager().addConnectionHandler(wrappedConnection -> {
             var watchData = new WatchData(0);
             var watch = new Smartwatch(watchData, "", wrappedConnection);
+
+            this.watchUpdateLoops.submit(() -> {
+                try {
+                    watch.networkLoop();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+
             Platform.runLater(() -> this.addWatch(watch));
         });
 

@@ -2,14 +2,13 @@ package nl.liacs.watch.protocol.server;
 
 import nl.liacs.watch.protocol.types.UnknownProtocolException;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -17,56 +16,44 @@ import java.util.function.Consumer;
  * Starts a {@link BroadcastHandler} to reply to host discovery requests.
  * Wraps an already started TCP server and handles new connections by wrapped it into a {@link WrappedConnection}.
  */
-public class ConnectionManager {
-    private final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+public class ConnectionManager implements Closeable {
     private final ServerSocket server;
+    private final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
+    private BroadcastHandler broadcastHandler;
+    private Thread serverThread;
     private boolean running = false;
 
     /**
      * @param server The TCP server to wrap.
-     * @throws SocketException Socket error when failing to create the broadcast handler.
      */
-    public ConnectionManager(ServerSocket server) throws SocketException {
+    public ConnectionManager(ServerSocket server) {
         this.server = server;
     }
 
     /**
      * Start the connection manager.
+     *
+     * @throws IOException IO error when failing to start the broadcast handler.
      */
-    public void start() {
+    public void start() throws IOException {
         // start broadcast handler
-        this.threadPool.submit(() -> {
-            try {
-                BroadcastHandler.Listen();
-            } catch (IOException e) {
-                e.printStackTrace();
-                this.shutdown();
-            }
-        });
+        this.broadcastHandler = new BroadcastHandler();
 
-        this.threadPool.submit(() -> {
-            while (!this.threadPool.isShutdown()) {
+        this.serverThread = new Thread(() -> {
+            while (this.running) {
                 try {
                     var socket = this.server.accept();
                     this.handleSocket(socket);
+                } catch (SocketException e) {
+                    return;
                 } catch (IOException | UnknownProtocolException e) {
                     e.printStackTrace();
                 }
             }
         });
+        this.serverThread.start();
 
         this.running = true;
-    }
-
-    /**
-     * Shut down the connection manager.
-     * This stops listening for new sockets and replying to broadcasts.
-     * This does _not_ close any created sockets.
-     */
-    public void shutdown() {
-        this.threadPool.shutdownNow();
-        this.running = false;
     }
 
     /**
@@ -78,6 +65,22 @@ public class ConnectionManager {
 
     public void addConnectionHandler(Consumer<WrappedConnection> consumer) {
         this.connectionListeners.add(consumer);
+    }
+
+    /**
+     * Shut down the connection manager.
+     * This stops listening for new sockets and replying to broadcasts.
+     * This does _not_ close any created sockets.
+     *
+     * @throws IOException IO error when closing the server failed.
+     */
+    @Override
+    public void close() throws IOException {
+        this.broadcastHandler.close();
+        this.server.close();
+
+        this.serverThread.interrupt();
+        this.running = false;
     }
 
     /**
