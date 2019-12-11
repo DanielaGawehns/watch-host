@@ -57,11 +57,6 @@ public class PrimaryController{
     private CSVFileReader reader = new CSVFileReader();
 
     /**
-     * Manager for managing the Database connection {@link DBManager}
-     */
-    private static DBManager dbManager = new DBManager();
-
-    /**
      * Controller for the watchView {@link WatchViewController}
      */
     private WatchViewController watchController;
@@ -100,7 +95,7 @@ public class PrimaryController{
     public void initialize() throws IOException {
         System.out.println("INITIALIZE Primary Controller");
 
-        watches = dbManager.getAllWatches();
+        watches = App.getDbManager().getAllWatches();
 
         App.getConnectionManager().addConnectionHandler(wrappedConnection -> {
             var watchData = new WatchData(0);
@@ -143,7 +138,7 @@ public class PrimaryController{
      */
     void addWatch(Smartwatch watch){
         watches.add(watch);
-        dbManager.insertWatch(watch);
+        App.getDbManager().insertWatch(watch);
         loadSideBar();
     }
 
@@ -280,7 +275,7 @@ public class PrimaryController{
             Smartwatch watch = watches.getWithID(reader.getWatchNumber());
             editedSensors = watch.addData(dataList); // add data stream to watch
             for(String sensor : editedSensors){
-                success = dbManager.insertDatalist(reader.getWatchNumber(), watches.getWithID(reader.getWatchNumber()).getSensorData(sensor));
+                success = App.getDbManager().insertDatalist(reader.getWatchNumber(), watches.getWithID(reader.getWatchNumber()).getSensorData(sensor));
                 if(success != 0)
                     break;
             }
@@ -344,7 +339,7 @@ public class PrimaryController{
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {
 
-                    dbManager.removeSmartwatch(watches.get(finalI2).getWatchID());
+                    App.getDbManager().removeSmartwatch(watches.get(finalI2).getWatchID());
                     removeWatch(watches.get(finalI2).getWatchID());
                 }
             });

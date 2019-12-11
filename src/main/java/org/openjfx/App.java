@@ -11,6 +11,7 @@ import nl.liacs.watch.protocol.types.Constants;
 import org.openjfx.controllers.PrimaryController;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +29,17 @@ public class App extends Application {
      */
     public static ConnectionManager getConnectionManager() {
         return connectionManager;
+    }
+
+    /**
+     * Global manager for managing the Database connection {@link DBManager}
+     */
+    private static DBManager dbManager;
+    /**
+     * @return The global database manager.
+     */
+    public static DBManager getDbManager() {
+        return dbManager;
     }
 
     /**
@@ -51,11 +63,13 @@ public class App extends Application {
      * @param args Unused arguments
      * @throws IOException Thrown by {@link Server#createServer(int)}
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException {
         var server = Server.createServer(Constants.TcpPort);
         Logger.getGlobal().log(Level.INFO, "running tcp server on port " + Constants.TcpPort);
         App.connectionManager = new ConnectionManager(server);
         App.connectionManager.start();
+
+        App.dbManager = new DBManager();
 
         launch();
 

@@ -3,6 +3,7 @@ package org.openjfx.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.openjfx.App;
 import org.openjfx.DBManager;
 import org.openjfx.Smartwatch;
 import util.Util;
@@ -34,12 +35,6 @@ public class WatchOptionsController {
 
 
     /**
-     * Database manager {@link DBManager} for adjusting data in the database
-     */
-    private DBManager dbManager = new DBManager();
-
-
-    /**
      * Constructor
      */
     void setWatchData(Smartwatch _watch){
@@ -58,7 +53,7 @@ public class WatchOptionsController {
 
         if(!textfieldWatchName.getText().equals(watch.getWatchName())){
             watch.setWatchName(textfieldWatchName.getText());
-            dbManager.setWatchName(watch.getWatchID(), watch.getWatchName());
+            App.getDbManager().setWatchName(watch.getWatchID(), watch.getWatchName());
         }
         Util.closeStage(textfieldWatchName);
     }

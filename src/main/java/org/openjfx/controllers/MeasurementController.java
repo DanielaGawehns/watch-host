@@ -12,12 +12,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import org.openjfx.App;
 import org.openjfx.Measurement;
 import org.openjfx.Smartwatch;
 import org.openjfx.SmartwatchList;
-import org.openjfx.DBManager;
 import util.Pair;
 import util.Util;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +46,6 @@ public class MeasurementController {
     private VBox sensorVbox2;
     @FXML
     private VBox sensorVbox3;
-
-    /**
-     * Manager to deal with Database operations
-     */
-    private DBManager dbManager = new DBManager();
 
     /**
      * List of all the possible sensors available
@@ -413,7 +409,7 @@ public class MeasurementController {
             curr.setMeasurement(measurement);
             IDList.add(curr.getWatchID());
         }
-        dbManager.addMeasurement(IDList, measurement);
+        App.getDbManager().addMeasurement(IDList, measurement);
 
         // the measurement has started, close window
         Util.closeStage(watchVbox1);

@@ -106,11 +106,6 @@ public class WatchViewController {
     private Smartwatch watch;
 
     /**
-     * Manager for managing the Database connection {@link DBManager}
-     */
-    private static DBManager dbManager = new DBManager();
-
-    /**
      * Controller of {@link PrimaryController}
      */
     private PrimaryController primaryController;
@@ -227,7 +222,7 @@ public class WatchViewController {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
-            dbManager.removeSmartwatch(watch.getWatchID());
+            App.getDbManager().removeSmartwatch(watch.getWatchID());
             primaryController.removeWatch(watch.getWatchID());
         }
     }
@@ -284,7 +279,7 @@ public class WatchViewController {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
-                dbManager.removeMeasurementFromWatch(watch.getWatchID());
+                App.getDbManager().removeMeasurementFromWatch(watch.getWatchID());
                 watch.setMeasurement(null);
 
                 //TODO: stop measurement on the watch
@@ -306,7 +301,7 @@ public class WatchViewController {
 
         if (!comments.isEmpty()) {
             watch.getComments().clear();
-            dbManager.removeComments(watch.getWatchID());
+            App.getDbManager().removeComments(watch.getWatchID());
             commentsBox.getChildren().clear();
         }
 
@@ -334,7 +329,7 @@ public class WatchViewController {
                     comment.setCommentBody(body);
                     comment.setCommentType(type);
                     watch.addComment(comment);
-                    dbManager.addComment(watch.getWatchID(), comment);
+                    App.getDbManager().addComment(watch.getWatchID(), comment);
 
                 } catch (IllegalArgumentException | NullPointerException e) {
                     // todo: notify user of invalid input file

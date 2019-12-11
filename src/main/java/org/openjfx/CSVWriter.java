@@ -1,9 +1,9 @@
 package org.openjfx;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.io.File;
 
 /**
  * Class for writing the data from database to CSV files
@@ -26,7 +26,7 @@ public class CSVWriter {
      */
     public void WriteOne(Smartwatch watch, File filename, boolean header) {
         StringBuilder sb = new StringBuilder();
-        DBManager DB = new DBManager();
+        DBManager DB = App.getDbManager();
         int maxDim = 0; // maximum dimensionality of data point
         boolean skip = true;
 
@@ -108,7 +108,7 @@ public class CSVWriter {
      * Retrieve data from all the watches fom database and writes into a CSV file
      */
     public void WriteAll(File filename) {
-        DBManager DB = new DBManager();
+        DBManager DB = App.getDbManager();
         boolean header = true;
 
         try {
