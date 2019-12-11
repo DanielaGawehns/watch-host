@@ -1,8 +1,9 @@
 package nl.liacs.watch.protocol.types;
 
+import java.io.Closeable;
 import java.io.IOException;
 
-public interface Connection {
+public interface Connection extends Closeable {
     /**
      * @return Whether or not the connection is open and ready to communicate.
      */
