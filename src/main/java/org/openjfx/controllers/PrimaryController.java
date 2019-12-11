@@ -120,7 +120,7 @@ public class PrimaryController{
 
         watches = dbManager.getAllWatches();
 
-        connectionManager.connectionListeners.add(wrappedConnection -> {
+        connectionManager.addConnectionHandler(wrappedConnection -> {
             var watchData = new WatchData(0);
             var watch = new Smartwatch(watchData, "", wrappedConnection);
             Platform.runLater(() -> this.addWatch(watch));

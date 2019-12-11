@@ -18,8 +18,7 @@ import java.util.function.Consumer;
  * Wraps an already started TCP server and handles new connections by wrapped it into a {@link WrappedConnection}.
  */
 public class ConnectionManager {
-    public final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
-    private final BroadcastHandler broadcastHandler;
+    private final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
     private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
     private final ServerSocket server;
     private boolean running = false;
@@ -29,7 +28,6 @@ public class ConnectionManager {
      * @throws SocketException Socket error when failing to create the broadcast handler.
      */
     public ConnectionManager(ServerSocket server) throws SocketException {
-        this.broadcastHandler = new BroadcastHandler();
         this.server = server;
     }
 
@@ -40,7 +38,7 @@ public class ConnectionManager {
         // start broadcast handler
         this.threadPool.submit(() -> {
             try {
-                this.broadcastHandler.Listen();
+                BroadcastHandler.Listen();
             } catch (IOException e) {
                 e.printStackTrace();
                 this.shutdown();
@@ -76,6 +74,10 @@ public class ConnectionManager {
      */
     public boolean isRunning() {
         return this.running;
+    }
+
+    public void addConnectionHandler(Consumer<WrappedConnection> consumer) {
+        this.connectionListeners.add(consumer);
     }
 
     /**

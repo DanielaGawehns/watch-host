@@ -5,7 +5,6 @@ import nl.liacs.watch.protocol.types.Constants;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -15,27 +14,19 @@ import java.util.Arrays;
 public class BroadcastHandler {
     private static final byte[] listenBytes = "HelloWorld!\0".getBytes();
     private static final byte[] answerBytes = "WatchSrvrPing\0".getBytes();
-    private final DatagramSocket server;
-
-    /**
-     * Create a new broadcast handler using the default ports.
-     *
-     * @throws SocketException Socket exception when creating a datagram server fails, for example, if the port is already in use.
-     */
-    public BroadcastHandler() throws SocketException {
-        this.server = new DatagramSocket(Constants.BroadcastHostPort);
-    }
 
     /**
      * Listen to broadcasts from watches and reply to them.
      *
      * @throws IOException IO error when listening or sending fails.
      */
-    public void Listen() throws IOException {
+    public static void Listen() throws IOException {
+        DatagramSocket server = new DatagramSocket();
+
         while (true) {
             var bytes = new byte[listenBytes.length];
             var packet = new DatagramPacket(bytes, bytes.length);
-            this.server.receive(packet);
+            server.receive(packet);
 
             if (!Arrays.equals(bytes, listenBytes)) {
                 var rec = new String(listenBytes, StandardCharsets.US_ASCII);
@@ -49,7 +40,7 @@ public class BroadcastHandler {
                     packet.getAddress(),
                     Constants.BroadcastWatchPort
             );
-            this.server.send(packet);
+            server.send(packet);
         }
     }
 }
