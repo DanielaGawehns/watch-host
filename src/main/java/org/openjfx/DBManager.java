@@ -815,6 +815,11 @@ public class DBManager {
         Connection con = null;
         PreparedStatement stmt = null;
 
+        if(measurementID < 0){
+            System.out.println("[DBManager#checkMeasurementClients] measurementID is invalid");
+            return;
+        }
+
         try{
             con  = connect();
             stmt = con.prepareStatement(command);

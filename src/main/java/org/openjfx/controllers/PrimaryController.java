@@ -162,7 +162,7 @@ public class PrimaryController{
      * @param ID Watch ID
      */
     void removeWatch(int ID){
-        watches.remove(ID);
+        watches.removeWithID(ID);
         loadSideBar();
     }
 

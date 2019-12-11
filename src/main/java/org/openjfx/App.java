@@ -37,9 +37,8 @@ public class App extends Application {
     /**
      * Main function
      * @param args Unused arguments
-     * @throws IOException Thrown by {@link Server#createServer(int)}
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         launch();
     }
 }
