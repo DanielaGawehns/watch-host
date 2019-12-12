@@ -1,4 +1,4 @@
-# Watch communication protocol v1
+# Watch communication protocol v1-alpha3
 
 # Watch-host discovery
 
@@ -22,7 +22,7 @@ If the version is unknown to the host, the host SHOULD close the connection.
 Otherwise, if the version number is known, the host MUST continue to
 communicate according to that protocol version.
 
-After the host has accepted the version number, it MUST send an ACK ($00000110_2$).
+After the host has accepted the version number, it MUST send an ACK ($06_{16}$).
 
 Now the watch and host are free to communicate in any order, per the rest of
 this document.
@@ -32,9 +32,11 @@ free to do so. But it's up to the implementator to choose the version range to
 support.
 
 ## Universal message structure
-| command ID | number of parameters | parameters... |
-|:---|:---|:---|
-|unsigned 8 bit|unsigned 8 bit||
+| message reference ID | command ID | number of parameters | parameters... |
+|:---|:---|:---|:---|
+|unsigned 16 bit|unsigned 8 bit|unsigned 8 bit||
+
+If the reference ID has the special value of 0, no reply is requested.
 
 ### Parameter
 | length of value in bytes | value |
@@ -58,30 +60,76 @@ The command ID is stated after every command name.
 
 #### PING (0)
 This message can be send by either side in a self chosen interval.
-The other side should respond with a PONG within a maximum set amount of missed PINGs.
-Generally this is set to 3, so the other side can miss two PINGs and only then respond with a PONG to reset the miss counter.
+The other side should respond within a maximum set amount of missed PINGs.
+Generally this is set to 3, so the other side can miss two PINGs and only then respond to reset the miss counter.
 
 Structure:
 `PING`
 
-#### PONG (1)
-The message to reply with a PING, should be sent in response to a PING.
+Reply:
+Any reply is permitted.
+
+#### REPLY (1)
+Message representing the result (or error) of an operation.
+
+The status code MUST be 0 for succes and any other non-zero number for failure.
+
+The next is an status string, for an error this SHOULD be given.
+For succes the status string can be an empty string.
+
+The rest of the parameters are zero or more results of the operation.
 
 Structure:
-`PONG`
+`REPLY <status code (double)> <status string (ASCII string)> <results... (binary string)>`
+
+Reply:
+N/A
+
+#### GET_VALUES (2)
+Get the values with the given key from the other side.
+
+The command MUST have an ID.
+If it does not, the other side MAY ignore the message.
+
+See the [key-value store section](#keyval) for more information.
+
+Structure:
+`GET_VALUES <key (ASCII string)>`
+
+Reply:
+Reply with the values in the store.
+If the key does not exist, return an error.
+
+#### SET_VALUES (3)
+Set the values with the given key and value on the other side.
+
+The command MUST have an ID.
+If it does not, the other side MAY ignore the message.
+
+See the [key-value store section](#keyval) for more information.
+
+Structure:
+`SET_VALUES <key (ASCII string)> <values... (binary string)>`
+
+Reply:
+Reply with the set array of values in the store.
+If the key/values is not valid, return an error.
 
 ### Watch to host
 
-#### INCREMENT (2)
-An update to the live view on the host.
-Should be send every LIVE_INTERVAL.
+#### INCREMENT (4)
+An aggregated update to the live view on the host.
+Should be send every `live.interval`, if any data is available.
 
 The time delta is since the previous sent INCREMENT message in milliseconds.
 
 Structure:
 `INCREMENT <sensor (ASCII string)> <time delta (double)> <data... (double)>`
 
-#### PLAYBACK (3)
+Reply:
+N/A
+
+#### PLAYBACK (5)
 A data point for the full recorded session.
 
 The time delta is since the start of the recording session in milliseconds.
@@ -89,28 +137,47 @@ The time delta is since the start of the recording session in milliseconds.
 Structure:
 `PLAYBACK <sensor (ASCII string)> <time delta (double)> <data... (double)>`
 
-### Host to watch
+Reply:
+N/A
 
-#### SENSOR_INTERVAL (4)
-Set the interval for a given sensor in milliseconds.
+## Key-value store {#keyval}
+The key value store is defined as a simple store containing pairs of the form:
+(ASCII string, [binary data string]).
 
-Structure:
-`SENSOR_INTERVAL <sensor (ASCII string)> <interval (double)>`
+Although it doesn't require a structure to work, the protocol defines a little
+structure that must be implemented.
 
-#### SENSOR_SETTING (5)
-Set a specific sensor dependent setting for the watch.
+Every value must be part of a namespace, root values are not permitted.
 
-Structure:
-`SENSOR_SETTING <sensor (ASCII string)> <setting name (ASCII string)> <setting value (binary string)>`
+### Watch store
+The namespace that must be implemented for the watch are the following:
 
-##### Sensor settings
-The settings available per sensor should be listed here.
+- `system`: containing system variables.
+- `sensor`: containing sensor settings.
+- `live`: containing settings about the aggregated updates for the host's live dashboard.
 
-#### LIVE_INTERVAL (6)
-Set the interval in milliseconds for sending aggregated updates for the host's live dashboard.
+#### `system` namespace
+The system namespace contains variables about the watch.
+Implemented must be:
 
-Structure:
-`LIVE_INTERVAL <interval (double)>`
+- `system.uid`: The unique watch ID (ASCII string).
+
+#### `sensor` namespace
+The system namespace contains variables about the sensors on the watch.
+Implemented must be:
+
+- `sensor.list`: A list of every sensor name (one or more ASCII strings).
+
+#### `live` namespace
+The live namespace contains settings about the aggregated updates for the host's live dashboard.
+Implemented must be:
+
+- `live.interval`: The interval of the live sensor updates (double).
+
+### Host store
+The namespace that must be implemented for the host are the following:
+
+TODO
 
 ## Example
 Accelerometer live view update, 100ms after the previous one.
