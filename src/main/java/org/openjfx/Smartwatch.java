@@ -2,25 +2,18 @@ package org.openjfx;
 
 
 import nl.liacs.watch.protocol.server.WrappedConnection;
-import nl.liacs.watch.protocol.types.Message;
-import nl.liacs.watch.protocol.types.ParameterType;
+import org.jetbrains.annotations.NotNull;
 import util.Util;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
  * Class holding all smartwatch data
  */
-public class Smartwatch {
-
-    /**
-     * The connection with the watch.
-     */
-    private final WrappedConnection connection;
+public class Smartwatch implements Closeable {
     /**
      * Data about the watch {@link WatchData}
      */
@@ -51,58 +44,32 @@ public class Smartwatch {
      */
     private List<Comment> comments = new ArrayList<>();
 
+    private WatchConnector connector = null;
+
     /**
      * Constructor
      */
-    public Smartwatch(WatchData _data, String _name, WrappedConnection connection){
+    public Smartwatch(WatchData _data, String _name, WrappedConnection connection) {
         System.out.println("making smartwatch");
         watchData = _data;
         if(!_name.isEmpty()){
             watchName = _name;
         }
 
-        this.connection = connection;
-
-    }
-
-    public void networkLoop() throws InterruptedException {
-        while (this.connection.isOpen()) {
-            Message item = this.connection.receive();
-
-            System.out.println("0");
-            switch (item.type) {
-                case INCREMENT:
-                    System.out.println("1");
-                    item.parameters[0].setType(ParameterType.STRING);
-                    var sensor = item.parameters[0].getString();
-                    System.out.println(sensor);
-                    if (sensor.equals("BATTERY")) {
-                        System.out.println("2");
-                        item.parameters[2].setType(ParameterType.DOUBLE);
-                        System.out.println("3");
-                        var percentage = item.parameters[2].getDouble();
-                        System.out.println("4");
-                        System.out.println(percentage);
-                        this.watchData.setBatteryPercentage(percentage.intValue());
-                        System.out.println("battery set!");
-                        break;
-                    }
-
-                    if (!this.sensorMap.containsKey(sensor)) {
-                        var data = new SensorData(watchData.getWatchID(), sensor, item.parameters.length-2);
-                        this.sensorMap.put(sensor, data);
-                    }
-
-                    var values = Arrays.stream(item.parameters).skip(2).map((param) -> {
-                        param.setType(ParameterType.DOUBLE);
-                        return param.getDouble();
-                    }).collect(Collectors.toList());
-                    var dataPoint = new DataPoint(sensor, LocalDate.now(), LocalTime.now(), values);
-                    this.sensorMap.get(sensor).add(dataPoint);
-
-                    break;
+        if (connection != null) {
+            try {
+                this.addConnection(connection);
+            } catch (IOException e) { // this can't throw in this case
+                e.printStackTrace();
             }
         }
+    }
+
+    public void addConnection(@NotNull WrappedConnection connection) throws IOException {
+        if (this.connector != null) {
+            this.connector.close();
+        }
+        this.connector = new WatchConnector(this, connection);
     }
 
     /**
@@ -257,4 +224,11 @@ public class Smartwatch {
      * Getter for {@link Smartwatch#measurement}
      */
     public Measurement getMeasurement() { return measurement; }
+
+    @Override
+    public void close() throws IOException {
+        if (this.connector != null) {
+            this.connector.close();
+        }
+    }
 }

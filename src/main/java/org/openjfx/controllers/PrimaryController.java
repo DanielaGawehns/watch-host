@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /**
@@ -87,8 +85,6 @@ public class PrimaryController{
      */
     private HostServices hostServices ;
 
-    private final ExecutorService watchUpdateLoops = Executors.newCachedThreadPool();
-
     /**
      * Initializes the main view by printing the sidebar and overview
      * It also gets all the data stored in the database by using {@link DBManager#getAllWatches()}
@@ -101,15 +97,6 @@ public class PrimaryController{
         App.getConnectionManager().addConnectionHandler(wrappedConnection -> {
             var watchData = new WatchData(UUID.randomUUID().toString()); // TODO
             var watch = new Smartwatch(watchData, "", wrappedConnection);
-
-            this.watchUpdateLoops.submit(() -> {
-                try {
-                    watch.networkLoop();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-
             Platform.runLater(() -> this.addWatch(watch));
         });
 
@@ -454,4 +441,15 @@ public class PrimaryController{
      * Setter for {@link PrimaryController#hostServices}
      */
     public void setHostServices(HostServices hostServices) { this.hostServices = hostServices ; }
+
+    /**
+     * Closes all watch connections
+     *
+     * @throws IOException IO error when failing to close the watch connection.
+     */
+    public static void shutdown() throws IOException {
+        for (Smartwatch watch : PrimaryController.watches) {
+            watch.close();
+        }
+    }
 }

@@ -74,5 +74,6 @@ public class App extends Application {
         launch();
 
         App.connectionManager.close();
+        PrimaryController.shutdown();
     }
 }
