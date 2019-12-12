@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,7 +38,7 @@ public class WrappedConnection implements Closeable {
                 try {
                     var msg = this.connection.receive();
                     this.handleMessage(msg);
-                } catch (EOFException e) {
+                } catch (EOFException | SocketException e) {
                     mustClose = true;
                 } catch (Exception e) {
                     e.printStackTrace();
