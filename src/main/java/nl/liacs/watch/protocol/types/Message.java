@@ -96,4 +96,19 @@ public class Message {
         }
         return other.type == this.type;
     }
+
+    @Override
+    public String toString() {
+        var paramSb = new StringBuilder();
+        for (int i = 0; i < parameters.length; i++) {
+            var param = parameters[i];
+            if (i > 0) {
+                paramSb.append(", ");
+            }
+
+            paramSb.append(param.toString());
+        }
+
+        return String.format("Message{ %d, %s, %s }", id, type.name(), paramSb.toString());
+    }
 }

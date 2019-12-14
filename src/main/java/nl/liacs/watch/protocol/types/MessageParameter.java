@@ -118,4 +118,27 @@ public class MessageParameter {
         final MessageParameter other = (MessageParameter) obj;
         return other.type == this.type && Arrays.equals(other.bytes, this.bytes);
     }
+
+    @Override
+    public String toString() {
+        var sb = new StringBuilder(type.name());
+
+        switch (type) {
+        case DOUBLE:
+            sb.append('(');
+            sb.append(this.getDouble());
+            sb.append(')');
+            break;
+        case STRING:
+            sb.append('(');
+            sb.append(this.getString());
+            sb.append(')');
+            break;
+
+        default:
+            break;
+        }
+
+        return sb.toString();
+    }
 }
