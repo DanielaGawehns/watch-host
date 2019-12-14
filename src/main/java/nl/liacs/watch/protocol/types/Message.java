@@ -97,9 +97,22 @@ public class Message {
         return other.type == this.type;
     }
 
-    public static Message makeReply(int messageID) {
+    public static Message makeReply(
+        int messageID,
+        int statusCode,
+        String message,
+        MessageParameter... parameters
+    ) {
         var res = new Message(MessageType.REPLY);
         res.id = messageID;
+
+        res.parameters = new MessageParameter[2 + parameters.length];
+        res.parameters[0] = new MessageParameter(statusCode);
+        res.parameters[1] = new MessageParameter(message);
+        for (int i = 0; i < parameters.length; i++) {
+            res.parameters[i + 2] = parameters[i];
+        }
+
         return res;
     }
 
