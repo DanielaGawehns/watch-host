@@ -15,15 +15,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import nl.liacs.watch.protocol.types.ParameterType;
 import org.openjfx.*;
 import util.Util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 /**
@@ -95,9 +93,24 @@ public class PrimaryController{
         watches = App.getDbManager().getAllWatches();
 
         App.getConnectionManager().addConnectionHandler(wrappedConnection -> {
-            var watchData = new WatchData(UUID.randomUUID().toString()); // TODO
-            var watch = new Smartwatch(watchData, "", wrappedConnection);
-            Platform.runLater(() -> this.addWatch(watch));
+            System.out.println("got a watch connection");
+            try {
+                var future = wrappedConnection.getValues("system.uid");
+                System.out.println("asked for ID");
+
+                future.thenAccept(params -> {
+                    params[0].setType(ParameterType.STRING);
+                    var uid = params[0].getString();
+
+                    System.out.println("got their ID: " + uid);
+
+                    var watchData = new WatchData(uid);
+                    var watch = new Smartwatch(watchData, "", wrappedConnection);
+                    Platform.runLater(() -> this.addWatch(watch));
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
         currentWatch = -1;

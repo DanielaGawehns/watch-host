@@ -97,6 +97,12 @@ public class Message {
         return other.type == this.type;
     }
 
+    public static Message makeReply(int messageID) {
+        var res = new Message(MessageType.REPLY);
+        res.id = messageID;
+        return res;
+    }
+
     @Override
     public String toString() {
         var paramSb = new StringBuilder();
