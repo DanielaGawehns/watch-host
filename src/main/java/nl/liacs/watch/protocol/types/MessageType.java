@@ -6,33 +6,31 @@ public enum MessageType {
      * check if the other side still responds by sending a PONG.
      */
     PING(0),
+
     /**
-     * a PONG to respond to a PING.
+     * a reply to a message send by the other party.
      */
-    PONG(1),
+    REPLY(1),
+
+    /**
+     * a key-value store retrieval operation.
+     */
+    GET_VALUES(2),
+
+    /**
+     * a key-value store set operation.
+     */
+    SET_VALUES(3),
 
     /**
      * an incremental data update for the dashboard, used in live views.
      */
-    INCREMENT(2),
+    INCREMENT(4),
+
     /**
      * older collected data to be send to the dashboard.
      */
-    PLAYBACK(3),
-
-    /**
-     * setting the poll interval of the given sensor.
-     */
-    SENSOR_INTERVAL(4),
-    /**
-     * setting sensor specific information.
-     */
-    SENSOR_SETTING(5),
-    /**
-     * set the streaming send interval, the live view will be basically throttled.  Events will be queued until the next
-     * increment.
-     */
-    LIVE_INTERVAL(5);
+    PLAYBACK(5);
 
     private int id;
 

@@ -11,6 +11,10 @@ import java.io.IOException;
  */
 public class Message {
     /**
+     * The message ID
+     */
+    public int id = 0;
+    /**
      * The type of the message.
      */
     public MessageType type;
@@ -35,8 +39,11 @@ public class Message {
      */
     @org.jetbrains.annotations.NotNull
     public static Message decode(DataInputStream s) throws IOException {
+        var id = s.readUnsignedShort();
         var type = MessageType.values()[s.readUnsignedByte()];
+
         var msg = new Message(type);
+        msg.id = id;
 
         msg.parameters = new MessageParameter[s.readUnsignedByte()];
         for (int i = 0; i < msg.parameters.length; i++) {
@@ -61,6 +68,7 @@ public class Message {
     public byte[] encode() throws IllegalStateException {
         ByteArrayDataOutput bb = ByteStreams.newDataOutput();
 
+        bb.writeShort(this.id);
         bb.writeByte(type.getId());
         bb.writeByte(parameters.length);
 

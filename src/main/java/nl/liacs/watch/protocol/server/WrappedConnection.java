@@ -1,18 +1,15 @@
 package nl.liacs.watch.protocol.server;
 
-import nl.liacs.watch.protocol.types.Message;
-import nl.liacs.watch.protocol.types.MessageType;
-import nl.liacs.watch.protocol.types.UnknownProtocolException;
+import nl.liacs.watch.protocol.types.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * A wrapped connection, with convenience methods.
@@ -21,6 +18,9 @@ public class WrappedConnection implements Closeable {
     private final Connection connection;
     private final BlockingQueue<Message> receiveQueue;
     private final ExecutorService pool;
+
+    private int latestId = 0;
+    private HashMap<Integer, List<CompletableFuture<MessageParameter[]>>> replyFutureMap = new HashMap<>();
 
     /**
      * @param connection The connection to wrap
@@ -71,12 +71,27 @@ public class WrappedConnection implements Closeable {
      * @param message The message to send.
      * @throws IOException IO error when failing to send the message.
      */
-    public void send(Message message) throws IOException {
+    public void send(@NotNull Message message) throws IOException {
         if (!connection.isOpen()) {
             throw new IllegalStateException("connection is closed");
         }
 
         this.connection.send(message);
+    }
+
+    public CompletableFuture<MessageParameter[]> sendAndWaitReply(Message message) throws IOException {
+        if (message.id == 0) {
+            throw new IllegalArgumentException("message id can't be 0 when expecting reply.");
+        }
+
+        this.send(message);
+
+        var future = new CompletableFuture<MessageParameter[]>();
+        if (!this.replyFutureMap.containsKey(message.id)) {
+            this.replyFutureMap.put(message.id, new ArrayList<>());
+        }
+        this.replyFutureMap.get(message.id).add(future);
+        return future;
     }
 
     /**
@@ -108,13 +123,48 @@ public class WrappedConnection implements Closeable {
         this.connection.close();
     }
 
-    private void handleMessage(Message msg) throws IOException {
+    private void handleMessage(@NotNull Message msg) throws IOException {
+        if (msg.id > this.latestId) {
+            this.latestId = msg.id;
+        }
+
         if (msg.type.equals(MessageType.PING)) {
-            var pong = new Message(MessageType.PONG);
-            this.send(pong);
+            var reply = Message.makeReply(msg.id);
+            this.send(reply);
             return;
         }
 
-        this.receiveQueue.add(msg);
+        var futures = this.replyFutureMap.getOrDefault(msg.id, Collections.emptyList());
+        if (futures.size() == 0) {
+            this.receiveQueue.add(msg);
+        } else {
+            assert msg.type == MessageType.REPLY;
+
+            msg.parameters[0].setType(ParameterType.DOUBLE);
+            var errored = msg.parameters[0].getDouble() > 0;
+
+            for (var future : futures) {
+                if (errored) {
+                    msg.parameters[1].setType(ParameterType.STRING);
+                    var status = msg.parameters[1].getString();
+                    future.completeExceptionally(new Exception(status)); // TODO: better exception types
+                } else {
+                    var parameters = Arrays.copyOfRange(msg.parameters, 2, msg.parameters.length);
+                    future.complete(parameters);
+                }
+            }
+        }
+    }
+
+    public Message makeMessageWithID(MessageType type) {
+        var msg = new Message(type);
+        msg.id = ++this.latestId;
+        return msg;
+    }
+
+    public CompletableFuture<MessageParameter[]> getValues(String key) throws IOException {
+        var msg = this.makeMessageWithID(MessageType.GET_VALUES);
+        msg.parameters = new MessageParameter[]{ new MessageParameter(key) };
+        return this.sendAndWaitReply(msg);
     }
 }

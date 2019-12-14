@@ -49,7 +49,7 @@ public class MessageTests {
         Assert.assertNotEquals(a, b);
 
         a = new Message(MessageType.INCREMENT);
-        b = new Message(MessageType.LIVE_INTERVAL);
+        b = new Message(MessageType.PLAYBACK);
         Assert.assertNotEquals(a, b);
     }
 }
