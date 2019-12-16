@@ -39,7 +39,7 @@ public class BroadcastHandler implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         this.thread.interrupt();
         this.server.close();
         this.running = false;

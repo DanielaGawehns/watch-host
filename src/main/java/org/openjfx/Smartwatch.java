@@ -17,7 +17,7 @@ public class Smartwatch implements Closeable {
     /**
      * Data about the watch {@link WatchData}
      */
-    private WatchData watchData;
+    private final WatchData watchData;
 
     /**
      * Data about subject {@link SubjectData}
@@ -32,7 +32,7 @@ public class Smartwatch implements Closeable {
     /**
      * Map to map sensor name string to a {@link SensorData} instance containing data of all the sensors available
      */
-    private Map<String, SensorData> sensorMap = new HashMap<>();
+    private final Map<String, SensorData> sensorMap = new HashMap<>();
 
     /**
      * The current measurement which is being performed by the watch

@@ -23,18 +23,18 @@ public class SensorData {
     /**
      * Name of the sensor the data is from
      */
-    private String sensor;
+    private final String sensor;
 
 
     /**
      * Stores the amount of data columns. These only include the double values
      */
-    private int dataFieldsNumber;
+    private final int dataFieldsNumber;
 
     /**
      * ID of the watch this data belong to
      */
-    private String watchID;
+    private final String watchID;
 
 
     /**

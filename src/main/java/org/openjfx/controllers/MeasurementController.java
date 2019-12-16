@@ -50,7 +50,7 @@ public class MeasurementController {
     /**
      * List of all the possible sensors available
      */
-    private List<String> allSensors = new ArrayList<>() {
+    private final List<String> allSensors = new ArrayList<>() {
         {
             add("ACCELEROMETER");
             add("GRAVITY");
@@ -77,18 +77,18 @@ public class MeasurementController {
     /**
      * List of sensors which are selected
      */
-    private List<Pair<String, TextField>> selectedSensors = new ArrayList<>();
+    private final List<Pair<String, TextField>> selectedSensors = new ArrayList<>();
 
     /**
      * List of {@link Smartwatch} which are selected to perform the measurement
      */
-    private List<Smartwatch> selectedWatches = new ArrayList<>();
+    private final List<Smartwatch> selectedWatches = new ArrayList<>();
 
 
     /**
      * Instance of {@link Measurement}
      */
-    private Measurement measurement = new Measurement();
+    private final Measurement measurement = new Measurement();
 
 
     /**

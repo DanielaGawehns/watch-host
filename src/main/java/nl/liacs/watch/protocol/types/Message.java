@@ -17,7 +17,7 @@ public class Message {
     /**
      * The type of the message.
      */
-    public MessageType type;
+    public final MessageType type;
     /**
      * Every parameter of the message.
      */
@@ -108,9 +108,7 @@ public class Message {
         res.parameters = new MessageParameter[2 + parameters.length];
         res.parameters[0] = new MessageParameterDouble(statusCode);
         res.parameters[1] = new MessageParameterString(message);
-        for (int i = 0; i < parameters.length; i++) {
-            res.parameters[i + 2] = parameters[i];
-        }
+        System.arraycopy(parameters, 0, res.parameters, 2, parameters.length);
 
         return res;
     }

@@ -32,7 +32,7 @@ public enum MessageType {
      */
     PLAYBACK(5);
 
-    private int id;
+    private final int id;
 
     MessageType(int id) {
         this.id = id;

@@ -13,17 +13,17 @@ public class DataPoint {
     /**
      * Name of the sensor from which the data came
      */
-    private String sensorName;
+    private final String sensorName;
 
     /**
      * Date of measurement
      */
-    private LocalDate date;
+    private final LocalDate date;
 
     /**
      * Time of measurement
      */
-    private LocalTime time;
+    private final LocalTime time;
 
     /**
      * List of doubles which saves data of measurement

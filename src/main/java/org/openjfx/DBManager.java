@@ -19,11 +19,11 @@ public class DBManager implements Closeable {
     /**
      * Set containing all the dataList ID's
      */
-    private Set<Integer> dataIDList = new LinkedHashSet<>();
+    private final Set<Integer> dataIDList = new LinkedHashSet<>();
     /**
      * Set containing all the measurement ID's
      */
-    private Set<Integer> measurementIDList = new LinkedHashSet<>();
+    private final Set<Integer> measurementIDList = new LinkedHashSet<>();
 
     public DBManager() throws SQLException, IOException {
         String databaseLoc

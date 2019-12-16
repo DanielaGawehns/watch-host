@@ -42,7 +42,7 @@ public class OverviewController {
     /**
      * List of {@link Chart} which are present on the overview
      */
-    private List<Chart> charts = new ArrayList<>();
+    private final List<Chart> charts = new ArrayList<>();
 
 
     /**

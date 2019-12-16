@@ -20,7 +20,7 @@ public class WrappedConnection implements Closeable {
     private final ExecutorService pool;
 
     private int latestId = 0;
-    private HashMap<Integer, List<CompletableFuture<MessageParameter[]>>> replyFutureMap = new HashMap<>();
+    private final HashMap<Integer, List<CompletableFuture<MessageParameter[]>>> replyFutureMap = new HashMap<>();
 
     /**
      * @param connection The connection to wrap
@@ -33,7 +33,7 @@ public class WrappedConnection implements Closeable {
         // receive loop
         this.pool.submit(() -> {
             while (!this.pool.isShutdown()) {
-                Boolean mustClose = false;
+                boolean mustClose = false;
 
                 try {
                     var msg = this.connection.receive();

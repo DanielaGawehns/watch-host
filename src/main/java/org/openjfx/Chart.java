@@ -23,12 +23,12 @@ public class Chart {
     /**
      * List of data to print in a chart. One sensorData depicts one line in the chart
      */
-    private List<SensorData> dataList;
+    private final List<SensorData> dataList;
 
     /**
      * Sensor which the data in the chart is from
      */
-    private String sensor;
+    private final String sensor;
 
     /**
      * Constructor with a list of {@link SensorData}

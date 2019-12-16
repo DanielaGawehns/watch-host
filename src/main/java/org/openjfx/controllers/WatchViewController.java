@@ -92,13 +92,13 @@ public class WatchViewController {
     /**
      * VBox in which to place the researchers comments
      */
-    private VBox commentsBox = new VBox();
+    private final VBox commentsBox = new VBox();
 
 
     /**
      * List of {@link Chart} containing all the charts in the watch view
      */
-    private List<Chart> charts = new ArrayList<>();
+    private final List<Chart> charts = new ArrayList<>();
 
     /**
      * The {@link Smartwatch} of which the overview is showed

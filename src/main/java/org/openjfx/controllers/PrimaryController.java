@@ -20,7 +20,9 @@ import util.Util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 /**
@@ -50,7 +52,7 @@ public class PrimaryController{
     /**
      * Reader for reading CSV files {@link CSVFileReader}
      */
-    private CSVFileReader reader = new CSVFileReader();
+    private final CSVFileReader reader = new CSVFileReader();
 
     /**
      * Controller for the watchView {@link WatchViewController}
@@ -86,7 +88,7 @@ public class PrimaryController{
      * Initializes the main view by printing the sidebar and overview
      * It also gets all the data stored in the database by using {@link DBManager#getAllWatches()}
      */
-    public void initialize() throws IOException {
+    public void initialize() {
         System.out.println("INITIALIZE Primary Controller");
 
         watches = App.getDbManager().getAllWatches();
