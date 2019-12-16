@@ -22,7 +22,7 @@ public class MessageTests {
         var encoded = msg.encode();
         var decoded = Message.decode(new DataInputStream(new ByteArrayInputStream(encoded)));
 
-        decoded.parameters[0] = decoded.parameters[1].asString();
+        decoded.parameters[0] = decoded.parameters[0].asString();
         decoded.parameters[1] = decoded.parameters[1].asDouble();
         decoded.parameters[2] = decoded.parameters[2].asDouble();
         decoded.parameters[3] = decoded.parameters[3].asDouble();
