@@ -140,13 +140,11 @@ public class WrappedConnection implements Closeable {
         } else {
             assert msg.type == MessageType.REPLY;
 
-            msg.parameters[0].setType(ParameterType.DOUBLE);
-            var errored = msg.parameters[0].getDouble() > 0;
+            var errored = msg.parameters[0].asDouble().getValue() > 0;
 
             for (var future : futures) {
                 if (errored) {
-                    msg.parameters[1].setType(ParameterType.STRING);
-                    var status = msg.parameters[1].getString();
+                    var status = msg.parameters[1].asString().getValue();
                     future.completeExceptionally(new Exception(status)); // TODO: better exception types
                 } else {
                     var parameters = Arrays.copyOfRange(msg.parameters, 2, msg.parameters.length);
@@ -164,7 +162,7 @@ public class WrappedConnection implements Closeable {
 
     public CompletableFuture<MessageParameter[]> getValues(String key) throws IOException {
         var msg = this.makeMessageWithID(MessageType.GET_VALUES);
-        msg.parameters = new MessageParameter[]{ new MessageParameter(key) };
+        msg.parameters = new MessageParameter[]{ new MessageParameterString(key) };
         return this.sendAndWaitReply(msg);
     }
 }

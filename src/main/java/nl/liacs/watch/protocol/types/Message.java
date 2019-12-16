@@ -53,7 +53,6 @@ public class Message {
             s.readFully(pbytes, 0, psize);
 
             var param = new MessageParameter();
-            param.type = ParameterType.UNKNOWN;
             param.bytes = pbytes;
             msg.parameters[i] = param;
         }
@@ -107,8 +106,8 @@ public class Message {
         res.id = messageID;
 
         res.parameters = new MessageParameter[2 + parameters.length];
-        res.parameters[0] = new MessageParameter(statusCode);
-        res.parameters[1] = new MessageParameter(message);
+        res.parameters[0] = new MessageParameterDouble(statusCode);
+        res.parameters[1] = new MessageParameterString(message);
         for (int i = 0; i < parameters.length; i++) {
             res.parameters[i + 2] = parameters[i];
         }

@@ -1,18 +1,9 @@
 package nl.liacs.watch.protocol.types;
 
-import com.google.common.io.ByteStreams;
-import com.google.common.primitives.Doubles;
-
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class MessageParameter {
-    /**
-     * The type of the parameter, defaults to unknown.
-     * Should be set before using.
-     */
-    ParameterType type = ParameterType.UNKNOWN;
     /**
      * The value of the parameter.
      */
@@ -22,75 +13,24 @@ public class MessageParameter {
     }
 
     /**
-     * @param bytes Create a byte array parameter with the given value.
+     * Create a derived class with the string type.
      */
-    public MessageParameter(byte[] bytes) {
-        this.type = ParameterType.BINARY;
-        this.bytes = bytes;
+    public MessageParameterString asString() {
+        return new MessageParameterString(this.bytes);
     }
 
     /**
-     * @param string Create a string parameter with the given value.
+     * Create a derived class with the double type.
      */
-    public MessageParameter(String string) {
-        this.type = ParameterType.STRING;
-
-        var bb = ByteBuffer.allocate(string.length());
-        bb.put(string.getBytes());
-        this.bytes = bb.array();
+    public MessageParameterDouble asDouble() {
+        return new MessageParameterDouble(this.bytes);
     }
 
     /**
-     * @param val Create a double parameter with the given value.
+     * Create a derived class with the binary type.
      */
-    public MessageParameter(double val) {
-        this.type = ParameterType.DOUBLE;
-
-        var bb = ByteBuffer.allocate(Doubles.BYTES);
-        bb.putDouble(val);
-        this.bytes = bb.array();
-    }
-
-    /**
-     * @return The parameter value as a string.
-     * @throws IllegalStateException Throws when the parameter is not a string.
-     */
-    public String getString() throws IllegalStateException {
-        if (type != ParameterType.STRING) {
-            throw new IllegalArgumentException("type is not string");
-        }
-        return new String(bytes, StandardCharsets.US_ASCII);
-    }
-
-    /**
-     * @return The parameter value as a double.
-     * @throws IllegalStateException Throws when the parameter is not a double.
-     */
-    public Double getDouble() throws IllegalStateException {
-        if (type != ParameterType.DOUBLE) {
-            throw new IllegalArgumentException("type is not double");
-        }
-        return ByteStreams.newDataInput(bytes).readDouble(); // TODO: something more efficient
-    }
-
-    /**
-     * @return The parameter value as a byte array.
-     * @throws IllegalStateException Throws when the parameter is not a byte array.
-     */
-    public byte[] getBinary() throws IllegalStateException {
-        if (type != ParameterType.BINARY) {
-            throw new IllegalArgumentException("type is not binary");
-        }
-        return bytes;
-    }
-
-    /**
-     * Set the type of this parameter.
-     *
-     * @param type The type to set to.
-     */
-    public void setType(ParameterType type) {
-        this.type = type;
+    public MessageParameterBinary asBinary() {
+        return new MessageParameterBinary(this.bytes);
     }
 
     /**
@@ -98,7 +38,7 @@ public class MessageParameter {
      * @throws IllegalStateException When the type of the parameter is unknown.
      */
     public byte[] encode() throws IllegalStateException {
-        if (this.type == ParameterType.UNKNOWN) {
+        if (this.getType() == ParameterType.UNKNOWN) {
             throw new IllegalStateException("parameter type can't be unknown");
         }
 
@@ -116,22 +56,24 @@ public class MessageParameter {
         if (!MessageParameter.class.isAssignableFrom(obj.getClass())) return false;
 
         final MessageParameter other = (MessageParameter) obj;
-        return other.type == this.type && Arrays.equals(other.bytes, this.bytes);
+        return other.getType() == this.getType() && Arrays.equals(other.bytes, this.bytes);
     }
 
     @Override
     public String toString() {
+        var type = this.getType();
+
         var sb = new StringBuilder(type.name());
 
         switch (type) {
         case DOUBLE:
-            sb.append('(');
-            sb.append(this.getDouble());
-            sb.append(')');
-            break;
         case STRING:
             sb.append('(');
-            sb.append(this.getString());
+            if (type == ParameterType.DOUBLE) {
+                sb.append(((MessageParameterDouble) this).getValue());
+            } else {
+                sb.append(((MessageParameterString) this).getValue());
+            }
             sb.append(')');
             break;
 
@@ -140,5 +82,9 @@ public class MessageParameter {
         }
 
         return sb.toString();
+    }
+
+    public ParameterType getType() {
+        return ParameterType.UNKNOWN;
     }
 }

@@ -15,7 +15,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import nl.liacs.watch.protocol.types.ParameterType;
 import org.openjfx.*;
 import util.Util;
 
@@ -99,8 +98,7 @@ public class PrimaryController{
                 System.out.println("asked for ID");
 
                 future.thenAccept(params -> {
-                    params[0].setType(ParameterType.STRING);
-                    var uid = params[0].getString();
+                    var uid = params[0].asString().getValue();
 
                     System.out.println("got their ID: " + uid);
 

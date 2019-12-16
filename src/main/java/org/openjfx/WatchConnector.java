@@ -2,7 +2,6 @@ package org.openjfx;
 
 import nl.liacs.watch.protocol.server.WrappedConnection;
 import nl.liacs.watch.protocol.types.Message;
-import nl.liacs.watch.protocol.types.ParameterType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
@@ -52,20 +51,15 @@ public class WatchConnector implements Closeable {
 
             switch (item.type) {
                 case INCREMENT:
-                    item.parameters[0].setType(ParameterType.STRING);
-                    var sensor = item.parameters[0].getString();
+                    var sensor = item.parameters[0].asString().getValue();
                     System.out.println(sensor);
                     if (sensor.equals("BATTERY")) {
-                        item.parameters[2].setType(ParameterType.DOUBLE);
-                        var percentage = item.parameters[2].getDouble();
+                        var percentage = item.parameters[2].asDouble().getValue();
                         watch.getWatchData().setBatteryPercentage(percentage.intValue());
                         break;
                     }
 
-                    var values = Arrays.stream(item.parameters).skip(2).map((param) -> {
-                        param.setType(ParameterType.DOUBLE);
-                        return param.getDouble();
-                    }).collect(Collectors.toList());
+                    var values = Arrays.stream(item.parameters).skip(2).map((param) -> param.asDouble().getValue()).collect(Collectors.toList());
                     var dataPoint = new DataPoint(sensor, LocalDate.now(), LocalTime.now(), values);
 
                     var list = Collections.singletonList(dataPoint);
