@@ -1,4 +1,9 @@
-# Watch communication protocol v1-alpha3
+---
+title: Watch communication protocol v1-alpha3
+author:
+ - Lieuwe Rooijakkers
+ - Peter Bosch
+---
 
 # Watch-host discovery
 
@@ -30,6 +35,10 @@ this document.
 **Note**: A host is not required to support older version numbers, they are
 free to do so. But it's up to the implementator to choose the version range to
 support.
+
+# Data specification
+
+All data is sent in _big-endian_ order (_network byte order_).
 
 ## Universal message structure
 | message reference ID | command ID | number of parameters | parameters... |
