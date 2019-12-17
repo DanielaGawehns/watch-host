@@ -32,6 +32,7 @@ public class BroadcastHandler implements Closeable {
                 e.printStackTrace();
             }
         });
+        this.thread.start();
     }
 
     public BroadcastHandler() throws IOException {
