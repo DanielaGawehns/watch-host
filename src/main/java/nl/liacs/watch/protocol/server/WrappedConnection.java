@@ -1,6 +1,7 @@
 package nl.liacs.watch.protocol.server;
 
 import nl.liacs.watch.protocol.types.*;
+import nl.liacs.watch.protocol.types.exceptions.ReplyException;
 import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
 import org.jetbrains.annotations.NotNull;
 
@@ -141,14 +142,20 @@ public class WrappedConnection implements Closeable {
         } else {
             assert msg.type == MessageType.REPLY;
 
-            var errored = msg.parameters[0].asDouble().getValue() > 0;
+            var status = msg.parameters[0].asDouble().getValue();
+            var errored = status > 0;
 
-            for (var future : futures) {
-                if (errored) {
-                    var status = msg.parameters[1].asString().getValue();
-                    future.completeExceptionally(new Exception(status)); // TODO: better exception types
-                } else {
-                    var parameters = Arrays.copyOfRange(msg.parameters, 2, msg.parameters.length);
+            if (errored) {
+                var message = msg.parameters[1].asString().getValue();
+                var exception = new ReplyException(status.intValue(), message);
+
+                for (var future : futures) {
+                    future.completeExceptionally(exception);
+                }
+            } else {
+                var parameters = Arrays.copyOfRange(msg.parameters, 2, msg.parameters.length);
+
+                for (var future : futures) {
                     future.complete(parameters);
                 }
             }
