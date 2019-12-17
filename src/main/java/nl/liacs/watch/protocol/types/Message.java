@@ -96,7 +96,15 @@ public class Message {
         return other.type == this.type;
     }
 
-    public static Message makeReply(
+    public Message makeReply(
+        int statusCode,
+        String message,
+        MessageParameter... parameters
+    ) {
+        return Message.makeReply(this.id, statusCode, message, parameters);
+    }
+
+    private static Message makeReply(
         int messageID,
         int statusCode,
         String message,

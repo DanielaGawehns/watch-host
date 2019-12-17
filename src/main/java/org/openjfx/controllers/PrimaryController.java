@@ -93,7 +93,7 @@ public class PrimaryController{
 
         watches = App.getDbManager().getAllWatches();
 
-        App.getConnectionManager().addConnectionHandler(wrappedConnection -> {
+        App.getConnectionManager().addConnectionConsumer(wrappedConnection -> {
             System.out.println("got a watch connection");
             try {
                 var future = wrappedConnection.getValues("system.uid");

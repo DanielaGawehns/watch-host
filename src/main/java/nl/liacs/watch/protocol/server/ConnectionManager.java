@@ -63,7 +63,7 @@ public class ConnectionManager implements Closeable {
         return this.running;
     }
 
-    public void addConnectionHandler(Consumer<WrappedConnection> consumer) {
+    public void addConnectionConsumer(Consumer<WrappedConnection> consumer) {
         this.connectionListeners.add(consumer);
     }
 

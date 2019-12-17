@@ -130,7 +130,7 @@ public class WrappedConnection implements Closeable {
         }
 
         if (msg.type.equals(MessageType.PING)) {
-            var reply = Message.makeReply(msg.id, 0, "pong");
+            var reply = msg.makeReply(0, "pong");
             this.send(reply);
             return;
         }

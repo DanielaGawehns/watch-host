@@ -13,6 +13,9 @@ public class MessageParameterDouble extends MessageParameter {
         this.bytes = bb.array();
     }
 
+    /**
+     * @param bytes Create a new instance with the given bytes.
+     */
     MessageParameterDouble(byte[] bytes) {
         this.bytes = bytes;
     }
