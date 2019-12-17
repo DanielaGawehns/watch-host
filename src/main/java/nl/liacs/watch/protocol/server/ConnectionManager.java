@@ -19,28 +19,23 @@ import java.util.function.Consumer;
 public class ConnectionManager implements Closeable {
     private final ServerSocket server;
     private final List<Consumer<WrappedConnection>> connectionListeners = new ArrayList<>();
-    private BroadcastHandler broadcastHandler;
-    private Thread serverThread;
-    private boolean running = false;
+    private final BroadcastHandler broadcastHandler;
+    private final Thread serverThread;
 
     /**
-     * @param server The TCP server to wrap.
-     */
-    public ConnectionManager(ServerSocket server) {
-        this.server = server;
-    }
-
-    /**
-     * Start the connection manager.
+     * Create and start a new connection manager.
      *
+     * @param server The TCP server to wrap.
      * @throws IOException IO error when failing to start the broadcast handler.
      */
-    public void start() throws IOException {
+    public ConnectionManager(ServerSocket server) throws IOException {
+        this.server = server;
+
         // start broadcast handler
         this.broadcastHandler = new BroadcastHandler();
 
         this.serverThread = new Thread(() -> {
-            while (this.running) {
+            while (!this.server.isClosed()) {
                 try {
                     var socket = this.server.accept();
                     this.handleSocket(socket);
@@ -52,15 +47,6 @@ public class ConnectionManager implements Closeable {
             }
         });
         this.serverThread.start();
-
-        this.running = true;
-    }
-
-    /**
-     * @return Whether or not the connection manager is currently running.
-     */
-    public boolean isRunning() {
-        return this.running;
     }
 
     public void addConnectionConsumer(Consumer<WrappedConnection> consumer) {
@@ -78,9 +64,7 @@ public class ConnectionManager implements Closeable {
     public void close() throws IOException {
         this.broadcastHandler.close();
         this.server.close();
-
         this.serverThread.interrupt();
-        this.running = false;
     }
 
     /**
