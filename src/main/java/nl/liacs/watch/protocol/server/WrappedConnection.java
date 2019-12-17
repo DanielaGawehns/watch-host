@@ -1,6 +1,7 @@
 package nl.liacs.watch.protocol.server;
 
 import nl.liacs.watch.protocol.types.*;
+import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;

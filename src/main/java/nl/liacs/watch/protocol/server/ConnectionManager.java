@@ -1,6 +1,6 @@
 package nl.liacs.watch.protocol.server;
 
-import nl.liacs.watch.protocol.types.UnknownProtocolException;
+import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
 
 import java.io.Closeable;
 import java.io.IOException;

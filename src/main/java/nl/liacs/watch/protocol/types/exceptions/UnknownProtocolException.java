@@ -1,4 +1,4 @@
-package nl.liacs.watch.protocol.types;
+package nl.liacs.watch.protocol.types.exceptions;
 
 /**
  * Exception when the protocol (version) is unknown
