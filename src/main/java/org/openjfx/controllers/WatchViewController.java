@@ -194,7 +194,7 @@ public class WatchViewController {
         var sensors = measurement.getSensors();
 
         for(var sensor : sensors){
-            String text = sensor.first() + " - " + sensor.second() + " ms";
+            String text = sensor.getFirst() + " - " + sensor.getSecond() + " ms";
             label = new Label(text);
             measurementLabels.getChildren().add(label);
         }

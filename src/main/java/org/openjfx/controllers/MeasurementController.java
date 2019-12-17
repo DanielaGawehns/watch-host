@@ -355,7 +355,7 @@ public class MeasurementController {
 
         // check if the user given interval is valid for each selected sensor
         for (Pair<String, TextField> currentSensor : selectedSensors) {
-            TextField currentInterval = currentSensor.second();
+            TextField currentInterval = currentSensor.getSecond();
             Integer interval;
             try {
                 interval = Integer.parseInt(currentInterval.getText());
@@ -367,7 +367,7 @@ public class MeasurementController {
 
             // check if the user given interval is valid for the current sensor
             if (interval > 0) { // todo: more rigorous checking based on type of sensor
-                sensorList.add(new Pair<>(currentSensor.first(), interval)); // interval is valid, store the value
+                sensorList.add(new Pair<>(currentSensor.getFirst(), interval)); // interval is valid, store the value
             } else {
                 Util.printErrorDialog("Interval error", "Chosen interval is not valid. Please choose another one to continue.");
                 return; // interval not valid, cannot start a measurement

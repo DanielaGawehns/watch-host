@@ -635,7 +635,7 @@ public class DBManager implements Closeable {
         createMeasurementTable(measurementID);
 
         for (var sensor : measurement.getSensors()) {
-            addToSensorTable(measurementID, sensor.first(), sensor.second());
+            addToSensorTable(measurementID, sensor.getFirst(), sensor.getSecond());
         }
 
         for (String ID : IDList) {
