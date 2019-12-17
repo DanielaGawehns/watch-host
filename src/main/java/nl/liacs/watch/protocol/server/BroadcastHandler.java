@@ -20,7 +20,6 @@ public class BroadcastHandler implements Closeable {
 
     private final DatagramSocket server;
     private final Thread thread;
-    private boolean running = true;
 
     public BroadcastHandler(int rate) throws IOException {
         server = new DatagramSocket();
@@ -43,7 +42,6 @@ public class BroadcastHandler implements Closeable {
     public void close() {
         this.thread.interrupt();
         this.server.close();
-        this.running = false;
     }
 
     @Nullable
@@ -64,7 +62,7 @@ public class BroadcastHandler implements Closeable {
      * @throws IOException IO error when listening or sending fails.
      */
     private void receiveLoop() throws IOException {
-        while (this.running) {
+        while (!this.server.isClosed()) {
             var packet = this.receivePacket();
             if (packet == null) {
                 continue;
