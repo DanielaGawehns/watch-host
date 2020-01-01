@@ -1,5 +1,22 @@
 package org.openjfx.controllers;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.openjfx.App;
+import org.openjfx.CSVFileReader;
+import org.openjfx.DBManager;
+import org.openjfx.DataPoint;
+import org.openjfx.SensorData;
+import org.openjfx.Smartwatch;
+import org.openjfx.SmartwatchList;
+import org.openjfx.WatchData;
+
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -8,21 +25,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.openjfx.*;
 import util.Util;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 
 /**
@@ -89,20 +104,18 @@ public class PrimaryController{
      * It also gets all the data stored in the database by using {@link DBManager#getAllWatches()}
      */
     public void initialize() {
-        System.out.println("INITIALIZE Primary Controller");
-
         watches = App.getDbManager().getAllWatches();
 
         App.getConnectionManager().addConnectionConsumer(wrappedConnection -> {
-            System.out.println("got a watch connection");
+            Logger.getGlobal().log(Level.INFO, "Got a new watch connection");
             try {
-                var future = wrappedConnection.getValues("system.uid");
-                System.out.println("asked for ID");
+                var uidFut = wrappedConnection.getValues("system.uid");
+                Logger.getGlobal().log(Level.INFO, "Asked watch for UID");
 
-                future.thenAccept(params -> {
+                uidFut.thenAccept(params -> {
                     var uid = params[0].asString().getValue();
 
-                    System.out.println("got their ID: " + uid);
+                    Logger.getGlobal().log(Level.INFO, "Got watch ID: " + uid);
 
                     var watchData = new WatchData(uid);
                     var watch = new Smartwatch(watchData, "", wrappedConnection);

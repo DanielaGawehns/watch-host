@@ -3,6 +3,7 @@ package org.openjfx;
 
 import nl.liacs.watch.protocol.server.WrappedConnection;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import util.Util;
 
 import java.io.Closeable;
@@ -27,7 +28,7 @@ public class Smartwatch implements Closeable {
     /**
      * Nickname for the watch specified by the user
      */
-    private String watchName = "NONAME";
+    private String name = "NONAME";
 
     /**
      * Map to map sensor name string to a {@link SensorData} instance containing data of all the sensors available
@@ -47,13 +48,17 @@ public class Smartwatch implements Closeable {
     private WatchConnector connector = null;
 
     /**
-     * Constructor
+     * Create a new {@link Smartwatch} with the given options.
+     *
+     * @param data The watch data to use for the watch.
+     * @param name The name to use for the watch.
+     * @param connection The wrapped connection to use for the watch.
      */
-    public Smartwatch(WatchData _data, String _name, WrappedConnection connection) {
+    public Smartwatch(@NotNull WatchData data, @NotNull String name, @Nullable WrappedConnection connection) {
         System.out.println("making smartwatch");
-        watchData = _data;
-        if(!_name.isEmpty()){
-            watchName = _name;
+        this.watchData = data;
+        if (!name.isEmpty()) {
+            this.name = name;
         }
 
         if (connection != null) {
@@ -86,7 +91,7 @@ public class Smartwatch implements Closeable {
      * Gets all the {@link SensorData} available from {@link Smartwatch#sensorMap}
      * @return A list of all the {@link SensorData}
      */
-    List<SensorData> getAllSensorData(){
+    List<SensorData> getAllSensorData() {
         return new ArrayList<>(sensorMap.values());
     }
 
@@ -205,13 +210,13 @@ public class Smartwatch implements Closeable {
     /**
      * Getter for {@link Smartwatch#watchData}
      */
-    public String getWatchName() { return watchName; }
+    public String getWatchName() { return name; }
 
 
     /**
-     * Setter for {@link Smartwatch#watchName}
+     * Setter for {@link Smartwatch#name}
      */
-    public void setWatchName(String name) { watchName = name; }
+    public void setWatchName(String name) { name = name; }
 
 
     /**
