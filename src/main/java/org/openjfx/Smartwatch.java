@@ -105,7 +105,7 @@ public class Smartwatch implements Closeable {
             }
 
             var sensorData = sensorMap.get(dataPoint.getSensorName());
-            if (!sensorData.contains(dataPoint.getDate(), dataPoint.getTime())) {
+            if (!sensorData.contains(dataPoint.getDateTime())) {
                 sensorData.add(dataPoint);
                 sensorDataEdited.add(dataPoint.getSensorName());
             }

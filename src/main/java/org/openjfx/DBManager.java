@@ -5,7 +5,7 @@ import util.Pair;
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -419,9 +419,7 @@ public class DBManager implements Closeable {
 
             // Go through all DataPoints
             for (int i = 0; i < dataList.size(); i++) {
-                LocalDate date = dataList.get(i).getDate();
-                LocalTime time = dataList.get(i).getTime();
-                String datetime = date.toString() + " " + time.toString();
+                String dateTime = dataList.get(i).getDateTime().toString();
                 Double data1 = dataList.get(i).getDataList().get(0);
 
                 // Build command string to deal with any data table format
@@ -435,9 +433,9 @@ public class DBManager implements Closeable {
                 command.append(")");
 
                 // Setup values and execute command
-                System.out.println("DB: " + command + " VALUES: " + datetime + "," + data1);
+                System.out.println("DB: " + command + " VALUES: " + dateTime + "," + data1);
                 var stmt = this.connection.prepareStatement(command.toString());
-                stmt.setString(1, datetime);
+                stmt.setString(1, dateTime);
                 stmt.setDouble(2, data1);
 
                 for (int j = 1; j < size; j++) {
@@ -540,8 +538,7 @@ public class DBManager implements Closeable {
         String command = "SELECT * FROM data" + dataID + " WHERE datetime BETWEEN ? AND ?";
         int dataListSizeCount = 0;
         SensorData data = null;
-        LocalTime time;
-        LocalDate date;
+        LocalDateTime dateTime;
         List<Double> dataList;
 
         System.out.println("DB: " + command);
@@ -570,14 +567,12 @@ public class DBManager implements Closeable {
 
             while (rs.next()) {
                 dataList = new ArrayList<>();
-                String[] strings = rs.getString("datetime").split(" ");
-                date = LocalDate.parse(strings[0]);
-                time = LocalTime.parse(strings[1]);
+                dateTime = LocalDateTime.parse(rs.getString("datetime"));
 
                 for (int i = 0; i < columns; i++) {
                     dataList.add(rs.getDouble("data_" + (i + 1)));
                 }
-                DataPoint point = new DataPoint(sensor, date, time, dataList);
+                DataPoint point = new DataPoint(sensor, dateTime, dataList);
                 data.add(point);
             }
 

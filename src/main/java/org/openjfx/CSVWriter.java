@@ -75,9 +75,7 @@ public class CSVWriter {
                     sb.append(COMMA_DELIMITER);
                     sb.append(datapoint.getSensorName());
                     sb.append(COMMA_DELIMITER);
-                    sb.append(datapoint.getDate());
-                    sb.append(COMMA_DELIMITER);
-                    sb.append(datapoint.getTime());
+                    sb.append(datapoint.getDateTime());
                     for (int i = 0; i < datapoint.getDataList().size(); i++) {
                         sb.append(COMMA_DELIMITER);
                         sb.append(datapoint.getDataList().get(i));
