@@ -30,8 +30,10 @@ public class Chart {
      */
     private final String sensor;
 
+
     /**
-     * Constructor with a list of {@link SensorData}
+     * Constructor with a list of {@link SensorData}. These SensorData object should be for the same sensor to represent
+     * multiple lines in a chart
      */
     public Chart(List<SensorData> list, VBox vbox){
         dataList = list;
@@ -121,6 +123,23 @@ public class Chart {
 
     }
 
+
+    /**
+     * Replaces a SensorData in {@link Chart#dataList} if a SensorData with corresponding watchID is found
+     * @param watchID The watchID to be checked
+     * @param data The data to replace the current data
+     */
+    public void setData(String watchID, SensorData data){
+        int i = 0;
+        for(SensorData sensorData : dataList){
+            if(sensorData.getWatchID().equals(watchID)){
+                dataList.set(i, data);
+                fillChart(chart, sensor);
+            }
+            i++;
+        }
+        System.out.println("Chart has no SensorData for watch with id " + watchID);
+    }
 
     /**
      * Getter for {@link Chart#sensor}

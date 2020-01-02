@@ -20,6 +20,7 @@ import util.Util;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,6 +44,11 @@ public class PrimaryController{
      */
     @FXML
     private BorderPane view;
+
+    /**
+     * Constant value for default start date for the {@link OverviewController} charts
+     */
+    private static final long standardDaysBack = 365; // TODO: set to something sensible
 
     /**
      * List of smartwatches connected {@link Smartwatch}
@@ -178,7 +184,7 @@ public class PrimaryController{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             overviewController = loader.getController();
-            overviewController.setup(watches.getAllSensorData(), watches.size(), watches.getNumberOfMeasurements());
+            overviewController.setup(watches.getAllSensorData(LocalDate.now().minusDays(standardDaysBack)), watches.size(), watches.getNumberOfMeasurements());
 
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane

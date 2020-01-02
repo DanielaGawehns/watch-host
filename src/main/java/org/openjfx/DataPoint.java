@@ -15,7 +15,7 @@ public class DataPoint {
     private final String sensorName;
 
     /**
-     * Date of measurement
+     * Date and time of measurement
      */
     private final LocalDateTime dateTime;
 

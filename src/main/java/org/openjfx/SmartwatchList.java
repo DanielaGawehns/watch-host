@@ -1,5 +1,6 @@
 package org.openjfx;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +81,14 @@ public class SmartwatchList extends ArrayList<Smartwatch> {
         List<SensorData> totalDataList = new ArrayList<>();
         for(Smartwatch watch : this){
             totalDataList.addAll(watch.getAllSensorData());
+        }
+        return totalDataList;
+    }
+
+    public List<SensorData> getAllSensorData(LocalDate date){
+        List<SensorData> totalDataList = new ArrayList<>();
+        for(Smartwatch watch : this){
+            totalDataList.addAll(watch.getAllSensorData(date));
         }
         return totalDataList;
     }

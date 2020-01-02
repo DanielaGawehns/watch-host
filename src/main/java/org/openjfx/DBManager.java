@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -540,6 +541,7 @@ public class DBManager implements Closeable {
         SensorData data = null;
         LocalDateTime dateTime;
         List<Double> dataList;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         System.out.println("DB: " + command);
         try {
@@ -567,7 +569,7 @@ public class DBManager implements Closeable {
 
             while (rs.next()) {
                 dataList = new ArrayList<>();
-                dateTime = LocalDateTime.parse(rs.getString("datetime"));
+                dateTime = LocalDateTime.parse(rs.getString("datetime"), formatter);
 
                 for (int i = 0; i < columns; i++) {
                     dataList.add(rs.getDouble("data_" + (i + 1)));

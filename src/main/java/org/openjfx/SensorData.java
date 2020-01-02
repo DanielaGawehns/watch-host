@@ -46,6 +46,17 @@ public class SensorData {
         dataFieldsNumber = _dataFieldsNumber;
     }
 
+    /**
+     * Constructor
+     */
+    SensorData(String _watchID, String _sensor, int _dataFieldsNumber, List<DataPoint> data){
+        records = new ArrayList<>();
+        sensor = _sensor;
+        watchID = _watchID;
+        dataFieldsNumber = _dataFieldsNumber;
+        records = data;
+    }
+
 
     /**
      * Gives the size of {@link SensorData#records}

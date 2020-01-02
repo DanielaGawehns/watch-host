@@ -2,8 +2,13 @@ package util;
 
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import org.openjfx.controllers.WatchViewController;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +108,30 @@ public class Util {
     static{
         sensorDataListSize.put("HRM", 1);
         sensorDataListSize.put("PRESSURE", 1);
+    }
+
+    /**
+     * Creates and sets a day cell factory to disable future dates in the provided DatePicker
+     */
+    public static void setDateFactory(DatePicker datePicker){
+        // Create a day cell factory
+        Callback<DatePicker, DateCell> dayCellFactory = new Callback<>() {
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        // Must call super
+                        super.updateItem(item, empty);
+
+                        // Disable all future date cells
+                        if (item.isAfter(LocalDate.now())) {
+                            this.setDisable(true);
+                        }
+                    }
+                };
+            }
+        };
+        datePicker.setDayCellFactory(dayCellFactory);
     }
 
 }
