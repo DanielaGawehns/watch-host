@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -95,6 +96,7 @@ public class CSVFileReader{
         String sensorName = record[0];
         LocalDate date = LocalDate.parse(record[1], formatterDate);
         LocalTime time = LocalTime.parse(record[2]);
+        LocalDateTime dateTime = LocalDateTime.of(date, time);
         List<Double> data = new ArrayList<>();
 
         switch (sensorName){
@@ -112,7 +114,7 @@ public class CSVFileReader{
             }
 
         }
-        return new DataPoint(sensorName, date, time, data);
+        return new DataPoint(sensorName, dateTime, data);
     }
 
 

@@ -3,8 +3,7 @@ package org.openjfx;
 import javafx.scene.chart.XYChart;
 import util.Util;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +80,7 @@ public class SensorData {
     void printRecords(){
         for(int i = 0; i < records.size(); i++){
             DataPoint point = records.get(i);
-            System.out.print(i + ": " + point.getDate() + "," + point.getTime());
+            System.out.print(i + ": " + point.getDateTime());
             List<Double> list = point.getDataList();
             for (Double aDouble : list) {
                 System.out.print("," + aDouble);
@@ -121,13 +120,12 @@ public class SensorData {
 
     /**
      * Checks if there is a {@link DataPoint} that has the same date and time values
-     * @param date Date of the measurement
-     * @param time Time of the measurement
+     * @param dateTime DateTime of the measurement
      * @return True if it contains a point with the same data and time values. False if not
      */
-    boolean contains(LocalDate date, LocalTime time){
+    boolean contains(LocalDateTime dateTime){
         for(int i = 0; i < size(); i++){
-            if(records.get(i).getDate().equals(date) && records.get(i).getTime().equals(time)){
+            if(records.get(i).getDateTime().equals(dateTime)){
                 return true;
             }
         }
@@ -160,7 +158,7 @@ public class SensorData {
             DataPoint record = records.get(i);
             Util.addDoubleLists(totalValues, old.getDataList());
 
-            if (old.getTime().equals(record.getTime())) { // if times are the same
+            if (old.getDateTime().equals(record.getDateTime())) { // if datetimes are the same
                 duplicateCounter++;
             } else { // add point to records
                 Util.divideDoubleList(totalValues, duplicateCounter);
@@ -198,7 +196,7 @@ public class SensorData {
      * @return A {@link XYChart.Data} containing the time and the first data column of {@link DataPoint}
      */
     XYChart.Data<String, Number> getDataPoint(int i) {
-        return new XYChart.Data<>(records.get(i).getTime().toString(), records.get(i).getDataList().get(0));
+        return new XYChart.Data<>(records.get(i).getDateTime().toString(), records.get(i).getDataList().get(0));
     }
 }
 

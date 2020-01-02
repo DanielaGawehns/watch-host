@@ -6,8 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -60,7 +59,7 @@ public class WatchConnector implements Closeable {
                     }
 
                     var values = Arrays.stream(item.parameters).skip(2).map((param) -> param.asDouble().getValue()).collect(Collectors.toList());
-                    var dataPoint = new DataPoint(sensor, LocalDate.now(), LocalTime.now(), values);
+                    var dataPoint = new DataPoint(sensor, LocalDateTime.now(), values);
 
                     var list = Collections.singletonList(dataPoint);
                     watch.addData(list);

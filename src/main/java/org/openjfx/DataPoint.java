@@ -1,7 +1,6 @@
 package org.openjfx;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -18,12 +17,7 @@ public class DataPoint {
     /**
      * Date of measurement
      */
-    private final LocalDate date;
-
-    /**
-     * Time of measurement
-     */
-    private final LocalTime time;
+    private final LocalDateTime dateTime;
 
     /**
      * List of doubles which saves data of measurement
@@ -34,10 +28,9 @@ public class DataPoint {
     /**
      * Constructor
      */
-    DataPoint(String _sensorName, LocalDate _date, LocalTime _time, List<Double> _dataList){
+    DataPoint(String _sensorName, LocalDateTime _dateTime, List<Double> _dataList){
         sensorName = _sensorName;
-        date = _date;
-        time = _time;
+        dateTime = _dateTime;
         dataList = _dataList;
     }
 
@@ -49,17 +42,10 @@ public class DataPoint {
     }
 
     /**
-     * Getter for {@link org.openjfx.DataPoint#date}
+     * Getter for {@link org.openjfx.DataPoint#dateTime}
      */
-    LocalDate getDate() {
-        return date;
-    }
-
-    /**
-     * Getter for {@link org.openjfx.DataPoint#time}
-     */
-    LocalTime getTime() {
-        return time;
+    LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     /**
