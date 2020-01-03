@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 public class WrappedConnection implements Closeable {
     private final Connection connection;
     private final BlockingQueue<Message> receiveQueue;
-    private final ExecutorService pool;
+    private final Thread thread;
 
     private int latestId = 0;
     private final HashMap<Integer, List<CompletableFuture<MessageParameter[]>>> replyFutureMap = new HashMap<>();
@@ -30,11 +30,10 @@ public class WrappedConnection implements Closeable {
     WrappedConnection(Connection connection) {
         this.connection = connection;
         this.receiveQueue = new LinkedBlockingQueue<>();
-        this.pool = Executors.newFixedThreadPool(1);
 
         // receive loop
-        this.pool.submit(() -> {
-            while (!this.pool.isShutdown()) {
+        this.thread = new Thread(() -> {
+            while (this.connection.isOpen()) {
                 boolean mustClose = false;
 
                 try {
@@ -56,6 +55,7 @@ public class WrappedConnection implements Closeable {
                 }
             }
         });
+        this.thread.start();
     }
 
     /**
@@ -130,8 +130,8 @@ public class WrappedConnection implements Closeable {
      */
     @Override
     public void close() throws IOException {
-        this.pool.shutdownNow();
         this.connection.close();
+        this.thread.interrupt();
     }
 
     /**
