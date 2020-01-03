@@ -8,6 +8,10 @@ public class MessageParameterString extends MessageParameter {
      * @param string Create a string parameter with the given value.
      */
     public MessageParameterString(String string) {
+        if (string == null) {
+            string = "";
+        }
+
         var bb = ByteBuffer.allocate(string.length());
         bb.put(string.getBytes());
         this.bytes = bb.array();

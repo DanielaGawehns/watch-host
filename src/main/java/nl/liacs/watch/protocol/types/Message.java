@@ -122,9 +122,11 @@ public class Message {
      * @param messageID The ID of the message to reply to.
      * @param statusCode The status code to use.
      * @param message The status message to use, required when
-     * {@code statusCode} is non-null.
+     * {@code statusCode} is not 0.
      * @param parameters The results to send.
      * @return The newly constructed message.
+     * @throws IllegalArgumentException Illegal argument error when message is
+     * null or empty when statusCode is not 0.
      */
     @NotNull
     private static Message makeReply(
@@ -132,9 +134,13 @@ public class Message {
         int statusCode,
         String message,
         MessageParameter... parameters
-    ) {
+    ) throws IllegalArgumentException {
         var res = new Message(MessageType.REPLY);
         res.id = messageID;
+
+        if (statusCode != 0 && Strings.isNullOrEmpty(message)) {
+            throw new IllegalArgumentException("message must be given when statusCode is not 0");
+        }
 
         res.parameters = new MessageParameter[2 + parameters.length];
         res.parameters[0] = new MessageParameterDouble(statusCode);
