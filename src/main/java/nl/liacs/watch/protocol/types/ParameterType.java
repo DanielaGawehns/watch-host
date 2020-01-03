@@ -1,5 +1,8 @@
 package nl.liacs.watch.protocol.types;
 
+/**
+ * A type of a {@link MessageParameter}
+ */
 public enum ParameterType {
     UNKNOWN,
     /**

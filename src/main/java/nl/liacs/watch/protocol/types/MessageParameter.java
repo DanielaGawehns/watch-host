@@ -84,6 +84,9 @@ public class MessageParameter {
         return sb.toString();
     }
 
+    /**
+     * @return The type of the parameter.
+     */
     public ParameterType getType() {
         return ParameterType.UNKNOWN;
     }
