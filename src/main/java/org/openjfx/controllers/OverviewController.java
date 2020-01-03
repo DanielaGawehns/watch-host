@@ -1,19 +1,16 @@
 package org.openjfx.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.openjfx.CSVWriter;
-import org.openjfx.Chart;
-import org.openjfx.SensorData;
+import org.openjfx.*;
+import util.Util;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,9 +42,8 @@ public class OverviewController {
     /**
      * DatePicker to select the starting date for printing data to charts
      */
-   /* @FXML
-    private DatePicker datePicker;*/
-
+    @FXML
+    private DatePicker datePicker;
 
 
     /**
@@ -57,14 +53,29 @@ public class OverviewController {
 
 
     /**
-     * Setup function for the controller
-     * @param data Initial data to fill {@link Chart}(s) using {@link OverviewController#setCharts(List)}
-     * @param watches The amount of watches that are currently active. Will be set in {@link OverviewController#setLabels(int, int)}
-     * @param measurements The amount of measurements that are currently active. Will be set in {@link OverviewController#setLabels(int, int)}
+     * List of all smartwatches to extract data to fill the charts
      */
-    void setup(List<SensorData> data, int watches, int measurements){
-        setCharts(data);
-        setLabels(watches, measurements);
+    private SmartwatchList watches;
+
+
+    /**
+     * Initializer to set {@link OverviewController#datePicker} standard value
+     */
+    public void initialize(){
+        datePicker.setValue(LocalDate.now().minusDays(365)); // will be overwritten in setup
+        Util.setDateFactory(datePicker);
+    }
+
+    /**
+     * Setup function for the controller. Sets standard value of {@link OverviewController#datePicker}, fills charts
+     * using {@link OverviewController#setCharts(List)} and sets information labels using {@link OverviewController#setLabels(int, int)}
+     * @param watches The {@link SmartwatchList} with the data to be filled into the charts
+     */
+    void setup(SmartwatchList watches){
+        this.watches = watches;
+        datePicker.setValue(watches.getStartDate());
+        setCharts(watches.getAllSensorData(watches.getStartDate()));
+        setLabels(watches.size(), watches.getNumberOfMeasurements());
     }
 
 
@@ -134,17 +145,20 @@ public class OverviewController {
     }
 
     /**
-     * Event for the datePicker. Sets the start date of {@link WatchViewController#watch} if it is different from current.
+     * Event for the datePicker. Sets the start date of {@link OverviewController#watches} if it is different from current.
      * Then replaces data of charts with new start date value
      */
-    /*public void startDatePressed() {
+    public void startDatePressed() {
         LocalDate date = datePicker.getValue();
 
-        System.out.println("Selected date " + date);
-        if(startDate != date){
+        System.out.println("\nSelected date " + date + "... Changing charts");
+        if(watches.getStartDate() != date){
+            watches.setStartDate(date);
             for(Chart chart : charts){
-                chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watch.getStartDate()));
+                for(Smartwatch watch : watches) {
+                    chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watches.getStartDate()));
+                }
             }
         }
-    }*/
+    }
 }

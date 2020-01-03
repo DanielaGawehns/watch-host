@@ -82,7 +82,12 @@ public class Chart {
         chart.setDisable(false); // turn on chart
 
         for(SensorData data : dataList){
-            chart.getData().add(fillSeries(data)); // add series to chart
+            if(data.size() > 0) {
+                System.out.println("Adding data of watch " + data.getWatchID() + " and sensor " + data.getSensor() + " to chart");
+                chart.getData().add(fillSeries(data)); // add series to chart
+            }else{
+                System.out.println("Data of watch " + data.getWatchID() + " and sensor " + data.getSensor() + " is empty");
+            }
         }
 
         chart.setTitle(sensorData.getSensor()); // set title of chart
@@ -98,7 +103,7 @@ public class Chart {
     private XYChart.Series<String, Number> fillSeries(SensorData sensorData){
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
 
-        series.setName(sensorData.getSensor()); // set title of line for legend
+        series.setName("Watch: " + sensorData.getWatchID()); // set title of line for legend
         for(int i = 0; i < sensorData.size(); i += 1){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
             series.getData().add(temp); // add datapoint to series

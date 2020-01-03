@@ -121,7 +121,7 @@ public class WatchViewController {
      * Initialize function for setting standard values
      */
     public void initialize(){
-        datePicker.setValue(LocalDate.now().minusDays(365));
+        datePicker.setValue(LocalDate.now().minusDays(365)); // will be overwritten in setWatch
         Util.setDateFactory(datePicker);
     }
 
@@ -232,7 +232,7 @@ public class WatchViewController {
 
 
     /**
-     * Event for disconnect button. Uses {@link DBManager#removeSmartwatch(int)} and {@link PrimaryController#removeWatch(int)}
+     * Event for disconnect button. Uses {@link DBManager#removeSmartwatch(String)} and {@link PrimaryController#removeWatch(String)}
      * to remove the watch
      */
     public void disconnectButtonPressed() {
@@ -287,7 +287,7 @@ public class WatchViewController {
 
 
     /**
-     * Event for measurement stop button. Uses {@link DBManager#removeMeasurementFromWatch(int)} and {@link Smartwatch#setMeasurement(Measurement)}
+     * Event for measurement stop button. Uses {@link DBManager#removeMeasurementFromWatch(String)} and {@link Smartwatch#setMeasurement(Measurement)}
      * to remove the measurement from the watch
      */
     public void stopPressed() {

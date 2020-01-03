@@ -46,11 +46,6 @@ public class PrimaryController{
     private BorderPane view;
 
     /**
-     * Constant value for default start date for the {@link OverviewController} charts
-     */
-    private static final long standardDaysBack = 365; // TODO: set to something sensible
-
-    /**
      * List of smartwatches connected {@link Smartwatch}
      */
     private static SmartwatchList watches = null;
@@ -184,7 +179,7 @@ public class PrimaryController{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             overviewController = loader.getController();
-            overviewController.setup(watches.getAllSensorData(LocalDate.now().minusDays(standardDaysBack)), watches.size(), watches.getNumberOfMeasurements());
+            overviewController.setup(watches);
 
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane
@@ -270,7 +265,7 @@ public class PrimaryController{
 
 
     /**
-     * Finds all the files in the folder specified by {@code folder} and runs the {@link PrimaryController#reader} on them. Then saves the data to the database using {@link DBManager#insertDatalist(int, SensorData)}
+     * Finds all the files in the folder specified by {@code folder} and runs the {@link PrimaryController#reader} on them. Then saves the data to the database using {@link DBManager#insertDatalist(String, SensorData)}
      * @param folder The folder to crawl
      */
     private void syncFiles(File folder) {

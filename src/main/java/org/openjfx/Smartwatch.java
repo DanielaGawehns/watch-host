@@ -17,11 +17,6 @@ import java.util.*;
 public class Smartwatch implements Closeable {
 
     /**
-     * Constant value for default start date for the {@link org.openjfx.controllers.WatchViewController} charts
-     */
-    private static final long standardDaysBack = 365; // TODO: set to something sensible
-
-    /**
      * Data about the watch {@link WatchData}
      */
     private final WatchData watchData;
@@ -56,7 +51,7 @@ public class Smartwatch implements Closeable {
     /**
      * The date from which we start printing data in the charts in {@link org.openjfx.controllers.WatchViewController}
      */
-    private LocalDate startDate = LocalDate.now().minusDays(standardDaysBack);
+    private LocalDate startDate = LocalDate.now().minusDays(Util.standardDaysBack);
 
     /**
      * Constructor
@@ -103,9 +98,16 @@ public class Smartwatch implements Closeable {
      */
     public SensorData getSensorData(String sensor, LocalDate date){
         SensorData sensorData = getSensorData(sensor);
-        List<DataPoint> newList = new ArrayList<>();
+        List<DataPoint> newList;
 
-        System.out.println("Getting data from sensor" + sensor + " from after " + date.atStartOfDay());
+        if(sensorData == null){
+            System.out.println("Watch " + getWatchID() + " has no data for sensor " + sensor);
+            return null;
+        }
+
+        newList = new ArrayList<>();
+
+        System.out.println("Getting data from sensor " + sensor + " from after " + date.atStartOfDay());
 
         for(DataPoint point : sensorData.getRecords()){
             if(point.getDateTime().isAfter(date.atStartOfDay())){
@@ -229,7 +231,7 @@ public class Smartwatch implements Closeable {
 
 
     /**
-     * Sets the ID of the watch using {@link WatchData#setWatchID(int)}
+     * Sets the ID of the watch using {@link WatchData#setWatchID(String)}
      * @param ID The value to set the ID to
      */
     public void setWatchID(String ID) { watchData.setWatchID(ID); }

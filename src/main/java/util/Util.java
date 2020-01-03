@@ -19,6 +19,12 @@ import java.util.Map;
 public class Util {
 
     /**
+     * Constant value for default start date for the {@link org.openjfx.controllers.WatchViewController} and
+     * {@link org.openjfx.controllers.OverviewController} charts
+     */
+    public static final long standardDaysBack = 365; // TODO: set to something sensible
+
+    /**
      * Prints an error dialog that pops up on the screen
      * @param header String containing the header message
      * @param body String containing the body message
