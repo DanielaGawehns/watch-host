@@ -8,6 +8,7 @@ import util.Util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -52,6 +53,7 @@ public class Smartwatch implements Closeable {
      * The date from which we start printing data in the charts in {@link org.openjfx.controllers.WatchViewController}
      */
     private LocalDate startDate = LocalDate.now().minusDays(Util.standardDaysBack);
+
 
     /**
      * Constructor
@@ -105,16 +107,26 @@ public class Smartwatch implements Closeable {
             return null;
         }
 
-        newList = new ArrayList<>();
+        if(date.isBefore(sensorData.getDataLoadedDate())){
+            System.out.println("[Smartwatch#getSensorData] retrieving data from watch " + getWatchID() + " of sensor " + sensor);
+            setData(App.getDbManager().getDataList(getWatchID(), sensor, date.atStartOfDay(), LocalDateTime.now()));
+            sensorData.setDataLoadedDate(date);
+        }
 
-        System.out.println("Getting data from sensor " + sensor + " from after " + date.atStartOfDay());
+        newList = new ArrayList<>();
+        sensorData = getSensorData(sensor);
+
+
+
+        System.out.println("[Smartwatch#getSensorData] Getting data of watch " + getWatchID() + " from sensor " + sensor + " from after " + date.atStartOfDay());
+        System.out.println("\trecords are of size " + sensorData.size());
 
         for(DataPoint point : sensorData.getRecords()){
             if(point.getDateTime().isAfter(date.atStartOfDay())){
                 newList.add(point);
             }
         }
-        return new SensorData(sensorData.getWatchID(), sensorData.getSensor(), sensorData.getDataFieldsNumber(), newList);
+        return new SensorData(sensorData.getWatchID(), sensorData.getSensor(), sensorData.getDataFieldsNumber(), sensorData.getDataLoadedDate(), newList);
     }
 
 
@@ -131,7 +143,17 @@ public class Smartwatch implements Closeable {
      * @return A list of all the {@link SensorData}
      */
     List<SensorData> getAllSensorData(LocalDate date){
-        List<SensorData> totalData = new ArrayList<>();
+        List<SensorData> totalData = getAllSensorData();
+
+        for(SensorData sensorData : totalData){
+            if(date.isBefore(sensorData.getDataLoadedDate())){
+                setData(App.getDbManager().getDataList(getWatchID(), sensorData.getSensor(), date.atStartOfDay(), LocalDateTime.now()));
+                sensorData.setDataLoadedDate(date);
+            }
+        }
+
+        totalData.clear();
+
         for(SensorData data : sensorMap.values()){
             totalData.add(getSensorData(data.getSensor(), date));
         }
@@ -196,7 +218,7 @@ public class Smartwatch implements Closeable {
     void addSensor(String sensor){
         if (!sensorMap.containsKey(sensor)) {
             System.out.println("Put sensor " + sensor + " place " + sensorMap.size());
-            var data = new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor));
+            var data = new SensorData(watchData.getWatchID(), sensor, Util.sensorDataListSize.get(sensor), startDate);
             sensorMap.put(sensor, data);
         }
     }

@@ -3,6 +3,7 @@ package org.openjfx;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -111,7 +112,7 @@ public class CSVWriter {
 
         try {
             fileWriter = new FileWriter(filename);
-            for (Smartwatch _watch : DB.getAllWatches()) {
+            for (Smartwatch _watch : DB.getAllWatches(LocalDateTime.MIN, LocalDateTime.now())) { // TODO make user give input on start and end dates
                 System.out.println("Writing data for watch " + _watch.getWatchID());
                 WriteOne(_watch, filename, header);
                 header = false;

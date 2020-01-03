@@ -5,6 +5,8 @@ import util.Pair;
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -69,7 +71,6 @@ public class DBManager implements Closeable {
             random = new Random().nextInt(Integer.MAX_VALUE);
             if (!IDList.contains(random)) {
                 IDList.add(random);
-                System.out.println("Got new Data ID: " + random);
                 return random;
             }
         }
@@ -78,7 +79,7 @@ public class DBManager implements Closeable {
 
 
     /**
-     * Runs {@link DBManager#insertSensor(int, String, int, int)} with {@link DBManager#getNewDataID(Set)} as {@code dataID}
+     * Runs {@link DBManager#insertSensor(String, String, int)} with {@link DBManager#getNewDataID(Set)} as {@code dataID}
      *
      * @param ID           Watch ID
      * @param sensor       Sensor name
@@ -107,20 +108,19 @@ public class DBManager implements Closeable {
             stmt.setString(2, sensor);
             stmt.setInt(3, dataID);
             stmt.executeUpdate();
-            System.out.println("DB: added sensor " + sensor + " to watch " + ID);
 
             command = new StringBuilder("CREATE TABLE data" + dataID + "(datetime TEXT NOT NULL, data_1 double NOT NULL ");
             for (int i = 1; i < dataListSize; i++) {
                 command.append(", data_").append(i + 1).append(" double NOT NULL");
             }
             command.append(", UNIQUE(datetime));");
+
             System.out.println("DB: " + command);
 
             var stmt2 = this.connection.prepareStatement(command.toString());
             stmt2.executeUpdate();
             stmt2.close();
 
-            System.out.println("DB: added a datalist with dataID " + dataID);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -166,7 +166,7 @@ public class DBManager implements Closeable {
     private void dropTable(String name) {
         String command = "DROP TABLE " + name;
 
-        System.out.println(command);
+        System.out.println("DB: " + command);
 
         try (var stmt = this.connection.prepareStatement(command)) {
             stmt.executeUpdate();
@@ -179,11 +179,11 @@ public class DBManager implements Closeable {
 
 
     /**
-     * Gets all watches from the database. Used {@link DBManager#getWatch(int)}
+     * Gets all watches from the database. Used {@link DBManager#getWatch(String, LocalDateTime, LocalDateTime)}
      *
      * @return {@link SmartwatchList} containing all the {@link Smartwatch} connected
      */
-    public SmartwatchList getAllWatches() {
+    public SmartwatchList getAllWatches(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         String command = "SELECT * FROM smartwatch";
         Smartwatch watch;
         SmartwatchList list = new SmartwatchList();
@@ -194,11 +194,11 @@ public class DBManager implements Closeable {
 
             while (rs.next()) {
                 ID = rs.getString(1);
-                watch = getWatch(ID);
+                watch = getWatch(ID, startDateTime, endDateTime);
                 if (watch != null) {
                     list.add(watch);
                 } else {
-                    System.err.println("Smartwatch with ID: " + ID + " not found");
+                    System.err.println("DB: Smartwatch with ID: " + ID + " not found");
                 }
             }
             rs.close();
@@ -210,13 +210,14 @@ public class DBManager implements Closeable {
 
 
     /**
-     * Gets a watch from the database. This includes all the data regarding the watch.
-     * Uses {@link DBManager#getWatchData(int)} and {@link DBManager#getSensorList(int)}
-     *
+     * Gets a watch from the database. This includes all the data regarding the watch and measurement data collected
+     * between the startdate and now
+     * Uses {@link DBManager#getWatchData(String)} and {@link DBManager#getSensorList(String)}
      * @param ID Watch ID
+     * @param startDateTime Start date and time
      * @return The watch {@link Smartwatch}
      */
-    Smartwatch getWatch(String ID) {
+    Smartwatch getWatch(String ID, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         String command = "SELECT * FROM smartwatch WHERE ID = ?";
         Smartwatch watch = null;
         WatchData data;
@@ -232,14 +233,14 @@ public class DBManager implements Closeable {
                     watch = new Smartwatch(data, rs.getString(2), null);
                     for (String sensor : sensors) {
                         watch.addSensor(sensor);
-                        watch.setData(getDataList(ID, sensor));
+                        watch.setData(getDataList(ID, sensor, startDateTime, endDateTime));
 
                     }
                     watch.setMeasurement(getWatchMeasurement(ID));
                     watch.setComments(getComments(ID));
-                    System.out.println("Got watch with ID " + ID);
+                    System.out.println("DB: Got watch with ID " + ID);
                 } else {
-                    System.err.println("No watchData found for watch with ID: " + ID);
+                    System.err.println("DB: No watchData found for watch with ID: " + ID);
                 }
             }
             rs.close();
@@ -272,7 +273,7 @@ public class DBManager implements Closeable {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("Got new WatchData for watch with ID " + ID);
+        System.out.println("DB: Got new WatchData for watch with ID " + ID);
         return data;
     }
 
@@ -434,7 +435,7 @@ public class DBManager implements Closeable {
                 command.append(")");
 
                 // Setup values and execute command
-                System.out.println("DB: " + command + " VALUES: " + dateTime + "," + data1);
+                //System.out.println("DB: " + command + " VALUES: " + dateTime + "," + data1);
                 var stmt = this.connection.prepareStatement(command.toString());
                 stmt.setString(1, dateTime);
                 stmt.setDouble(2, data1);
@@ -481,7 +482,7 @@ public class DBManager implements Closeable {
 
 
     /**
-     * Runs {@link DBManager#getDataList(int, String, LocalTime, LocalTime)} with MIN and MAX time values to get all
+     * Runs {@link DBManager#getDataList(String, String, LocalDateTime, LocalDateTime)} )} with MIN and MAX time values to get all
      * data available
      *
      * @param ID     Watch ID
@@ -489,19 +490,19 @@ public class DBManager implements Closeable {
      * @return {@link SensorData} containing the data
      */
     SensorData getDataList(String ID, String sensor) {
-        return getDataList(ID, sensor, LocalTime.MIN, LocalTime.MAX);
+        return getDataList(ID, sensor, LocalDateTime.MIN, LocalDateTime.MAX);
     }
 
 
     /**
-     * Runs {@link DBManager#getAllDataLists(int, LocalTime, LocalTime)} with MIN and MAX time values to get all
+     * Runs {@link DBManager#getAllDataLists(String, LocalDateTime, LocalDateTime)} with MIN and MAX time values to get all
      * data available
      *
      * @param ID Watch ID
      * @return List of {@link SensorData} containing the data
      */
     List<SensorData> getAllDataLists(String ID) {
-        return getAllDataLists(ID, LocalTime.MIN, LocalTime.MAX);
+        return getAllDataLists(ID, LocalDateTime.MIN, LocalDateTime.now());
     }
 
 
@@ -509,16 +510,19 @@ public class DBManager implements Closeable {
      * Gets the data of every sensor of a watch of a given time period
      *
      * @param ID        Watch ID
-     * @param startTime Start time
-     * @param endTime   End time
+     * @param startDateTime Start date and time
+     * @param endDateTime   End date and time
      * @return List of {@link SensorData} containing the data
      */
-    List<SensorData> getAllDataLists(String ID, LocalTime startTime, LocalTime endTime) {
+    List<SensorData> getAllDataLists(String ID, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<SensorData> list = new ArrayList<>();
         List<String> sensorList = getSensorList(ID);
+        SensorData data;
 
         for (String sensor : sensorList) {
-            list.add(getDataList(ID, sensor, startTime, endTime));
+            data = getDataList(ID, sensor, startDateTime, endDateTime);
+            if(data != null && data.size() > 0)
+                list.add(data);
         }
         return list;
     }
@@ -529,11 +533,11 @@ public class DBManager implements Closeable {
      *
      * @param ID        Watch ID
      * @param sensor    Sensor name
-     * @param startTime Start time
-     * @param endTime   End time
+     * @param startDateTime Start date and time
+     * @param endDateTime   End date and time
      * @return {@link SensorData} containing the data
      */
-    SensorData getDataList(String ID, String sensor, LocalTime startTime, LocalTime endTime) {
+    SensorData getDataList(String ID, String sensor,  LocalDateTime startDateTime, LocalDateTime endDateTime) {
         int dataID = getDatalistID(ID, sensor);
         int columns;
         String command = "SELECT * FROM data" + dataID + " WHERE datetime BETWEEN ? AND ?";
@@ -556,16 +560,16 @@ public class DBManager implements Closeable {
                     dataListSizeCount++;
                 }
             }
-            data = new SensorData(ID, sensor, dataListSizeCount);
+            data = new SensorData(ID, sensor, dataListSizeCount, startDateTime.toLocalDate());
 
             // Execute command
             var stmt = this.connection.prepareStatement(command);
-            stmt.setTime(1, Time.valueOf(startTime));
-            stmt.setTime(2, Time.valueOf(endTime));
+            stmt.setString(1, startDateTime.toString());
+            stmt.setString(2, endDateTime.toString());
             ResultSet rs = stmt.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             columns = rsmd.getColumnCount() - 1;
-            System.out.println("DB: columns is " + columns);
+            //System.out.println("DB: columns is " + columns);
 
             while (rs.next()) {
                 dataList = new ArrayList<>();

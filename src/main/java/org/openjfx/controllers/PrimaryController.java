@@ -21,6 +21,7 @@ import util.Util;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -87,12 +88,12 @@ public class PrimaryController{
 
     /**
      * Initializes the main view by printing the sidebar and overview
-     * It also gets all the data stored in the database by using {@link DBManager#getAllWatches()}
+     * It also gets all the data stored in the database by using {@link DBManager#getAllWatches(LocalDateTime, LocalDateTime)}
      */
     public void initialize() {
         System.out.println("INITIALIZE Primary Controller");
 
-        watches = App.getDbManager().getAllWatches();
+        watches = App.getDbManager().getAllWatches(LocalDateTime.now().minusDays(Util.standardDaysBack), LocalDateTime.now());
 
         App.getConnectionManager().addConnectionConsumer(wrappedConnection -> {
             System.out.println("got a watch connection");

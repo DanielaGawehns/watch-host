@@ -124,7 +124,8 @@ public class Chart {
             return;
         }
         dataList.add(data);
-        chart.getData().add(fillSeries(data));
+        if(data.size() > 0) // only add series if SensorData contains datapoints
+            chart.getData().add(fillSeries(data));
 
     }
 

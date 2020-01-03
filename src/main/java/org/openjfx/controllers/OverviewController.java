@@ -85,6 +85,7 @@ public class OverviewController {
      * @param data The list of {@link SensorData} to be added
      */
     private void setCharts(List<SensorData> data){
+        System.out.println("[OverviewController#setCharts] ********");
         Chart chart;
         for(SensorData sensorData : data){
             System.out.println("Got data from sensor " + sensorData.getSensor());
@@ -156,6 +157,8 @@ public class OverviewController {
             watches.setStartDate(date);
             for(Chart chart : charts){
                 for(Smartwatch watch : watches) {
+                    System.out.println("[OverviewController#startDatePressed] changing data chart of sensor " + chart.getSensor()
+                    + " and watch " + watch.getWatchID());
                     chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watches.getStartDate()));
                 }
             }
