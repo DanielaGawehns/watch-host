@@ -21,13 +21,20 @@ public class WrappedConnection implements Closeable {
     private final BlockingQueue<Message> receiveQueue;
     private final Thread thread;
 
-    private int latestId = 0;
+    /**
+     * The highest ID seen on this connection
+     */
+    private int highestId = 0;
+    /**
+     * Mapping between message ID and a list of futures waiting on the result
+     * for that ID.
+     */
     private final HashMap<Integer, List<CompletableFuture<MessageParameter[]>>> replyFutureMap = new HashMap<>();
 
     /**
      * @param connection The connection to wrap
      */
-    WrappedConnection(Connection connection) {
+    WrappedConnection(@NotNull Connection connection) {
         this.connection = connection;
         this.receiveQueue = new LinkedBlockingQueue<>();
 
@@ -63,7 +70,7 @@ public class WrappedConnection implements Closeable {
      * @throws IOException              IO error when failing to communicate.
      * @throws UnknownProtocolException Unknown protocol error when the client is running an unsupported protocol version.
      */
-    WrappedConnection(Socket socket) throws IOException, UnknownProtocolException {
+    WrappedConnection(@NotNull Socket socket) throws IOException, UnknownProtocolException {
         this(new Connection(socket));
     }
 
@@ -144,8 +151,8 @@ public class WrappedConnection implements Closeable {
      * @throws IOException IO error when failing to send PING reply.
      */
     private void handleMessage(@NotNull Message msg) throws IOException {
-        if (msg.id > this.latestId) {
-            this.latestId = msg.id;
+        if (msg.id > this.highestId) {
+            this.highestId = msg.id;
         }
 
         if (msg.type.equals(MessageType.PING)) {
@@ -189,7 +196,7 @@ public class WrappedConnection implements Closeable {
     @NotNull
     public Message makeMessageWithID(@NotNull MessageType type) {
         var msg = new Message(type);
-        msg.id = ++this.latestId;
+        msg.id = ++this.highestId;
         return msg;
     }
 

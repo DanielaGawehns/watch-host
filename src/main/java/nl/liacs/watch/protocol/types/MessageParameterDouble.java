@@ -1,7 +1,10 @@
 package nl.liacs.watch.protocol.types;
 
-import com.google.common.primitives.Doubles;
 import java.nio.ByteBuffer;
+
+import com.google.common.primitives.Doubles;
+
+import org.jetbrains.annotations.NotNull;
 
 public class MessageParameterDouble extends MessageParameter {
     /**
@@ -16,13 +19,14 @@ public class MessageParameterDouble extends MessageParameter {
     /**
      * @param bytes Create a new instance with the given bytes.
      */
-    MessageParameterDouble(byte[] bytes) {
+    MessageParameterDouble(@NotNull byte[] bytes) {
         this.bytes = bytes;
     }
 
     /**
      * @return The parameter value as a double.
      */
+    @NotNull
     public Double getValue() {
         return ByteBuffer.wrap(bytes).getDouble();
     }

@@ -1,13 +1,15 @@
 package nl.liacs.watch.protocol.server;
 
-import nl.liacs.watch.protocol.types.Message;
-import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
-
 import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+
+import org.jetbrains.annotations.NotNull;
+
+import nl.liacs.watch.protocol.types.Message;
+import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
 
 /**
  * Connection wraps a socket and implements {@link nl.liacs.watch.protocol.types.Connection}.
@@ -24,7 +26,7 @@ public class Connection implements nl.liacs.watch.protocol.types.Connection, Clo
      * @throws IOException              IO error when failing to read from or send to the socket.
      * @throws UnknownProtocolException When the protocol version is unknown to the server.
      */
-    public Connection(Socket socket) throws IOException, UnknownProtocolException {
+    public Connection(@NotNull Socket socket) throws IOException, UnknownProtocolException {
         this.socket = socket;
         this.is = new DataInputStream(socket.getInputStream());
         this.os = new DataOutputStream(socket.getOutputStream());
@@ -50,7 +52,7 @@ public class Connection implements nl.liacs.watch.protocol.types.Connection, Clo
     }
 
     @Override
-    public void send(Message message) throws IOException {
+    public void send(@NotNull Message message) throws IOException {
         this.os.write(message.encode());
     }
 

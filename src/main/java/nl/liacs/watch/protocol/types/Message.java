@@ -3,10 +3,12 @@ package nl.liacs.watch.protocol.types;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import com.google.common.base.Strings;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Class representing a protocol message.
@@ -66,6 +68,7 @@ public class Message {
      * @return The current message encoded as a byte array.
      * @throws IllegalStateException When the type of a parameter is unknown.
      */
+    @NotNull
     public byte[] encode() throws IllegalStateException {
         ByteArrayDataOutput bb = ByteStreams.newDataOutput();
 
@@ -110,7 +113,7 @@ public class Message {
     @NotNull
     public Message makeReply(
         int statusCode,
-        String message,
+        @Nullable String message,
         MessageParameter... parameters
     ) {
         return Message.makeReply(this.id, statusCode, message, parameters);
@@ -132,7 +135,7 @@ public class Message {
     private static Message makeReply(
         int messageID,
         int statusCode,
-        String message,
+        @Nullable String message,
         MessageParameter... parameters
     ) throws IllegalArgumentException {
         var res = new Message(MessageType.REPLY);
