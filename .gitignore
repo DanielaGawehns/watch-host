@@ -27,3 +27,7 @@ hs_err_pid*
 target
 watch-host.iml
 docs
+.classpath
+.project
+.settings/
+.vim/
