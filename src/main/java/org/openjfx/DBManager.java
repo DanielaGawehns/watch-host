@@ -194,7 +194,9 @@ public class DBManager implements Closeable {
 
             while (rs.next()) {
                 ID = rs.getString(1);
-                watch = getWatch(ID, startDateTime, endDateTime);
+                //watch = getWatch(ID, startDateTime, endDateTime);
+                watch = watchFromResult(ID, startDateTime, endDateTime, rs);
+
                 if (watch != null) {
                     list.add(watch);
                 } else {
@@ -220,14 +222,14 @@ public class DBManager implements Closeable {
     Smartwatch getWatch(String ID, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         String command = "SELECT * FROM smartwatch WHERE ID = ?";
         Smartwatch watch = null;
-        WatchData data;
+        //WatchData data;
 
         try (var stmt = this.connection.prepareStatement(command)) {
-            stmt.setString(1, ID);
+            //stmt.setString(1, ID);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                data = getWatchData(ID);
+               /* data = getWatchData(ID);
                 var sensors = getSensorList(ID);
                 if (data != null) {
                     watch = new Smartwatch(data, rs.getString(2), null);
@@ -241,12 +243,47 @@ public class DBManager implements Closeable {
                     System.out.println("DB: Got watch with ID " + ID);
                 } else {
                     System.err.println("DB: No watchData found for watch with ID: " + ID);
-                }
+                }*/
+                watch = watchFromResult(ID, startDateTime, endDateTime, rs);
             }
             rs.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return watch;
+    }
+
+
+    /**
+     * Converts a resultset to {@link Smartwatch}
+     * @param ID Watch ID
+     * @param startDateTime Start date of data loading
+     * @param endDateTime End date of data loading
+     * @param rs Result set containing information from the database. This result set has to contain the result of a {@code SELECT *} query of the {@code Smartwatch} table
+     * @return The watch {@link Smartwatch}
+     * @throws SQLException In case result set is in a wrong format
+     */
+    private Smartwatch watchFromResult(String ID, LocalDateTime startDateTime, LocalDateTime endDateTime, ResultSet rs) throws SQLException {
+        WatchData data;
+        Smartwatch watch = null;
+
+        data = getWatchData(ID);
+        var sensors = getSensorList(ID);
+        if (data != null) {
+            watch = new Smartwatch(data, rs.getString(2), null);
+            for (String sensor : sensors) {
+                watch.addSensor(sensor);
+                watch.setData(getDataList(ID, sensor, startDateTime, endDateTime));
+
+            }
+            watch.setMeasurement(getWatchMeasurement(ID));
+            watch.setComments(getComments(ID));
+            System.out.println("DB: Got watch with ID " + ID);
+        } else {
+            System.err.println("DB: No watchData found for watch with ID: " + ID);
+        }
+
         return watch;
     }
 

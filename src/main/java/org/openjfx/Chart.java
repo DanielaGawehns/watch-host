@@ -32,8 +32,8 @@ public class Chart {
 
 
     /**
-     * Constructor with a list of {@link SensorData}. These SensorData object should be for the same sensor to represent
-     * multiple lines in a chart
+     * Constructor with a list of {@link SensorData}.
+     * These SensorData object should be for the same sensor to represent multiple lines in a chart
      */
     public Chart(List<SensorData> list, VBox vbox){
         dataList = list;
