@@ -17,13 +17,20 @@ import java.util.Arrays;
 public class BroadcastHandler implements Closeable {
     private static final byte[] listenBytes = "HelloWorld!\0".getBytes();
     private static final byte[] answerBytes = "WatchSrvrPing\0".getBytes();
+    private static int defaultTimeout = 500;
 
     private final DatagramSocket server;
     private final Thread thread;
 
-    public BroadcastHandler(int rate) throws IOException {
+    /**
+     * Create a new {@link BroadcastHandler} with the given timeout.
+     *
+     * @param timeout The timeout to use.
+     * @throws IOException IO error when failing to create a new datagram server.
+     */
+    public BroadcastHandler(int timeout) throws IOException {
         server = new DatagramSocket();
-        server.setSoTimeout(rate);
+        server.setSoTimeout(timeout);
         this.thread = new Thread(() -> {
             try {
                 this.receiveLoop();
@@ -34,8 +41,13 @@ public class BroadcastHandler implements Closeable {
         this.thread.start();
     }
 
+    /**
+     * Create a new {@link BroadcastHandler} with the a timeout of {@link defaultTimeout}
+     *
+     * @throws IOException IO error when failing to create a new datagram server.
+     */
     public BroadcastHandler() throws IOException {
-        this(500);
+        this(defaultTimeout);
     }
 
     @Override
@@ -44,6 +56,12 @@ public class BroadcastHandler implements Closeable {
         this.server.close();
     }
 
+    /**
+     * Tries to get the next datagram packet from the server.
+     *
+     * @return The datagram packet if there was one, otherwise null.
+     * @throws IOException IO error when failing to retrieve the packet.
+     */
     @Nullable
     private DatagramPacket receivePacket() throws IOException {
         var bytes = new byte[listenBytes.length];

@@ -8,9 +8,9 @@ author:
 # Watch-host discovery
 
 When a watch wants to find the hosts on the network, it sends a UDP broadcast to the local network (255.255.255.255) on port 2112.
-The payload of this broadcast MUST be "HelloWorld!".
+The payload of this broadcast MUST be `HelloWorld!`.
 
-On receiving this message, the host MUST send an UDP unicast message to the sender of the broadcast on port 2113 with the contents "WatchSrvrPing".
+On receiving this message, the host MUST send an UDP unicast message to the sender of the broadcast on port 2113 with the contents `WatchSrvrPing`.
 
 Now the watch can connect as described in the following section.
 

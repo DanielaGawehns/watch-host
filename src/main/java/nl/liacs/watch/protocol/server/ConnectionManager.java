@@ -1,7 +1,5 @@
 package nl.liacs.watch.protocol.server;
 
-import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -10,6 +8,10 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import org.jetbrains.annotations.NotNull;
+
+import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
 
 /**
  * Class that handles all the protocol connections.
@@ -28,7 +30,7 @@ public class ConnectionManager implements Closeable {
      * @param server The TCP server to wrap.
      * @throws IOException IO error when failing to start the broadcast handler.
      */
-    public ConnectionManager(ServerSocket server) throws IOException {
+    public ConnectionManager(@NotNull ServerSocket server) throws IOException {
         this.server = server;
 
         // start broadcast handler
@@ -49,7 +51,12 @@ public class ConnectionManager implements Closeable {
         this.serverThread.start();
     }
 
-    public void addConnectionConsumer(Consumer<WrappedConnection> consumer) {
+    /**
+     * Add a new connection consumer to the list of consumers.
+     *
+     * @param consumer The consumer to add.
+     */
+    public void addConnectionConsumer(@NotNull Consumer<WrappedConnection> consumer) {
         this.connectionListeners.add(consumer);
     }
 
@@ -72,7 +79,7 @@ public class ConnectionManager implements Closeable {
      * @throws IOException              IO error when failing to communicate.
      * @throws UnknownProtocolException Unknown protocol error when the client is running an unsupported protocol version.
      */
-    private void handleSocket(Socket socket) throws IOException, UnknownProtocolException {
+    private void handleSocket(@NotNull Socket socket) throws IOException, UnknownProtocolException {
         var wrappedConnection = new WrappedConnection(socket);
         for (var consumer : this.connectionListeners) {
             consumer.accept(wrappedConnection);

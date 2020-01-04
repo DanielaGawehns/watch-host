@@ -81,7 +81,16 @@ public class WrappedConnection implements Closeable {
         this.connection.send(message);
     }
 
-    public CompletableFuture<MessageParameter[]> sendAndWaitReply(Message message) throws IOException {
+    /**
+     * Send the given message and wait for a reply.
+
+     * @param message The message to send.
+     * @return A {@link CompletableFuture} that resolves to a list of {@link MessageParameter} of the reply.
+     * @throws IOException IO error when failing to send the message.
+     * @throws IllegalArgumentException Illegal argument error when the ID of the given message is 0.
+     */
+    @NotNull
+    public CompletableFuture<MessageParameter[]> sendAndWaitReply(@NotNull Message message) throws IOException {
         if (message.id == 0) {
             throw new IllegalArgumentException("message id can't be 0 when expecting reply.");
         }
@@ -125,6 +134,15 @@ public class WrappedConnection implements Closeable {
         this.connection.close();
     }
 
+    /**
+     * Handle the newly received {@link Message}.
+     * This handles replying to PINGs, completing futures for replies of sent
+     * messages, updating {@link latestId}, and putting normal messages in the
+     * {@link receiveQueue}.
+     *
+     * @param msg The message to handle.
+     * @throws IOException IO error when failing to send PING reply.
+     */
     private void handleMessage(@NotNull Message msg) throws IOException {
         if (msg.id > this.latestId) {
             this.latestId = msg.id;
@@ -162,12 +180,27 @@ public class WrappedConnection implements Closeable {
         }
     }
 
-    public Message makeMessageWithID(MessageType type) {
+    /**
+     * Make a new {@link Message} with an unique ID and the given {@link MessageType}.
+     *
+     * @param type The type for the new message.
+     * @return A new message with the given type and unique ID.
+     */
+    @NotNull
+    public Message makeMessageWithID(@NotNull MessageType type) {
         var msg = new Message(type);
         msg.id = ++this.latestId;
         return msg;
     }
 
+    /**
+     * Create a new {@link Message} that receives the given key from the other
+     * side.
+     *
+     * @param key The key to retrieve the value of.
+     * @return A future that resolves to an array of the retrieved values of the key as {@link MessageParameter}.
+     * @throws IOException IO error when failing to send the request.
+     */
     public CompletableFuture<MessageParameter[]> getValues(String key) throws IOException {
         var msg = this.makeMessageWithID(MessageType.GET_VALUES);
         msg.parameters = new MessageParameter[]{ new MessageParameterString(key) };

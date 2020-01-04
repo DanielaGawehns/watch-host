@@ -1,10 +1,12 @@
 package nl.liacs.watch.protocol.types;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
-import java.io.DataInputStream;
-import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Class representing a protocol message.
@@ -37,7 +39,7 @@ public class Message {
      * @return The parsed message.
      * @throws IOException IO error when reading from the stream failed.
      */
-    @org.jetbrains.annotations.NotNull
+    @NotNull
     public static Message decode(DataInputStream s) throws IOException {
         var id = s.readUnsignedShort();
         var type = MessageType.values()[s.readUnsignedByte()];
@@ -96,6 +98,16 @@ public class Message {
         return other.type == this.type;
     }
 
+    /**
+     * Create a new reply for this message.
+     *
+     * @param statusCode The status code to use.
+     * @param message The status message to use, required when
+     * {@code statusCode} is non-null.
+     * @param parameters The results to send.
+     * @return The newly constructed message.
+     */
+    @NotNull
     public Message makeReply(
         int statusCode,
         String message,
@@ -104,6 +116,17 @@ public class Message {
         return Message.makeReply(this.id, statusCode, message, parameters);
     }
 
+    /**
+     * Create a new reply to the message with the given {@code messageID}.
+     *
+     * @param messageID The ID of the message to reply to.
+     * @param statusCode The status code to use.
+     * @param message The status message to use, required when
+     * {@code statusCode} is non-null.
+     * @param parameters The results to send.
+     * @return The newly constructed message.
+     */
+    @NotNull
     private static Message makeReply(
         int messageID,
         int statusCode,

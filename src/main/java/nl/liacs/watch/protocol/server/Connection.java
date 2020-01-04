@@ -36,36 +36,24 @@ public class Connection implements nl.liacs.watch.protocol.types.Connection, Clo
             throw new UnknownProtocolException("watch runs unknown protocol version", version);
         }
 
-        this.os.writeByte(0b00000110); // send ACK.
+        this.os.writeByte(0x06); // send ACK.
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public boolean isOpen() {
         return this.socket.isConnected();
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public Message receive() throws IOException {
         return Message.decode(this.is);
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void send(Message message) throws IOException {
         this.os.write(message.encode());
     }
 
-    /**
-     * @inheritDoc
-     */
     @Override
     public void close() throws IOException {
         this.is.close();
