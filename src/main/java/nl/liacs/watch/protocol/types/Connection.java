@@ -5,9 +5,9 @@ import java.io.IOException;
 
 public interface Connection extends Closeable {
     /**
-     * @return Whether or not the connection is open and ready to communicate.
+     * @return Whether or not the connection is closed and unavailable to communicate.
      */
-    boolean isOpen();
+    boolean isClosed();
 
     /**
      * @return The message received and parsed.

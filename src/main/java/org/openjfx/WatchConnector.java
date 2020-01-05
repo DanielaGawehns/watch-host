@@ -45,7 +45,7 @@ public class WatchConnector implements Closeable {
      * @throws InterruptedException Interrupted error when the thread is interrupted.
      */
     private void updateLoop() throws InterruptedException {
-        while (this.connection.isOpen()) {
+        while (!this.connection.isClosed()) {
             Message item = this.connection.receive();
 
             switch (item.type) {

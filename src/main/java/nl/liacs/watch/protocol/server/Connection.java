@@ -42,8 +42,8 @@ public class Connection implements nl.liacs.watch.protocol.types.Connection, Clo
     }
 
     @Override
-    public boolean isOpen() {
-        return this.socket.isConnected();
+    public boolean isClosed() {
+        return this.socket.isClosed();
     }
 
     @Override

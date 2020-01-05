@@ -40,7 +40,7 @@ public class WrappedConnection implements Closeable {
 
         // receive loop
         this.thread = new Thread(() -> {
-            while (this.connection.isOpen()) {
+            while (!this.connection.isClosed()) {
                 boolean mustClose = false;
 
                 try {
@@ -75,13 +75,14 @@ public class WrappedConnection implements Closeable {
     }
 
     /**
-     * Send the given message to the client.
+     * Send the given message to the client, without waiting for any possible
+     * result.
      *
      * @param message The message to send.
      * @throws IOException IO error when failing to send the message.
      */
     public void send(@NotNull Message message) throws IOException {
-        if (!connection.isOpen()) {
+        if (connection.isClosed()) {
             throw new IllegalStateException("connection is closed");
         }
 
@@ -124,10 +125,10 @@ public class WrappedConnection implements Closeable {
     }
 
     /**
-     * @return Whether or not the connection is currently open.
+     * @return Whether or not the connection is currently closed.
      */
-    public Boolean isOpen() {
-        return this.connection.isOpen();
+    public boolean isClosed() {
+        return this.connection.isClosed();
     }
 
     /**
