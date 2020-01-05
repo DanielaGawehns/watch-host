@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 /**
  * A wrapped connection, with convenience methods.
@@ -19,7 +20,7 @@ import java.util.concurrent.*;
 public class WrappedConnection implements Closeable {
     private final Connection connection;
     private final BlockingQueue<Message> receiveQueue;
-    private final Thread thread;
+    private final ExecutorService pool;
 
     /**
      * The highest ID seen on this connection
@@ -35,34 +36,52 @@ public class WrappedConnection implements Closeable {
      * @param connection The connection to wrap
      */
     WrappedConnection(@NotNull Connection connection) {
+        this.pool = Executors.newFixedThreadPool(2);
         this.connection = connection;
         this.receiveQueue = new LinkedBlockingQueue<>();
 
-        // receive loop
-        this.thread = new Thread(() -> {
-            while (!this.connection.isClosed()) {
-                boolean mustClose = false;
+        Consumer<Callable<Boolean>> doWork = (fn) -> {
+            boolean mustClose = false;
 
+            try {
+                mustClose = fn.call();
+            } catch (EOFException | SocketException e) {
+                mustClose = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (mustClose) {
                 try {
-                    var msg = this.connection.receive();
-                    this.handleMessage(msg);
-                } catch (EOFException | SocketException e) {
-                    mustClose = true;
-                } catch (Exception e) {
+                    this.close();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        };
 
-                if (mustClose) {
-                    try {
-                        this.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
+        // receive loop
+        this.pool.submit(() -> {
+            while (!this.pool.isShutdown()) {
+                doWork.accept(() -> {
+                    var msg = this.connection.receive();
+                    this.handleMessage(msg);
+                    return false;
+                });
             }
         });
-        this.thread.start();
+
+        // PING loop
+        this.pool.submit(() -> {
+            while (!this.pool.isShutdown()) {
+                doWork.accept(() -> {
+                    Thread.sleep(2500);
+                    var msg = this.makeMessageWithID(MessageType.PING);
+                    this.send(msg);
+                    return false;
+                });
+            }
+        });
     }
 
     /**
@@ -138,8 +157,8 @@ public class WrappedConnection implements Closeable {
      */
     @Override
     public void close() throws IOException {
+        this.pool.shutdownNow();
         this.connection.close();
-        this.thread.interrupt();
     }
 
     /**
