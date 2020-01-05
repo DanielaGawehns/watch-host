@@ -216,7 +216,7 @@ public class Smartwatch implements Closeable {
     /**
      * Setter for {@link Smartwatch#name}
      */
-    public void setWatchName(String name) { name = name; }
+    public void setWatchName(String name) { this.name = name; }
 
 
     /**
