@@ -45,12 +45,15 @@ All data is sent in _big-endian_ order (_network byte order_).
 |:---|:---|:---|:---|
 |unsigned 16 bit|unsigned 8 bit|unsigned 8 bit||
 
-The reference ID is used for `REPLY` messages containing the reply to the sent message.
-The ID can be any not already used integer as chosen by the sender of the message.
-A reply is _only_ sent if and only if the ID is non-zero and a reply is specified for the message (i.e. the reply section in the specification is not "N/A").
+The reference ID is used for a possible `REPLY` message containing the reply to the sent message.
+A reply is sent if and only if the ID is non-zero and a reply is specified for the message (i.e. the reply section in the specification is not "N/A").
 
-Note: _not already used_ means not used by the sender of the message.
+The ID can be any integer as chosen by the sender of the message.
+The sender should make best efforts to not reuse IDs already used by the sender, at least not used recently.
 It's totally allowed for both parties to sent a message with the same ID and they should be treated as separate entities.
+
+Note: we say _best effort_ since ID reuse is inevitable in long standing connections, the maximum ID is 65535, after which the connection should still work.
+We suggest using incremental IDs starting at 1 and resetting to 1 when the limit is reached.
 
 ### Parameter
 | length of value in bytes | value |
