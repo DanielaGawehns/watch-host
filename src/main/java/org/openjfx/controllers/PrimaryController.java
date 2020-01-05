@@ -127,8 +127,20 @@ public class PrimaryController{
 
                     Logger.getGlobal().log(Level.INFO, "Got watch ID: " + uid);
 
-                    var watchData = new WatchData(uid);
-                    var watch = new Smartwatch(watchData, "", wrappedConnection);
+                    // try reusing watch
+                    {
+                        final var watch = watches.getWithID(uid);
+                        if (watch != null) {
+                            try {
+                                watch.addConnection(wrappedConnection);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            return;
+                        }
+                    }
+
+                    final var watch = new Smartwatch(new WatchData(uid), "", wrappedConnection);
                     Platform.runLater(() -> this.addWatch(watch));
                 });
             } catch (IOException e) {
