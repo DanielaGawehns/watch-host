@@ -29,7 +29,7 @@ public class BroadcastHandler implements Closeable {
      * @throws IOException IO error when failing to create a new datagram server.
      */
     public BroadcastHandler(int timeout) throws IOException {
-        server = new DatagramSocket();
+        server = new DatagramSocket(Constants.BroadcastHostPort);
         server.setSoTimeout(timeout);
         this.thread = new Thread(() -> {
             try {
