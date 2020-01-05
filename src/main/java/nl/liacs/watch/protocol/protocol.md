@@ -188,7 +188,7 @@ Implemented must be:
 The system namespace contains variables about the sensors on the watch.
 Implemented must be:
 
-- `sensor.list`: A list of every sensor name (one or more ASCII strings).
+- `sensor.list`: A list of every sensor name (one or more `str`).
 
 #### `live` namespace
 The live namespace contains settings about the aggregated updates for the host's live dashboard.
