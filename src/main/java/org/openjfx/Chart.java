@@ -30,8 +30,10 @@ public class Chart {
      */
     private final String sensor;
 
+
     /**
-     * Constructor with a list of {@link SensorData}
+     * Constructor with a list of {@link SensorData}.
+     * These SensorData object should be for the same sensor to represent multiple lines in a chart
      */
     public Chart(List<SensorData> list, VBox vbox){
         dataList = list;
@@ -80,7 +82,12 @@ public class Chart {
         chart.setDisable(false); // turn on chart
 
         for(SensorData data : dataList){
-            chart.getData().add(fillSeries(data)); // add series to chart
+            if(data.size() > 0) {
+                System.out.println("Adding data of watch " + data.getWatchID() + " and sensor " + data.getSensor() + " to chart");
+                chart.getData().add(fillSeries(data)); // add series to chart
+            }else{
+                System.out.println("Data of watch " + data.getWatchID() + " and sensor " + data.getSensor() + " is empty");
+            }
         }
 
         chart.setTitle(sensorData.getSensor()); // set title of chart
@@ -96,7 +103,7 @@ public class Chart {
     private XYChart.Series<String, Number> fillSeries(SensorData sensorData){
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
 
-        series.setName(sensorData.getSensor()); // set title of line for legend
+        series.setName("Watch: " + sensorData.getWatchID()); // set title of line for legend
         for(int i = 0; i < sensorData.size(); i += 1){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
             series.getData().add(temp); // add datapoint to series
@@ -117,10 +124,28 @@ public class Chart {
             return;
         }
         dataList.add(data);
-        chart.getData().add(fillSeries(data));
+        if(data.size() > 0) // only add series if SensorData contains datapoints
+            chart.getData().add(fillSeries(data));
 
     }
 
+
+    /**
+     * Replaces a SensorData in {@link Chart#dataList} if a SensorData with corresponding watchID is found
+     * @param watchID The watchID to be checked
+     * @param data The data to replace the current data
+     */
+    public void setData(String watchID, SensorData data){
+        int i = 0;
+        for(SensorData sensorData : dataList){
+            if(sensorData.getWatchID().equals(watchID)){
+                dataList.set(i, data);
+                fillChart(chart, sensor);
+            }
+            i++;
+        }
+        System.out.println("Chart has no SensorData for watch with id " + watchID);
+    }
 
     /**
      * Getter for {@link Chart#sensor}

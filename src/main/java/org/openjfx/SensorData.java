@@ -3,6 +3,7 @@ package org.openjfx;
 import javafx.scene.chart.XYChart;
 import util.Util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,15 +36,35 @@ public class SensorData {
      */
     private final String watchID;
 
+    /**
+     * The date from which the data has been loaded into the program from the database. This shows if we need to load
+     * older data from the database when changing around the starting dates in {@link org.openjfx.controllers.OverviewController}
+     * or {@link org.openjfx.controllers.WatchViewController}
+     */
+    private LocalDate dataLoadedDate;
+
 
     /**
      * Constructor
      */
-    SensorData(String _watchID, String _sensor, int _dataFieldsNumber){
+    SensorData(String _watchID, String _sensor, int _dataFieldsNumber, LocalDate dataLoadedDate){
+        records = new ArrayList<>();
+        sensor = _sensor;
+        watchID = _watchID;
+        this.dataLoadedDate = dataLoadedDate;
+        dataFieldsNumber = _dataFieldsNumber;
+    }
+
+    /**
+     * Constructor
+     */
+    SensorData(String _watchID, String _sensor, int _dataFieldsNumber, LocalDate dataLoadedDate, List<DataPoint> data){
         records = new ArrayList<>();
         sensor = _sensor;
         watchID = _watchID;
         dataFieldsNumber = _dataFieldsNumber;
+        this.dataLoadedDate = dataLoadedDate;
+        records = data;
     }
 
 
@@ -196,8 +217,19 @@ public class SensorData {
      * @return A {@link XYChart.Data} containing the time and the first data column of {@link DataPoint}
      */
     XYChart.Data<String, Number> getDataPoint(int i) {
-        return new XYChart.Data<>(records.get(i).getDateTime().toString(), records.get(i).getDataList().get(0));
+        return new XYChart.Data<>(records.get(i).getDateTime().toLocalTime().toString(), records.get(i).getDataList().get(0));
     }
+
+
+    /**
+     * Getter for {@link SensorData#dataLoadedDate}
+     */
+    LocalDate getDataLoadedDate() { return dataLoadedDate; }
+
+    /**
+     * Setter for {@link SensorData#dataLoadedDate}
+     */
+    void setDataLoadedDate(LocalDate dataLoadedDate) { this.dataLoadedDate = dataLoadedDate; }
 }
 
 

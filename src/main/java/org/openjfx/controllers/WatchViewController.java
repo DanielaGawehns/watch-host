@@ -3,15 +3,13 @@ package org.openjfx.controllers;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.openjfx.*;
 import util.Util;
 
@@ -19,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,7 @@ import java.util.Optional;
 public class WatchViewController {
 
     private static final String COMMA_DELIMITER = ",";
+
 
     /**
      * Label for measurement duration
@@ -88,6 +88,12 @@ public class WatchViewController {
     @FXML
     private VBox chartsBox;
 
+    /**
+     * DatePicker to select the starting date for printing data to charts
+     */
+    @FXML
+    private DatePicker datePicker;
+
 
     /**
      * VBox in which to place the researchers comments
@@ -112,6 +118,14 @@ public class WatchViewController {
 
 
     /**
+     * Initialize function for setting standard values
+     */
+    public void initialize(){
+        datePicker.setValue(LocalDate.now().minusDays(365)); // will be overwritten in setWatch
+        Util.setDateFactory(datePicker);
+    }
+
+    /**
      * Sets {@link WatchViewController#watch} and fills the charts using {@link Chart#Chart(SensorData, VBox)}
      * Also calls {@link WatchViewController#setInfo()} to set all the information labels
      * @param _watch The {@link Smartwatch} which data will be shown
@@ -119,21 +133,27 @@ public class WatchViewController {
     void setWatch(Smartwatch _watch, PrimaryController controller){
         System.out.println("Setting watch... with id " + _watch.getWatchID());
         watch = _watch;
+        datePicker.setValue(watch.getStartDate());
         primaryController = controller;
 
         setInfo();
 
+        String sensor = "~";
         try {
-            for (String sensor : watch.getSensorListFromMap()) {
-                charts.add(new Chart(watch.getSensorData(sensor), chartsBox));
+            for(int i = 0; i < watch.getSensorListFromMap().size(); i++) {
+                sensor = watch.getSensorListFromMap().get(i);
+                charts.add(new Chart(watch.getSensorData(sensor, watch.getStartDate()), chartsBox));
             }
             setComments();
-        }catch (Exception e){ // if data is not found
-            System.out.println("No data found for watch: " + " and sensor: TEMP");
+        }catch (NullPointerException e){ // if data is not found
+            System.out.println("No data found for watch: " + watch.getWatchID() + " and sensor: " + sensor);
             return;
         }
         System.out.println("Done filling chart");
     }
+
+
+
 
 
     /**
@@ -212,7 +232,7 @@ public class WatchViewController {
 
 
     /**
-     * Event for disconnect button. Uses {@link DBManager#removeSmartwatch(int)} and {@link PrimaryController#removeWatch(int)}
+     * Event for disconnect button. Uses {@link DBManager#removeSmartwatch(String)} and {@link PrimaryController#removeWatch(String)}
      * to remove the watch
      */
     public void disconnectButtonPressed() {
@@ -267,7 +287,7 @@ public class WatchViewController {
 
 
     /**
-     * Event for measurement stop button. Uses {@link DBManager#removeMeasurementFromWatch(int)} and {@link Smartwatch#setMeasurement(Measurement)}
+     * Event for measurement stop button. Uses {@link DBManager#removeMeasurementFromWatch(String)} and {@link Smartwatch#setMeasurement(Measurement)}
      * to remove the measurement from the watch
      */
     public void stopPressed() {
@@ -390,6 +410,22 @@ public class WatchViewController {
 
             commentsBox.getChildren().add(vbox);
             chartsBox.getChildren().add(commentsBox);
+        }
+    }
+
+    /**
+     * Event for the datePicker. Sets the start date of {@link WatchViewController#watch} if it is different from current.
+     * Then replaces data of charts with new start date value
+     */
+    public void startDatePressed() {
+        LocalDate date = datePicker.getValue();
+
+        System.out.println("Selected date " + date);
+        if(watch.getStartDate() != date){
+            watch.setStartDate(date);
+            for(Chart chart : charts){
+                chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watch.getStartDate()));
+            }
         }
     }
 }

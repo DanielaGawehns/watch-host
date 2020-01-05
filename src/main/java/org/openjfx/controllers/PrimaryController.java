@@ -39,6 +39,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import util.Util;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 
 /**
  * Class controlling the main screen
@@ -101,10 +109,12 @@ public class PrimaryController{
 
     /**
      * Initializes the main view by printing the sidebar and overview
-     * It also gets all the data stored in the database by using {@link DBManager#getAllWatches()}
+     * It also gets all the data stored in the database by using {@link DBManager#getAllWatches(LocalDateTime, LocalDateTime)}
      */
     public void initialize() {
-        watches = App.getDbManager().getAllWatches();
+        System.out.println("INITIALIZE Primary Controller");
+
+        watches = App.getDbManager().getAllWatches(LocalDateTime.now().minusDays(Util.standardDaysBack), LocalDateTime.now());
 
         App.getConnectionManager().addConnectionConsumer(wrappedConnection -> {
             Logger.getGlobal().log(Level.INFO, "Got a new watch connection");
@@ -191,7 +201,7 @@ public class PrimaryController{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             overviewController = loader.getController();
-            overviewController.setup(watches.getAllSensorData(), watches.size(), watches.getNumberOfMeasurements());
+            overviewController.setup(watches);
 
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane
@@ -277,7 +287,7 @@ public class PrimaryController{
 
 
     /**
-     * Finds all the files in the folder specified by {@code folder} and runs the {@link PrimaryController#reader} on them. Then saves the data to the database using {@link DBManager#insertDatalist(int, SensorData)}
+     * Finds all the files in the folder specified by {@code folder} and runs the {@link PrimaryController#reader} on them. Then saves the data to the database using {@link DBManager#insertDatalist(String, SensorData)}
      * @param folder The folder to crawl
      */
     private void syncFiles(File folder) {
