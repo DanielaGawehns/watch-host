@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class MessageParameterBinary extends MessageParameter {
     /**
-     * @param bytes Create a byte array parameter with the given value.
+     * Create a byte array parameter with the given value.
+     *
+     * @param bytes The value to use.
      */
     public MessageParameterBinary(@NotNull byte[] bytes) {
         this.bytes = bytes;

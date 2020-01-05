@@ -2,26 +2,24 @@ package nl.liacs.watch.protocol.types;
 
 import java.nio.ByteBuffer;
 
-import com.google.common.primitives.Doubles;
-
 import org.jetbrains.annotations.NotNull;
 
-public class MessageParameterDouble extends MessageParameter {
+public class MessageParameterInteger extends MessageParameter {
     /**
-     * Create a double parameter with the given value.
+     * Create a integer parameter with the given value.
      *
      * @param val The value to use.
      */
-    public MessageParameterDouble(double val) {
-        var bb = ByteBuffer.allocate(Doubles.BYTES);
-        bb.putDouble(val);
+    public MessageParameterInteger(int val) {
+        var bb = ByteBuffer.allocate(Integer.BYTES);
+        bb.putInt(val);
         this.bytes = bb.array();
     }
 
     /**
      * @param bytes Create a new instance with the given bytes.
      */
-    MessageParameterDouble(@NotNull byte[] bytes) {
+    MessageParameterInteger(@NotNull byte[] bytes) {
         this.bytes = bytes;
     }
 
@@ -29,12 +27,13 @@ public class MessageParameterDouble extends MessageParameter {
      * @return The parameter value as a double.
      */
     @NotNull
-    public Double getValue() {
-        return ByteBuffer.wrap(bytes).getDouble();
+    @Override
+    public Integer getValue() {
+        return ByteBuffer.wrap(bytes).getInt();
     }
 
     @Override
     public ParameterType getType() {
-        return ParameterType.DOUBLE;
+        return ParameterType.INTEGER;
     }
 }

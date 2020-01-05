@@ -1,5 +1,7 @@
 package nl.liacs.watch.protocol.types;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -17,6 +19,13 @@ public class MessageParameter {
      */
     public MessageParameterString asString() {
         return new MessageParameterString(this.bytes);
+    }
+
+    /**
+     * Create a derived class with the integer type.
+     */
+    public MessageParameterInteger asInteger() {
+        return new MessageParameterInteger(this.bytes);
     }
 
     /**
@@ -66,18 +75,16 @@ public class MessageParameter {
         var sb = new StringBuilder(type.name());
 
         switch (type) {
+        case INTEGER:
         case DOUBLE:
         case STRING:
             sb.append('(');
-            if (type == ParameterType.DOUBLE) {
-                sb.append(((MessageParameterDouble) this).getValue());
-            } else {
-                sb.append(((MessageParameterString) this).getValue());
-            }
+            sb.append(this.getValue());
             sb.append(')');
             break;
 
-        default:
+        case UNKNOWN:
+        case BINARY:
             break;
         }
 
@@ -89,5 +96,10 @@ public class MessageParameter {
      */
     public ParameterType getType() {
         return ParameterType.UNKNOWN;
+    }
+
+    @Nullable
+    public Object getValue() {
+        return null;
     }
 }

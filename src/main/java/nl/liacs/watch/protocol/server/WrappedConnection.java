@@ -195,9 +195,7 @@ public class WrappedConnection implements Closeable {
      */
     @NotNull
     public Message makeMessageWithID(@NotNull MessageType type) {
-        var msg = new Message(type);
-        msg.id = ++this.highestId;
-        return msg;
+        return new Message(++this.highestId, type);
     }
 
     /**

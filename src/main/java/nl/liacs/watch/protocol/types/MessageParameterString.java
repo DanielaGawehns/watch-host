@@ -8,7 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class MessageParameterString extends MessageParameter {
     /**
-     * @param string Create a string parameter with the given value.
+     * Create a string parameter with the given value.
+     *
+     * @param string The string to use.
      */
     public MessageParameterString(@Nullable String string) {
         if (string == null) {

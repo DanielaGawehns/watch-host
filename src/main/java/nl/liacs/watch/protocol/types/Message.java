@@ -17,7 +17,7 @@ public class Message {
     /**
      * The message ID
      */
-    public int id = 0;
+    public final int id;
     /**
      * The type of the message.
      */
@@ -28,12 +28,24 @@ public class Message {
     public MessageParameter[] parameters = new MessageParameter[0];
 
     /**
+     * Create a new {@link Message} with the given ID and type.
+     *
+     * @param id The reference ID for the message to have.
+     * @param type The type for the message to have.
+     */
+    public Message(int id, MessageType type) {
+        this.id = id;
+        this.type = type;
+    }
+
+    /**
      * Create a new {@link Message} with the given type.
+     * The ID will be set to 0.
      *
      * @param type The type for the message to have.
      */
     public Message(MessageType type) {
-        this.type = type;
+        this(0, type);
     }
 
     /**
@@ -46,8 +58,7 @@ public class Message {
         var id = s.readUnsignedShort();
         var type = MessageType.values()[s.readUnsignedByte()];
 
-        var msg = new Message(type);
-        msg.id = id;
+        var msg = new Message(id, type);
 
         msg.parameters = new MessageParameter[s.readUnsignedByte()];
         for (int i = 0; i < msg.parameters.length; i++) {
@@ -138,15 +149,14 @@ public class Message {
         @Nullable String message,
         MessageParameter... parameters
     ) throws IllegalArgumentException {
-        var res = new Message(MessageType.REPLY);
-        res.id = messageID;
+        var res = new Message(messageID, MessageType.REPLY);
 
         if (statusCode != 0 && Strings.isNullOrEmpty(message)) {
             throw new IllegalArgumentException("message must be given when statusCode is not 0");
         }
 
         res.parameters = new MessageParameter[2 + parameters.length];
-        res.parameters[0] = new MessageParameterDouble(statusCode);
+        res.parameters[0] = new MessageParameterInteger(statusCode);
         res.parameters[1] = new MessageParameterString(message);
         System.arraycopy(parameters, 0, res.parameters, 2, parameters.length);
 
