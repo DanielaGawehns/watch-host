@@ -1,5 +1,5 @@
 ---
-title: Watch communication protocol v1-alpha3
+title: Watch communication protocol v1-alpha4
 author:
  - Lieuwe Rooijakkers
  - Peter Bosch
@@ -45,7 +45,12 @@ All data is sent in _big-endian_ order (_network byte order_).
 |:---|:---|:---|:---|
 |unsigned 16 bit|unsigned 8 bit|unsigned 8 bit||
 
-If the reference ID has the special value of 0, no reply is requested.
+The reference ID is used for `REPLY` messages containing the reply to the sent message.
+The ID can be any not already used integer as chosen by the sender of the message.
+A reply is _only_ sent if and only if the ID is non-zero and a reply is specified for the message (i.e. the reply section in the specification is not "N/A").
+
+Note: _not already used_ means not used by the sender of the message.
+It's totally allowed for both parties to sent a message with the same ID and they should be treated as separate entities.
 
 ### Parameter
 | length of value in bytes | value |
@@ -53,11 +58,12 @@ If the reference ID has the special value of 0, no reply is requested.
 |unsigned 16 bit||
 
 #### Value types
-Specified by every command, possible are:
+Specified by every command, possible are (short name given in the parentheses):
 
-- Binary data string;
-- **Non**-null terminated ASCII string;
-- Double precision IEEE float.
+- Binary data string (`bytes`);
+- **Non**-null terminated ASCII string (`str`);
+- 32-bit signed integer (`i32`);
+- Double precision IEEE float (`f64`).
 
 ## Message types
 There are several message types, some bidirectional but most unidirectional.
@@ -76,20 +82,24 @@ Structure:
 `PING`
 
 Reply:
-Any reply is permitted.
+An unspecified but valid `REPLY` message.
 
 #### REPLY (1)
 Message representing the result (or error) of an operation.
 
+The reference ID must be equal to the reference ID of the message that this
+message is a reply to.
+Note that replies cannot be sent on messages bearing a reference ID of 0.
+
 The status code MUST be 0 for succes and any other non-zero number for failure.
 
-The next is an status string, for an error this SHOULD be given.
-For succes the status string can be an empty string.
+The next is a status string, for an error this SHOULD be given.
+For succes the status string MAY be an empty string.
 
 The rest of the parameters are zero or more results of the operation.
 
 Structure:
-`REPLY <status code (double)> <status string (ASCII string)> <results... (binary string)>`
+`REPLY <status code (i32)> <status string (str)> <results... (bytes)>`
 
 Reply:
 N/A
@@ -103,10 +113,10 @@ If it does not, the other side MAY ignore the message.
 See the [key-value store section](#keyval) for more information.
 
 Structure:
-`GET_VALUES <key (ASCII string)>`
+`GET_VALUES <key (str)>`
 
 Reply:
-Reply with the values in the store.
+`REPLY` message with the values in the store.
 If the key does not exist, return an error.
 
 #### SET_VALUES (3)
@@ -118,10 +128,10 @@ If it does not, the other side MAY ignore the message.
 See the [key-value store section](#keyval) for more information.
 
 Structure:
-`SET_VALUES <key (ASCII string)> <values... (binary string)>`
+`SET_VALUES <key (str)> <values... (bytes)>`
 
 Reply:
-Reply with the set array of values in the store.
+`REPLY` message with the set array of values in the store.
 If the key/values is not valid, return an error.
 
 ### Watch to host
@@ -133,7 +143,7 @@ Should be send every `live.interval`, if any data is available.
 The time delta is since the previous sent INCREMENT message in milliseconds.
 
 Structure:
-`INCREMENT <sensor (ASCII string)> <time delta (double)> <data... (double)>`
+`INCREMENT <sensor (str)> <time delta (i32)> <data... (f64)>`
 
 Reply:
 N/A
@@ -144,7 +154,7 @@ A data point for the full recorded session.
 The time delta is since the start of the recording session in milliseconds.
 
 Structure:
-`PLAYBACK <sensor (ASCII string)> <time delta (double)> <data... (double)>`
+`PLAYBACK <sensor (str)> <time delta (f64)> <data... (f64)>`
 
 Reply:
 N/A
@@ -169,7 +179,7 @@ The namespace that must be implemented for the watch are the following:
 The system namespace contains variables about the watch.
 Implemented must be:
 
-- `system.uid`: The unique watch ID (ASCII string).
+- `system.uid`: The unique watch ID (`str`).
 
 #### `sensor` namespace
 The system namespace contains variables about the sensors on the watch.
@@ -181,7 +191,7 @@ Implemented must be:
 The live namespace contains settings about the aggregated updates for the host's live dashboard.
 Implemented must be:
 
-- `live.interval`: The interval of the live sensor updates (double).
+- `live.interval`: The interval of the live sensor updates (`f64`).
 
 ### Host store
 The namespace that must be implemented for the host are the following:
@@ -190,10 +200,11 @@ TODO
 
 ## Example
 Accelerometer live view update, 100ms after the previous one.
+Message reference ID is set to 0.
 Values are in order of x,y,z acceleration.
 
 In ASCII:
-`INCREMENT 5 accel 100 5.43894 3.47392 1.32419`
+`INCREMENT accel 100 5.43894 3.47392 1.32419`
 
 In binary:
-`02 05 00 05 61 63 63 65 6c 00 08 40 59 00 00 00 00 00 00 00 08 40 15 c1 79 7c c3 9f fd 00 08 40 0b ca 96 91 a7 5c d1 00 08 3f f5 2f e1 da 7b 0b 39`
+`00 00 04 05 00 05 61 63 63 65 6c 00 04 00 00 00 64 00 08 40 15 c1 79 7c c3 9f fd 00 08 40 0b ca 96 91 a7 5c d1 00 08 3f f5 2f e1 da 7b 0b 39`
