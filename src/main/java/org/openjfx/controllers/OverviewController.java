@@ -163,7 +163,7 @@ public class OverviewController {
         }
     }
 
-    public void reloadCharts(){
+    void reloadCharts(){
         for (Chart chart : charts) {
             chart.setWidth((int) primaryController.getView().getWidth());
             for(Smartwatch watch : watches) {

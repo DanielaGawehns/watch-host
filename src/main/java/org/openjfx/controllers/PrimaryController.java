@@ -149,6 +149,7 @@ public class PrimaryController{
         });
 
         currentWatch = -1;
+        setViewListener();
         loadSideBar();
     }
 
