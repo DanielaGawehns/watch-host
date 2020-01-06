@@ -5,6 +5,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,10 @@ import java.util.List;
  */
 public class Chart {
 
+    /**
+     * Scale factor to determine how many data points will be shown in the graph
+     */
+    private static double pointScaleFactor = 15.0;
 
     /**
      * The chart (string, number) to fill
@@ -30,13 +35,20 @@ public class Chart {
      */
     private final String sensor;
 
+    /**
+     * Approximation of the chart size
+     */
+    private int width;
+
 
     /**
      * Constructor with a list of {@link SensorData}.
      * These SensorData object should be for the same sensor to represent multiple lines in a chart
      */
-    public Chart(List<SensorData> list, VBox vbox){
+    public Chart(List<SensorData> list, VBox vbox, int width){
         dataList = list;
+        System.out.println("[Chart] width is ");
+        this.width = width;
         sensor = dataList.get(0).getSensor();
         placeChartOnScreen(sensor, vbox);
     }
@@ -44,9 +56,10 @@ public class Chart {
     /**
      * Constructor with a single {@link SensorData}
      */
-    public Chart(SensorData data, VBox vbox){
+    public Chart(SensorData data, VBox vbox, int width){
         dataList = new ArrayList<>();
         dataList.add(data);
+        this.width = width;
         sensor = dataList.get(0).getSensor();
         placeChartOnScreen(sensor, vbox);
     }
@@ -66,7 +79,7 @@ public class Chart {
         charts.getChildren().add(chart);
     }
 
-    // TODO: Make this work with all types of charts
+
     /**
      * Fills a Linechart with data
      * @param chart The Linechart to be filled
@@ -74,7 +87,7 @@ public class Chart {
      */
     private void fillChart(LineChart<String, Number> chart, String sensor) {
 
-        System.out.println("Fill Chart for sensor " + sensor);
+        System.out.println("Fill Chart for sensor " + sensor + " of width " + chart.getXAxis().getWidth());
         SensorData sensorData = dataList.get(0); // get data of the right sensor
 
         chart.setAnimated(false); // disable animation for clearing
@@ -103,8 +116,14 @@ public class Chart {
     private XYChart.Series<String, Number> fillSeries(SensorData sensorData){
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
 
+        System.out.println("[Chart#fillSeries] width is now " + width);
+
+
+        int skip = Math.max(1, sensorData.size() / (int) Math.round(width / pointScaleFactor));
+        System.out.println("[Chart#fillSeries] printing every " + skip + "th point with width " + chart.getXAxis().getWidth() + " and size " + sensorData.size());
+
         series.setName("Watch: " + sensorData.getWatchID()); // set title of line for legend
-        for(int i = 0; i < sensorData.size(); i += 1){ //TODO: find more robust way to remove unnecessary nodes
+        for(int i = 0; i < sensorData.size(); i += skip){ //TODO: find more robust way to remove unnecessary nodes
             XYChart.Data<String, Number> temp = sensorData.getDataPoint(i); // get dataPoint no. i
             series.getData().add(temp); // add datapoint to series
         }
@@ -151,4 +170,10 @@ public class Chart {
      * Getter for {@link Chart#sensor}
      */
     public String getSensor() { return sensor; }
+
+
+    /**
+     * Setter for {@link Chart#width}
+     */
+    public void setWidth(int width) { this.width = width; }
 }

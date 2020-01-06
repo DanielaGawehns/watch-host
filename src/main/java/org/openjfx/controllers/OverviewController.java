@@ -58,6 +58,8 @@ public class OverviewController {
     private SmartwatchList watches;
 
 
+    private PrimaryController primaryController;
+
     /**
      * Initializer to set {@link OverviewController#datePicker} standard value
      */
@@ -71,8 +73,9 @@ public class OverviewController {
      * using {@link OverviewController#setCharts(List)} and sets information labels using {@link OverviewController#setLabels(int, int)}
      * @param watches The {@link SmartwatchList} with the data to be filled into the charts
      */
-    void setup(SmartwatchList watches){
+    void setup(SmartwatchList watches, PrimaryController controller){
         this.watches = watches;
+        primaryController = controller;
         datePicker.setValue(watches.getStartDate());
         setCharts(watches.getAllSensorData(watches.getStartDate()));
         setLabels(watches.size(), watches.getNumberOfMeasurements());
@@ -93,7 +96,8 @@ public class OverviewController {
             if(chart != null){
                 chart.addData(sensorData);
             }else{
-                charts.add(new Chart(sensorData, chartsVbox));
+                chart = new Chart(sensorData, chartsVbox, (int) primaryController.getView().getWidth());
+                charts.add(chart);
             }
         }
     }
@@ -155,12 +159,15 @@ public class OverviewController {
         System.out.println("\nSelected date " + date + "... Changing charts");
         if(watches.getStartDate() != date){
             watches.setStartDate(date);
-            for(Chart chart : charts){
-                for(Smartwatch watch : watches) {
-                    System.out.println("[OverviewController#startDatePressed] changing data chart of sensor " + chart.getSensor()
-                    + " and watch " + watch.getWatchID());
-                    chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watches.getStartDate()));
-                }
+            reloadCharts();
+        }
+    }
+
+    public void reloadCharts(){
+        for (Chart chart : charts) {
+            chart.setWidth((int) primaryController.getView().getWidth());
+            for(Smartwatch watch : watches) {
+                chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watches.getStartDate()));
             }
         }
     }

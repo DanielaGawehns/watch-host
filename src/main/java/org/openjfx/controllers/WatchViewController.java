@@ -9,7 +9,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import org.openjfx.*;
 import util.Util;
 
@@ -86,7 +85,7 @@ public class WatchViewController {
      * VBox to contain the charts and comments
      */
     @FXML
-    private VBox chartsBox;
+    public VBox chartsBox;
 
     /**
      * DatePicker to select the starting date for printing data to charts
@@ -123,10 +122,11 @@ public class WatchViewController {
     public void initialize(){
         datePicker.setValue(LocalDate.now().minusDays(365)); // will be overwritten in setWatch
         Util.setDateFactory(datePicker);
+        //System.out.println("width is: " + chartsBox.getWidth());
     }
 
     /**
-     * Sets {@link WatchViewController#watch} and fills the charts using {@link Chart#Chart(SensorData, VBox)}
+     * Sets {@link WatchViewController#watch} and fills the charts using {@link Chart#Chart(SensorData, VBox, int)}
      * Also calls {@link WatchViewController#setInfo()} to set all the information labels
      * @param _watch The {@link Smartwatch} which data will be shown
      */
@@ -142,7 +142,9 @@ public class WatchViewController {
         try {
             for(int i = 0; i < watch.getSensorListFromMap().size(); i++) {
                 sensor = watch.getSensorListFromMap().get(i);
-                charts.add(new Chart(watch.getSensorData(sensor, watch.getStartDate()), chartsBox));
+                var chart = new Chart(watch.getSensorData(sensor, watch.getStartDate()), chartsBox, (int) primaryController.getView().getWidth());
+                charts.add(chart);
+
             }
             setComments();
         }catch (NullPointerException e){ // if data is not found
@@ -151,10 +153,7 @@ public class WatchViewController {
         }
         System.out.println("Done filling chart");
     }
-
-
-
-
+    
 
     /**
      * Sets all the information fields in the watch view
@@ -413,6 +412,22 @@ public class WatchViewController {
         }
     }
 
+
+    /**
+     * Resets data of all charts to data stored in {@link WatchViewController#watch}
+     */
+    void reloadCharts(){
+        int width = (int) primaryController.getView().getWidth();
+        if(width <= 0)
+                return;
+
+        for(Chart chart : charts){
+            chart.setWidth((int) primaryController.getView().getWidth());
+            chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watch.getStartDate()));
+            System.out.println("width is: " + primaryController.getView().getWidth());
+        }
+    }
+
     /**
      * Event for the datePicker. Sets the start date of {@link WatchViewController#watch} if it is different from current.
      * Then replaces data of charts with new start date value
@@ -423,10 +438,19 @@ public class WatchViewController {
         System.out.println("Selected date " + date);
         if(watch.getStartDate() != date){
             watch.setStartDate(date);
-            for(Chart chart : charts){
-                chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watch.getStartDate()));
-            }
+            reloadCharts();
         }
+    }
+
+
+    /**
+     * Event for the reload charts button. Calls {@link WatchViewController#reloadCharts()}
+     */
+    public void reloadChartsButtonPressed() {
+        System.out.println("[WatchViewController#reloadChartsButtonPressed] Reloading charts");
+        long startTime = System.nanoTime();
+        reloadCharts();
+        System.out.println("[WatchViewController#reloadChartsButtonPressed] Reloading cost: " + ((System.nanoTime() - startTime) * Math.pow(10, -6)) + " ms");
     }
 }
 

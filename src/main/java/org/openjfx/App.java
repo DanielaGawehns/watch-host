@@ -56,6 +56,8 @@ public class App extends Application {
         stage.setScene(new Scene(root));
         stage.setTitle("Watchboard");
         stage.show();
+        controller.loadOverviewFXML();
+        controller.setViewListener();
     }
 
     /**

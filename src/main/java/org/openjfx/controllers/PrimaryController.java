@@ -2,12 +2,12 @@ package org.openjfx.controllers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import org.openjfx.App;
 import org.openjfx.CSVFileReader;
 import org.openjfx.DBManager;
@@ -149,7 +149,6 @@ public class PrimaryController{
         });
 
         currentWatch = -1;
-        loadOverviewFXML();
         loadSideBar();
     }
 
@@ -208,12 +207,12 @@ public class PrimaryController{
      * Loads the overview (overview.fxml) into the {@link PrimaryController#view}.
      * Also binds the width of the overview to the {@link PrimaryController#view}
      */
-    private void loadOverviewFXML() {
+    public void loadOverviewFXML() {
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/overview.fxml")); // load fxml file
             BorderPane newPane = loader.load(); // load file into replacement pane
             overviewController = loader.getController();
-            overviewController.setup(watches);
+            overviewController.setup(watches, this);
 
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane
@@ -258,8 +257,7 @@ public class PrimaryController{
             measurementController.loadSensors();
             measurementController.loadWatches();
             measurementController.loadTimesField();
-            //newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
-            //view.setCenter(newPane); // set newPane as center of borderPane
+
             Stage stage = new Stage();
             stage.setTitle("Register watch");
             stage.setScene(new Scene(newPane));
@@ -278,6 +276,22 @@ public class PrimaryController{
     private void watchlogoPressed(int number) {
         currentWatch = number; // set current watch
         loadWatchFXML();
+    }
+
+
+    /**
+     * Sets a change value listener on {@code widthProperty()} of {@link PrimaryController#view} to change charts on resize
+     */
+    public void setViewListener(){
+        // listener on width to update charts
+        final ChangeListener<Number> listener = (observable, oldValue, newValue) -> Platform.runLater(() -> {
+            if(watchController != null)
+                watchController.reloadCharts();
+
+            if(overviewController != null)
+                overviewController.reloadCharts();
+        });
+        view.widthProperty().addListener(listener);
     }
 
 
