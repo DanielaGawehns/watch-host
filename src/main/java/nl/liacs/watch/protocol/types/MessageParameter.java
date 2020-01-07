@@ -1,9 +1,9 @@
 package nl.liacs.watch.protocol.types;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+
+import org.jetbrains.annotations.Contract;
 
 public class MessageParameter {
     /**
@@ -98,8 +98,8 @@ public class MessageParameter {
         return ParameterType.UNKNOWN;
     }
 
-    @Nullable
+    @Contract("fail")
     public Object getValue() {
-        return null;
+        throw new IllegalStateException("getValue() can only be called on subclasses");
     }
 }
