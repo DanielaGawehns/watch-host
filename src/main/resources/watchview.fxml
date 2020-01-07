@@ -13,11 +13,13 @@
                <children>
                   <HBox alignment="CENTER_RIGHT" spacing="5.0">
                      <children>
+                        <Button mnemonicParsing="false" onAction="#reloadChartsButtonPressed" text="Reload charts" />
+                        <Region HBox.hgrow="ALWAYS" />
                         <Label text="Start date:" />
                         <DatePicker fx:id="datePicker" onAction="#startDatePressed" promptText="Choose start date" />
                      </children>
                      <VBox.margin>
-                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </HBox>
                </children></VBox>

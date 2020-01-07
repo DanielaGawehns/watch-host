@@ -12,11 +12,11 @@
             <children>
                <HBox alignment="CENTER_RIGHT" spacing="5.0">
                   <children>
-                     <Label text="Start date:"/>
-                     <DatePicker fx:id="datePicker" onAction="#startDatePressed" promptText="Choose start date"/>
+                     <Label text="Start date:" />
+                     <DatePicker fx:id="datePicker" onAction="#startDatePressed" promptText="Choose start date" />
                   </children>
                   <padding>
-                     <Insets bottom="5.0" right="5.0" top="5.0"/>
+                     <Insets bottom="5.0" right="5.0" top="5.0" />
                   </padding>
                </HBox>
             </children>
