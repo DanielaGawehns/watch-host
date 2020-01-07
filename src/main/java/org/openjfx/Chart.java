@@ -16,7 +16,7 @@ import java.util.List;
 public class Chart {
 
     /**
-     * Scale factor to determine how many data points will be shown in the graph
+     * Scale factor to determine how many data points will be shown in the chart with regards to {@link Chart#width}
      */
     private static double pointScaleFactor = 15.0;
 
@@ -36,7 +36,8 @@ public class Chart {
     private final String sensor;
 
     /**
-     * Approximation of the chart size
+     * Approximation of the chart size set by {@link org.openjfx.controllers.PrimaryController}
+     * @see <a href="https://git.liacs.nl/softwareengineering_wearables/watch-host/merge_requests/8#note_4818">This comment</a>
      */
     private int width;
 
@@ -121,10 +122,6 @@ public class Chart {
      */
     private XYChart.Series<String, Number> fillSeries(SensorData sensorData){
         XYChart.Series<String, Number> series = new XYChart.Series<>(); // new series for adding data points
-
-        System.out.println("[Chart#fillSeries] width is now " + width);
-
-
         int skip = Math.max(1, sensorData.size() / (int) Math.round(width / pointScaleFactor));
         System.out.println("[Chart#fillSeries] printing every " + skip + "th point with width " + chart.getXAxis().getWidth() + " and size " + sensorData.size());
 
@@ -151,7 +148,7 @@ public class Chart {
         dataList.add(data);
         if(data.size() > 0) // only add series if SensorData contains datapoints
             chart.getData().add(fillSeries(data));
-
+            fillChart();
     }
 
 
@@ -165,7 +162,7 @@ public class Chart {
         for(SensorData sensorData : dataList){
             if(sensorData.getWatchID().equals(watchID)){
                 dataList.set(i, data);
-                fillChart(chart, sensor);
+                fillChart();
             }
             i++;
         }
