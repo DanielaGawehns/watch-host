@@ -1,15 +1,19 @@
 package org.openjfx;
 
-import nl.liacs.watch.protocol.server.WrappedConnection;
-import nl.liacs.watch.protocol.types.Message;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import nl.liacs.watch.protocol.server.WrappedConnection;
+import nl.liacs.watch.protocol.types.Message;
+import nl.liacs.watch.protocol.types.MessageParameter;
+import nl.liacs.watch.protocol.types.MessageParameterString;
 
 /**
  * Connects a {@link Smartwatch} with a {@link WrappedConnection}.
@@ -65,6 +69,23 @@ public class WatchConnector implements Closeable {
                     watch.addData(list);
 
                     break;
+
+                case GET_VALUES:
+                    var key = item.parameters[0].asString().getValue();
+                    var res = getKeyValue(key);
+                    if (res != null) {
+                        item.makeReply(0, null, res);
+                    } else { // key not available
+                        item.makeReply(404, "key not found");
+                    }
+                    break;
+
+                case SET_VALUES:
+                    throw new IllegalArgumentException("TODO");
+
+                case PING:
+                case REPLY:
+                    throw new IllegalStateException("PING or REPLY leaked out of WrappedConnection");
             }
         }
     }
@@ -78,5 +99,23 @@ public class WatchConnector implements Closeable {
     public void close() throws IOException {
         this.connection.close();
         this.thread.interrupt();
+    }
+
+    /**
+     * Gets the value associated with {@code key}.
+     * Returns {@code null} when the key couldn't be found.
+     *
+     * @param key The key to get the value of.
+     * @return The value, or {@code null} if the key wasn't found.
+     */
+    @Nullable
+    private MessageParameter[] getKeyValue(@NotNull String key) {
+        if (key.equals("system.name")) { // just to test
+            return new MessageParameter[]{
+                new MessageParameterString("nl.liacs.watch-host"),
+            };
+        }
+
+        return null;
     }
 }
