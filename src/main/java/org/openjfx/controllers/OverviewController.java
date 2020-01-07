@@ -159,16 +159,19 @@ public class OverviewController {
         System.out.println("\nSelected date " + date + "... Changing charts");
         if(watches.getStartDate() != date){
             watches.setStartDate(date);
-            reloadCharts();
+            for (Chart chart : charts) {
+                chart.setWidth((int) primaryController.getView().getWidth());
+                for(Smartwatch watch : watches) {
+                    chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watches.getStartDate()));
+                }
+            }
         }
     }
 
     void reloadCharts(){
         for (Chart chart : charts) {
             chart.setWidth((int) primaryController.getView().getWidth());
-            for(Smartwatch watch : watches) {
-                chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watches.getStartDate()));
-            }
+            chart.fillChart();
         }
     }
 }

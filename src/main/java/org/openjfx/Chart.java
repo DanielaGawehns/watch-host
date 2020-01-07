@@ -81,6 +81,12 @@ public class Chart {
 
 
     /**
+     * Fills a Linechart with data using internal chart and sensor
+     */
+    public void fillChart(){ fillChart(chart, sensor); }
+
+
+    /**
      * Fills a Linechart with data
      * @param chart The Linechart to be filled
      * @param sensor The sensor that is used
@@ -165,6 +171,7 @@ public class Chart {
         }
         System.out.println("Chart has no SensorData for watch with id " + watchID);
     }
+
 
     /**
      * Getter for {@link Chart#sensor}

@@ -417,13 +417,9 @@ public class WatchViewController {
      * Resets data of all charts to data stored in {@link WatchViewController#watch}
      */
     void reloadCharts(){
-        int width = (int) primaryController.getView().getWidth();
-        if(width <= 0)
-                return;
-
         for(Chart chart : charts){
             chart.setWidth((int) primaryController.getView().getWidth());
-            chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watch.getStartDate()));
+            chart.fillChart();
             System.out.println("width is: " + primaryController.getView().getWidth());
         }
     }
@@ -438,7 +434,12 @@ public class WatchViewController {
         System.out.println("Selected date " + date);
         if(watch.getStartDate() != date){
             watch.setStartDate(date);
-            reloadCharts();
+
+            for(Chart chart : charts){
+                chart.setWidth((int) primaryController.getView().getWidth());
+                chart.setData(watch.getWatchID(), watch.getSensorData(chart.getSensor(), watch.getStartDate()));
+                System.out.println("width is: " + primaryController.getView().getWidth());
+            }
         }
     }
 
