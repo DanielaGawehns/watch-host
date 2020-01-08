@@ -21,10 +21,12 @@ public class Message {
     /**
      * The type of the message.
      */
+    @NotNull
     public final MessageType type;
     /**
      * Every parameter of the message.
      */
+    @NotNull
     public MessageParameter[] parameters = new MessageParameter[0];
 
     /**

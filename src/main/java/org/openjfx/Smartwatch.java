@@ -64,7 +64,7 @@ public class Smartwatch implements Closeable {
      *
      * @param data The watch data to use for the watch.
      * @param name The name to use for the watch.
-     * @param connection The wrapped connection to use for the watch.
+     * @param connection The wrapped connection to use for the watch, if any.
      */
     public Smartwatch(@NotNull WatchData data, @NotNull String name, @Nullable WrappedConnection connection) {
         System.out.println("making smartwatch");

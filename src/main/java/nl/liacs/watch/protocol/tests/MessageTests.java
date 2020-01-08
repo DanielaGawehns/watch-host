@@ -12,21 +12,24 @@ public class MessageTests {
     @Test
     public void testMessageEncode() throws IOException {
         var msg = new Message(MessageType.INCREMENT);
-        msg.parameters = new MessageParameter[5];
-        msg.parameters[0] = new MessageParameterString("accel");
-        msg.parameters[1] = new MessageParameterDouble(100);
-        msg.parameters[2] = new MessageParameterDouble(5.43894);
-        msg.parameters[3] = new MessageParameterDouble(3.47392);
-        msg.parameters[4] = new MessageParameterDouble(1.32419);
+        msg.parameters = new MessageParameter[] {
+            new MessageParameterString("accel"),
+            new MessageParameterDouble(100),
+            new MessageParameterDouble(5.43894),
+            new MessageParameterDouble(3.47392),
+            new MessageParameterDouble(1.32419)
+        };
 
         var encoded = msg.encode();
         var decoded = Message.decode(new DataInputStream(new ByteArrayInputStream(encoded)));
 
-        decoded.parameters[0] = decoded.parameters[0].asString();
-        decoded.parameters[1] = decoded.parameters[1].asDouble();
-        decoded.parameters[2] = decoded.parameters[2].asDouble();
-        decoded.parameters[3] = decoded.parameters[3].asDouble();
-        decoded.parameters[4] = decoded.parameters[4].asDouble();
+        decoded.parameters = new MessageParameter[] {
+            decoded.parameters[0].asString(),
+            decoded.parameters[1].asDouble(),
+            decoded.parameters[2].asDouble(),
+            decoded.parameters[3].asDouble(),
+            decoded.parameters[4].asDouble()
+        };
 
         Assert.assertEquals(msg, decoded);
     }
