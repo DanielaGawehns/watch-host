@@ -138,7 +138,11 @@ public class PrimaryController{
                         return;
                     }
 
-                    final var newWatch = new Smartwatch(new WatchData(uid), "", wrappedConnection);
+                    final var newWatch = new Smartwatch(
+                        new WatchData(uid),
+                        String.format("Watch %d", watches.size()),
+                        wrappedConnection
+                    );
                     Platform.runLater(() -> this.addWatch(newWatch));
                 });
             } catch (IOException e) {
@@ -361,7 +365,7 @@ public class PrimaryController{
             int batteryType;
             int finalI = i + 1;
 
-            button.setText("Watch " + watches.get(i).getWatchID());
+            button.setText(watches.get(i).getWatchName());
             button.setGraphic(imageView);
 
             button.setOnAction((ActionEvent event) ->{ // If clicked

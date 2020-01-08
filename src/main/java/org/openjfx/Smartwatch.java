@@ -30,8 +30,10 @@ public class Smartwatch implements Closeable {
 
     /**
      * Nickname for the watch specified by the user
+     *
+     * Note: this isn't expected to be unqiue.
      */
-    private String name = "NONAME";
+    private String name = "";
 
     /**
      * Map to map sensor name string to a {@link SensorData} instance containing data of all the sensors available
@@ -67,9 +69,7 @@ public class Smartwatch implements Closeable {
     public Smartwatch(@NotNull WatchData data, @NotNull String name, @Nullable WrappedConnection connection) {
         System.out.println("making smartwatch");
         this.watchData = data;
-        if (!name.isEmpty()) {
-            this.name = name;
-        }
+        this.name = name;
 
         if (connection != null) {
             try {
