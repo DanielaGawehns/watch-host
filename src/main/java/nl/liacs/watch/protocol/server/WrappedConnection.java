@@ -219,8 +219,7 @@ public class WrappedConnection implements Closeable {
     }
 
     /**
-     * Create a new {@link Message} that receives the given key from the other
-     * side.
+     * Retrieve the given key from the remote party.
      *
      * @param key The key to retrieve the value of.
      * @return A future that resolves to an array of the retrieved values of the key as {@link MessageParameter}.
@@ -229,6 +228,29 @@ public class WrappedConnection implements Closeable {
     public CompletableFuture<MessageParameter[]> getValues(String key) throws IOException {
         var msg = this.makeMessageWithID(MessageType.GET_VALUES);
         msg.parameters = new MessageParameter[]{ new MessageParameterString(key) };
+        return this.sendAndWaitReply(msg);
+    }
+
+    /**
+     * Set the value of the given key at the remote party.
+     * If the keys and/or value(s) were invalid, the returned future completes
+     * with a {@link ReplyException} exception.
+     *
+     * @param key The key to set
+     * @param values The values to set the key to.
+     * @return The values as set in the remote key/value store, note that these
+     * values can be chaned by the remote party.
+     * @throws IOException IO error when failing to send the request.
+     */
+    public CompletableFuture<MessageParameter[]> setValues(String key, byte[]... values) throws IOException {
+        var msg = this.makeMessageWithID(MessageType.SET_VALUES);
+
+        msg.parameters = new MessageParameter[1+values.length];
+        msg.parameters[0] = new MessageParameterString(key);
+        for (int i = 0; i < values.length; i++) {
+            msg.parameters[i+1] = new MessageParameterBinary(values[i]);
+        }
+
         return this.sendAndWaitReply(msg);
     }
 }
