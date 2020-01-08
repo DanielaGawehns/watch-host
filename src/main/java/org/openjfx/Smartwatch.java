@@ -30,6 +30,8 @@ public class Smartwatch implements Closeable {
 
     /**
      * Nickname for the watch specified by the user
+     *
+     * Note: this isn't expected to be unqiue.
      */
     private String name = "";
 
