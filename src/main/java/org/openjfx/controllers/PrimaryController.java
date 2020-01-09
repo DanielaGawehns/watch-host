@@ -482,10 +482,10 @@ public class PrimaryController{
 
            stage.setOnHiding(e -> {
                System.out.println("CLOSED STAGE!");
-               if(currentWatch > 0 && currentWatch < watches.size()){
+               if(currentWatch > 0 && currentWatch <= watches.size()){
                    loadWatchFXML();
                }
-
+               loadSideBar();
            });
        }catch (IOException e){
            e.printStackTrace();
