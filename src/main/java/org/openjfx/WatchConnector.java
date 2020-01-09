@@ -4,13 +4,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.openjfx.controllers.PrimaryController;
 
 import nl.liacs.watch.protocol.server.WrappedConnection;
 import nl.liacs.watch.protocol.types.Message;
@@ -23,7 +24,7 @@ import nl.liacs.watch.protocol.types.MessageParameterString;
 public class WatchConnector implements Closeable {
     private final Smartwatch watch;
     private final WrappedConnection connection;
-    private final PrimaryController controller;
+    private final List<Runnable> dataObservers = new ArrayList<>();
     private final Thread thread;
 
     /**
@@ -33,10 +34,9 @@ public class WatchConnector implements Closeable {
      * @param connection The connection to bind
      * @param controller The controlle to bind
      */
-    WatchConnector(@NotNull Smartwatch watch, @NotNull WrappedConnection connection, @NotNull PrimaryController controller) {
+    WatchConnector(@NotNull Smartwatch watch, @NotNull WrappedConnection connection) {
         this.watch = watch;
         this.connection = connection;
-        this.controller = controller;
 
         this.thread = new Thread(() -> {
             try {
@@ -76,7 +76,9 @@ public class WatchConnector implements Closeable {
                     var list = Collections.singletonList(dataPoint);
                     watch.addData(list);
 
-                    controller.watchController.reloadCharts();
+                    for (var observer : this.dataObservers) {
+                        observer.run();
+                    }
 
                     break;
                 }
@@ -93,7 +95,9 @@ public class WatchConnector implements Closeable {
                     var list = Collections.singletonList(dataPoint);
                     watch.addData(list);
 
-                    controller.watchController.reloadCharts();
+                    for (var observer : this.dataObservers) {
+                        observer.run();
+                    }
 
                     break;
                 }
@@ -145,5 +149,9 @@ public class WatchConnector implements Closeable {
         }
 
         return null;
+    }
+
+    public void AddDataObserver(Runnable runnable) {
+        this.dataObservers.add(runnable);
     }
 }

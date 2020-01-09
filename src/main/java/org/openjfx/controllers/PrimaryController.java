@@ -80,7 +80,7 @@ public class PrimaryController{
     /**
      * Controller for the watchView {@link WatchViewController}
      */
-    public WatchViewController watchController;
+    public static WatchViewController watchController;
 
     /**
      * Controller for measurement setup screen {@link MeasurementController}
@@ -237,6 +237,13 @@ public class PrimaryController{
             watchController = loader.getController(); // set controller to controller of new file
             System.out.println("Setting watch on place " + (currentWatch - 1));
             watchController.setWatch(watches.get(currentWatch - 1), this); // send Data of the watch being viewed to the controller
+
+            var connector = watches.get(currentWatch - 1).getConnector();
+            if (connector != null) {
+                connector.AddDataObserver(() -> {
+                    watchController.reloadCharts();
+                });
+            }
 
             newPane.prefWidthProperty().bind(view.widthProperty()); // bind width of newPane to the old one
             view.setCenter(newPane); // set newPane as center of borderPane

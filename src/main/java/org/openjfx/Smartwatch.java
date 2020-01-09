@@ -87,6 +87,11 @@ public class Smartwatch implements Closeable {
         this.connector = new WatchConnector(this, connection);
     }
 
+    @Nullable
+    public WatchConnector getConnector() {
+        return this.connector;
+    }
+
     /**
      * Get {@link SensorData} from {@link Smartwatch#sensorMap}
      * @param sensor The name of the sensor
