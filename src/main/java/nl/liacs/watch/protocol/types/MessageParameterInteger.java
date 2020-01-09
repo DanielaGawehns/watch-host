@@ -24,7 +24,7 @@ public class MessageParameterInteger extends MessageParameter {
     }
 
     /**
-     * @return The parameter value as a double.
+     * @return The parameter value as an integer.
      */
     @NotNull
     @Override
