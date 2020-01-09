@@ -66,6 +66,7 @@ Specified by every command, possible are (short name given in the parentheses):
 - Binary data string (`bytes`);
 - **Non**-null terminated ASCII string (`str`);
 - 32-bit signed integer (`i32`);
+- 64-bit signed integer (`i64`);
 - Double precision IEEE float (`f64`).
 
 ## Message types
@@ -146,7 +147,7 @@ Should be send every `live.interval`, if any data is available.
 The time delta is since the previous sent INCREMENT message in milliseconds.
 
 Structure:
-`INCREMENT <sensor (str)> <time delta (i32)> <data... (f64)>`
+`INCREMENT <sensor (str)> <time delta (i64)> <data... (f64)>`
 
 Reply:
 N/A
@@ -157,7 +158,7 @@ A data point for the full recorded session.
 The time delta is since the start of the recording session in milliseconds.
 
 Structure:
-`PLAYBACK <sensor (str)> <time delta (f64)> <data... (f64)>`
+`PLAYBACK <sensor (str)> <time delta (i64)> <data... (f64)>`
 
 Reply:
 N/A

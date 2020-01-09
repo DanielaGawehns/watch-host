@@ -13,6 +13,10 @@ public enum ParameterType {
      */
     INTEGER,
     /**
+     * 64-bit signed integer.
+     */
+    LONG,
+    /**
      * Double precision IEEE float.
      */
     DOUBLE,

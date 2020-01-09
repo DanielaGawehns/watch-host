@@ -29,6 +29,13 @@ public class MessageParameter {
     }
 
     /**
+     * Create a derived class with the long type.
+     */
+    public MessageParameterLong asLong() {
+        return new MessageParameterLong(this.bytes);
+    }
+
+    /**
      * Create a derived class with the double type.
      */
     public MessageParameterDouble asDouble() {
