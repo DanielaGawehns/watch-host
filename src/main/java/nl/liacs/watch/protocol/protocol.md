@@ -191,6 +191,10 @@ Implemented must be:
 
 - `sensor.list`: A list of every sensor name (one or more `str`).
 
+And, for every sensor `<sensor>`, the following:
+- `sensor.<sensor>.lastreading.values`: A list of the values of the last reading of `<sensor>` (`i32`).
+- `sensor.<sensor>.lastreading.time`: The time of the last reading of `<sensor>` (`i64`).
+
 #### `live` namespace
 The live namespace contains settings about the aggregated updates for the host's live dashboard.
 Implemented must be:
