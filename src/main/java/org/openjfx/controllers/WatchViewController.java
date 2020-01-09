@@ -97,7 +97,7 @@ public class WatchViewController {
     /**
      * VBox in which to place the researchers comments
      */
-    private final VBox commentsBox = new VBox();
+    private VBox commentsBox = new VBox();
 
 
     /**
@@ -336,13 +336,15 @@ public class WatchViewController {
                 }
 
                 try {
-                    LocalTime t1 = LocalTime.parse(record[0].trim());
-                    LocalTime t2 = LocalTime.parse(record[1].trim());
+                    LocalDate date = LocalDate.parse(record[0].trim());
+                    LocalTime t1 = LocalTime.parse(record[1].trim());
+                    LocalTime t2 = LocalTime.parse(record[2].trim());
                     // todo: also require date?
-                    String body = record[2].trim();
-                    String type = record[3].trim();
+                    String body = record[3].trim();
+                    String type = record[4].trim();
 
                     Comment comment = new Comment();
+                    comment.setDate(date);
                     comment.setStartingTime(t1);
                     comment.setEndTime(t2);
                     comment.setCommentBody(body);
@@ -368,11 +370,14 @@ public class WatchViewController {
         var comments = watch.getComments();
 
         for (Comment comment : comments) {
+            LocalDate dateDate = comment.getDate();
             LocalTime t1Date = comment.getStartingTime();
             LocalTime t2Date = comment.getEndTime();
+            String dateString = dateDate.toString();
             String t1String = t1Date.toString();
             String t2String = t2Date.toString();
-            Label t1 = new Label("  " + t1String + " - ");
+            Label date = new Label("  " + dateString + " - ");
+            Label t1 = new Label(t1String + " - ");
             Label t2 = new Label(t2String + "\t");
 
             String bodyString = comment.getCommentBody();
@@ -396,19 +401,20 @@ public class WatchViewController {
             VBox vbox = new VBox();
             HBox hbox = new HBox();
 
+            System.out.println("date: " + dateString);
             System.out.println("t1: " + t1String);
             System.out.println("t2: " + t2String);
             System.out.println("body: " + bodyString);
             System.out.println("type: " + type);
 
-            hbox.getChildren().addAll(leadingfiller, typecolor, t1, t2, body);
+            hbox.getChildren().addAll(leadingfiller, typecolor, date, t1, t2, body);
             hbox.setAlignment(Pos.CENTER_LEFT);
 
             vbox.getChildren().addAll(hbox);
             vbox.setAlignment(Pos.CENTER);
 
-            commentsBox.getChildren().add(vbox);
-            chartsBox.getChildren().add(commentsBox);
+            //commentsBox.getChildren().add(vbox);
+            chartsBox.getChildren().add(vbox);
         }
     }
 

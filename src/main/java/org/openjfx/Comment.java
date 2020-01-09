@@ -1,11 +1,17 @@
 package org.openjfx;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
  * Class for storing comments about specific measurements of a specific watch
  */
 public class Comment {
+
+    /**
+     * Stores the date from the comments
+     */
+    private LocalDate date;
 
     /**
      * Stores the starting times from the comments
@@ -31,6 +37,12 @@ public class Comment {
     /**
      * Getter for {@link Comment#startingTime}
      */
+    public LocalDate getDate() { return date; }
+
+
+    /**
+     * Getter for {@link Comment#startingTime}
+     */
     public LocalTime getStartingTime() { return startingTime; }
 
 
@@ -50,6 +62,13 @@ public class Comment {
      * Setter for {@link Comment#commentType}
      */
     public String getCommentType() { return commentType; }
+
+
+    /**
+     * Setter for {@link Comment#date}
+     */
+    public void setDate(LocalDate d) { this.date = d; }
+
 
     /**
      * Setter for {@link Comment#startingTime}

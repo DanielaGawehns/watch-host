@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS comments
         constraint comments_smartwatch_ID_fk
             references smartwatch
                 on delete cascade,
+    date DATE not null,
     time_start TIME not null,
     time_end TIME not null,
     comment TEXT not null,

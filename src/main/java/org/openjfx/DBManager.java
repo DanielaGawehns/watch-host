@@ -907,15 +907,16 @@ public class DBManager implements Closeable {
      * @param comment {@link Comment} to be added
      */
     public void addComment(String ID, org.openjfx.Comment comment) {
-        String command = "INSERT INTO comments VALUES(?, ?, ?, ?, ?)";
+        String command = "INSERT INTO comments VALUES(?, ?, ?, ?, ?, ?)";
 
         try (var stmt = this.connection.prepareStatement(command)) {
 
             stmt.setString(1, ID);
-            stmt.setTime(2, Time.valueOf(comment.getStartingTime()));
-            stmt.setTime(3, Time.valueOf(comment.getEndTime()));
-            stmt.setString(4, comment.getCommentBody());
-            stmt.setString(5, comment.getCommentType());
+            stmt.setDate(2, Date.valueOf(comment.getDate()));
+            stmt.setTime(3, Time.valueOf(comment.getStartingTime()));
+            stmt.setTime(4, Time.valueOf(comment.getEndTime()));
+            stmt.setString(5, comment.getCommentBody());
+            stmt.setString(6, comment.getCommentType());
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -940,10 +941,11 @@ public class DBManager implements Closeable {
 
             while (rs.next()) {
                 comment = new org.openjfx.Comment();
-                comment.setStartingTime(rs.getTime(2).toLocalTime());
-                comment.setEndTime(rs.getTime(3).toLocalTime());
-                comment.setCommentBody(rs.getString(4));
-                comment.setCommentType(rs.getString(5));
+                comment.setDate(rs.getDate(2).toLocalDate());
+                comment.setStartingTime(rs.getTime(3).toLocalTime());
+                comment.setEndTime(rs.getTime(4).toLocalTime());
+                comment.setCommentBody(rs.getString(5));
+                comment.setCommentType(rs.getString(6));
 
                 comments.add(comment);
             }
