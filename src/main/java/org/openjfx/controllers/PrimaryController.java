@@ -80,7 +80,7 @@ public class PrimaryController{
     /**
      * Controller for the watchView {@link WatchViewController}
      */
-    private WatchViewController watchController;
+    public WatchViewController watchController;
 
     /**
      * Controller for measurement setup screen {@link MeasurementController}

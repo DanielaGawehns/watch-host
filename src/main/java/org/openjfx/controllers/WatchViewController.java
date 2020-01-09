@@ -422,7 +422,7 @@ public class WatchViewController {
     /**
      * Resets data of all charts to data stored in {@link WatchViewController#watch}
      */
-    void reloadCharts(){
+    public void reloadCharts(){
         for(Chart chart : charts){
             chart.setWidth((int) primaryController.getView().getWidth());
             chart.fillChart();

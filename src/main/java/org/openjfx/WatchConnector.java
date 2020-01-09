@@ -3,12 +3,14 @@ package org.openjfx;
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.openjfx.controllers.PrimaryController;
 
 import nl.liacs.watch.protocol.server.WrappedConnection;
 import nl.liacs.watch.protocol.types.Message;
@@ -21,6 +23,7 @@ import nl.liacs.watch.protocol.types.MessageParameterString;
 public class WatchConnector implements Closeable {
     private final Smartwatch watch;
     private final WrappedConnection connection;
+    private final PrimaryController controller;
     private final Thread thread;
 
     /**
@@ -28,10 +31,12 @@ public class WatchConnector implements Closeable {
      *
      * @param watch The watch to bind
      * @param connection The connection to bind
+     * @param controller The controlle to bind
      */
-    public WatchConnector(@NotNull Smartwatch watch, @NotNull WrappedConnection connection) {
+    WatchConnector(@NotNull Smartwatch watch, @NotNull WrappedConnection connection, @NotNull PrimaryController controller) {
         this.watch = watch;
         this.connection = connection;
+        this.controller = controller;
 
         this.thread = new Thread(() -> {
             try {
@@ -53,7 +58,7 @@ public class WatchConnector implements Closeable {
             Message item = this.connection.receive();
 
             switch (item.type) {
-                case INCREMENT:
+                case INCREMENT: {
                     var sensor = item.parameters[0].asString().getValue();
                     System.out.println(sensor);
                     if (sensor.equals("BATTERY")) {
@@ -62,13 +67,36 @@ public class WatchConnector implements Closeable {
                         break;
                     }
 
-                    var values = Arrays.stream(item.parameters).skip(2).map((param) -> param.asDouble().getValue()).collect(Collectors.toList());
+                    var values = Arrays.stream(item.parameters)
+                        .skip(2)
+                        .map((param) -> param.asDouble().getValue())
+                        .collect(Collectors.toList());
                     var dataPoint = new DataPoint(sensor, LocalDateTime.now(), values);
 
                     var list = Collections.singletonList(dataPoint);
                     watch.addData(list);
 
+                    controller.watchController.reloadCharts();
+
                     break;
+                }
+
+                case PLAYBACK: {
+                    var sensor = item.parameters[0].asString().getValue();
+                    var values = Arrays.stream(item.parameters)
+                        .skip(2)
+                        .map((param) -> param.asDouble().getValue())
+                        .collect(Collectors.toList());
+                    var date = LocalDateTime.ofEpochSecond(item.parameters[1].asLong().getValue(), 0, ZoneOffset.UTC);
+                    var dataPoint = new DataPoint(sensor, date, values);
+
+                    var list = Collections.singletonList(dataPoint);
+                    watch.addData(list);
+
+                    controller.watchController.reloadCharts();
+
+                    break;
+                }
 
                 case GET_VALUES:
                     var key = item.parameters[0].asString().getValue();
