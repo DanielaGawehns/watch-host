@@ -269,7 +269,7 @@ public class PrimaryController{
             measurementController.loadTimesField();
 
             Stage stage = new Stage();
-            stage.setTitle("Register watch");
+            stage.setTitle("New measurement...");
             stage.setScene(new Scene(newPane));
             stage.setResizable(true);
             stage.show();
