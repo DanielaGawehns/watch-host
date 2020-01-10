@@ -102,7 +102,7 @@ public class WatchConnector implements Closeable {
                         .skip(2)
                         .map((param) -> param.asDouble().getValue())
                         .collect(Collectors.toList());
-                    var date = LocalDateTime.ofEpochSecond(item.parameters[1].asLong().getValue(), 0, ZoneOffset.UTC);
+                    var date = LocalDateTime.ofEpochSecond(item.parameters[1].asLong().getValue() / 1000, 0, ZoneOffset.UTC);
                     var dataPoint = new DataPoint(sensor, date, values);
 
                     var list = Collections.singletonList(dataPoint);
