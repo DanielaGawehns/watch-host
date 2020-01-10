@@ -224,7 +224,10 @@ public class PrimaryController{
             var connector = watches.get(currentWatch - 1).getConnector();
             if (connector != null) {
                 connector.AddDataObserver(() -> {
-                    watchController.reloadCharts();
+                    Platform.runLater(() -> {
+                        watchController.reloadCharts();
+                        loadSideBar();
+                    });
                 });
             }
 
