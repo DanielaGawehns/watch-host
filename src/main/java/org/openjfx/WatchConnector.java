@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -185,5 +186,46 @@ public class WatchConnector implements Closeable {
 
     public void AddDataObserver(Runnable runnable) {
         this.dataObservers.add(runnable);
+    }
+
+    /**
+     * Get all sensors from the watch.
+     * TODO: THIS FUNCTION IS FOR DEMO PUPOSES AND SHOULD BE MOVED AND REFACTORED
+     *
+     * @return A future that completes to a list of {@link Sensor} instances.
+     * @throws IOException IO error when failing to retrieve the sensor list.
+     */
+    public CompletableFuture<List<Sensor>> getSensors() throws IOException {
+        var sensorsFut = connection.getValues("sensor.list");
+
+        return sensorsFut.thenApply((parameters) -> {
+            var sensorFutures = new ArrayList<CompletableFuture<Sensor>>();
+            for (var param : parameters) {
+                var sensorName = param.asString().getValue();
+
+                try {
+                    var sensorFut = Sensor.getByName(sensorName, connection);
+                    sensorFutures.add(sensorFut);
+                } catch (IOException e) {
+                    // HACK
+                    System.out.println(e);
+                }
+            }
+
+            return CompletableFuture.allOf(sensorFutures.toArray(new CompletableFuture[sensorFutures.size()])).thenApply(x -> sensorFutures);
+        }).thenCompose(waitAll -> {
+            return waitAll.thenApply(sensorFutures -> {
+                var sensors = new ArrayList<Sensor>();
+                for (var fut : sensorFutures) {
+                    try {
+                        sensors.add(fut.get());
+                    } catch (Exception e) {
+                        // HACK
+                        System.out.println(e);
+                    }
+                }
+                return sensors;
+            });
+        });
     }
 }

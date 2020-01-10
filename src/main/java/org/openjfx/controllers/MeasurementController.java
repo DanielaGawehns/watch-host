@@ -1,5 +1,15 @@
 package org.openjfx.controllers;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openjfx.App;
+import org.openjfx.Measurement;
+import org.openjfx.Sensor;
+import org.openjfx.Smartwatch;
+import org.openjfx.SmartwatchList;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -12,16 +22,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.openjfx.App;
-import org.openjfx.Measurement;
-import org.openjfx.Smartwatch;
-import org.openjfx.SmartwatchList;
 import util.Pair;
 import util.Util;
-
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class for controlling function for the New Measurement screen
@@ -50,24 +52,7 @@ public class MeasurementController {
     /**
      * List of all the possible sensors available
      */
-    private final List<String> allSensors = new ArrayList<>() {
-        {
-            add("ACCELEROMETER");
-            add("GRAVITY");
-            add("LINEAR ACCELERATION");
-            add("MAGNETIC");
-            add("ROTATION VECTOR");
-            add("ORIENTATION");
-            add("GYROSCOPE");
-            add("LIGHT");
-            add("PROXIMITY");
-            add("PRESSURE");
-            add("ULTRAVIOLET");
-            add("TEMPERATURE");
-            add("HUMIDITY");
-            add("HRM");
-        }
-    };
+    private List<Sensor> allSensors = new ArrayList<>();
 
     /**
      * List containing the connected watches
@@ -102,7 +87,7 @@ public class MeasurementController {
 
         for(int i = 0; i < allSensors.size(); i++){
             var sensor = allSensors.get(i);
-            checkBox = new CheckBox(sensor);
+            checkBox = new CheckBox(sensor.name);
 
             if(i ==  rowCount){ // Switch column
                 vbox = sensorVbox2;
@@ -126,7 +111,7 @@ public class MeasurementController {
 
             // Event for checkBoxes
             CheckBox finalCheckBox = checkBox;
-            var sensorPair = new Pair<>(sensor, field);
+            var sensorPair = new Pair<>(sensor.name, field);
             checkBox.setOnAction((ActionEvent event) -> {
                 if(finalCheckBox.isSelected()){
                     System.out.println("Sensor " + sensor + " is selected!");
@@ -413,5 +398,9 @@ public class MeasurementController {
 
         // the measurement has started, close window
         Util.closeStage(watchVbox1);
+    }
+
+    public void setSensors(List<Sensor> sensors) {
+        this.allSensors = sensors;
     }
 }

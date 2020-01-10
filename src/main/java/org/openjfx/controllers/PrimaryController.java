@@ -1,51 +1,34 @@
 package org.openjfx.controllers;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import org.openjfx.App;
-import org.openjfx.CSVFileReader;
-import org.openjfx.DBManager;
-import org.openjfx.DataPoint;
-import org.openjfx.SensorData;
-import org.openjfx.Smartwatch;
-import org.openjfx.SmartwatchList;
-import org.openjfx.WatchData;
-
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Separator;
-import javafx.scene.control.SplitMenuButton;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.openjfx.*;
 import util.Util;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -267,6 +250,15 @@ public class PrimaryController{
             measurementController.loadSensors();
             measurementController.loadWatches();
             measurementController.loadTimesField();
+
+            {
+                var watch = watches.get(0);
+                var connector = watch.getConnector();
+
+                if (connector != null) {
+                    connector.getSensors().thenAccept(sensors -> measurementController.setSensors(sensors));
+                }
+            }
 
             Stage stage = new Stage();
             stage.setTitle("New measurement...");
