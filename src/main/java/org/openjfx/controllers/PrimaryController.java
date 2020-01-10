@@ -22,11 +22,9 @@ import util.Util;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,7 +114,7 @@ public class PrimaryController{
                         try {
                             oldWatch.addConnection(wrappedConnection);
 
-                            try { Thread.sleep(3.5 * 1000); }
+                            try { Thread.sleep(3 * 1000); }
                             catch (InterruptedException e) { System.out.println(e); }
                             wrappedConnection.askPlayback(LocalDateTime.of(2020, 01, 01, 00, 00, 00), LocalDateTime.now());
                         } catch (IOException e) {
@@ -132,7 +130,7 @@ public class PrimaryController{
                     );
                     Platform.runLater(() -> this.addWatch(newWatch));
 
-                    try { Thread.sleep(3.5 * 1000); }
+                    try { Thread.sleep(3 * 1000); }
                     catch (InterruptedException e) { System.out.println(e); }
                 });
             } catch (IOException e) {
