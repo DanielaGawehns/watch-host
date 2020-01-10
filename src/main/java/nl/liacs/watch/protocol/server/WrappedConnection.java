@@ -278,8 +278,8 @@ public class WrappedConnection implements Closeable {
     public void askPlayback(LocalDateTime start, LocalDateTime end) throws IOException {
         var msg = new Message(MessageType.GET_PLAYBACK);
         msg.parameters = new MessageParameter[] {
-            new MessageParameterDouble(start.toEpochSecond(ZoneOffset.UTC)),
-            new MessageParameterDouble(end.toEpochSecond(ZoneOffset.UTC)),
+            new MessageParameterDouble(start.toEpochSecond(ZoneOffset.UTC) * 1000),
+            new MessageParameterDouble(end.toEpochSecond(ZoneOffset.UTC) * 1000),
         };
         this.send(msg);
     }
