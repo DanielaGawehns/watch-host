@@ -75,7 +75,12 @@ public class WrappedConnection implements Closeable {
         this.pool.submit(() -> {
             while (!this.pool.isShutdown()) {
                 doWork.accept(() -> {
-                    Thread.sleep(2500);
+                    try {
+                        Thread.sleep(2500);
+                    } catch (InterruptedException e) {
+                        System.out.println(e);
+                    }
+
                     var msg = this.makeMessageWithID(MessageType.PING);
                     this.send(msg);
                     return false;
