@@ -192,8 +192,8 @@ public class WrappedConnection implements Closeable {
         } else {
             assert msg.type == MessageType.REPLY;
 
-            var status = msg.parameters[0].asDouble().getValue();
-            var errored = status > 0;
+            var status = msg.parameters[0].asInteger().getValue();
+            var errored = status != 0;
 
             if (errored) {
                 var message = msg.parameters[1].asString().getValue();
