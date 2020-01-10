@@ -114,6 +114,7 @@ public class Util {
     static{
         sensorDataListSize.put("HRM", 1);
         sensorDataListSize.put("PRESSURE", 1);
+        sensorDataListSize.put("ACCELEROMETER", 1);
     }
 
     /**
