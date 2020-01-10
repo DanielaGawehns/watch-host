@@ -184,13 +184,8 @@ public class WrappedConnection implements Closeable {
             var reply = msg.makeReply(0, "pong");
             this.send(reply);
             return;
-        }
-
-        var futures = this.replyFutureMap.getOrDefault(msg.id, Collections.emptyList());
-        if (futures.size() == 0) {
-            this.receiveQueue.add(msg);
-        } else {
-            assert msg.type == MessageType.REPLY;
+        } else if (msg.type.equals(MessageType.REPLY)) {
+            var futures = this.replyFutureMap.getOrDefault(msg.id, Collections.emptyList());
 
             var status = msg.parameters[0].asInteger().getValue();
             var errored = status != 0;
@@ -209,7 +204,11 @@ public class WrappedConnection implements Closeable {
                     future.complete(parameters);
                 }
             }
+
+            return;
         }
+
+        this.receiveQueue.add(msg);
     }
 
     /**
