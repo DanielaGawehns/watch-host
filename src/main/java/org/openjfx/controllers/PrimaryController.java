@@ -115,6 +115,10 @@ public class PrimaryController{
                     if (oldWatch != null) {
                         try {
                             oldWatch.addConnection(wrappedConnection);
+
+                            try { Thread.sleep(3.5 * 1000); }
+                            catch (InterruptedException e) { System.out.println(e); }
+                            wrappedConnection.askPlayback(LocalDateTime.of(2020, 01, 01, 00, 00, 00), LocalDateTime.now());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -127,6 +131,9 @@ public class PrimaryController{
                         wrappedConnection
                     );
                     Platform.runLater(() -> this.addWatch(newWatch));
+
+                    try { Thread.sleep(3.5 * 1000); }
+                    catch (InterruptedException e) { System.out.println(e); }
                 });
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1,18 +1,35 @@
 package nl.liacs.watch.protocol.server;
 
-import nl.liacs.watch.protocol.types.*;
-import nl.liacs.watch.protocol.types.exceptions.ReplyException;
-import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
+
+import org.jetbrains.annotations.NotNull;
+
+import nl.liacs.watch.protocol.types.Message;
+import nl.liacs.watch.protocol.types.MessageParameter;
+import nl.liacs.watch.protocol.types.MessageParameterBinary;
+import nl.liacs.watch.protocol.types.MessageParameterDouble;
+import nl.liacs.watch.protocol.types.MessageParameterString;
+import nl.liacs.watch.protocol.types.MessageType;
+import nl.liacs.watch.protocol.types.exceptions.ReplyException;
+import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
 
 /**
  * A wrapped connection, with convenience methods.
@@ -256,5 +273,14 @@ public class WrappedConnection implements Closeable {
         }
 
         return this.sendAndWaitReply(msg);
+    }
+
+    public void askPlayback(LocalDateTime start, LocalDateTime end) throws IOException {
+        var msg = new Message(MessageType.GET_PLAYBACK);
+        msg.parameters = new MessageParameter[] {
+            new MessageParameterDouble(start.toEpochSecond(ZoneOffset.UTC)),
+            new MessageParameterDouble(end.toEpochSecond(ZoneOffset.UTC)),
+        };
+        this.send(msg);
     }
 }

@@ -30,7 +30,12 @@ public enum MessageType {
     /**
      * older collected data to be send to the dashboard.
      */
-    PLAYBACK(5);
+    PLAYBACK(5),
+
+    /**
+     * HACK: tmp get playback message
+     */
+    GET_PLAYBACK(6);
 
     private final int id;
 
