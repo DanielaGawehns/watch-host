@@ -26,6 +26,7 @@ public class WatchConnector implements Closeable {
     private final WrappedConnection connection;
     private final List<Runnable> dataObservers = new ArrayList<>();
     private final Thread thread;
+    private final Thread batteryThread;
 
     /**
      * Create a new {@link WatchConnector} and start the update loop.
@@ -46,6 +47,17 @@ public class WatchConnector implements Closeable {
             }
         });
         this.thread.start();
+
+        this.batteryThread = new Thread(() -> {
+            try {
+                this.batteryLoop();
+            } catch (IOException e) {
+                System.out.println(e);
+            } catch (InterruptedException e) {
+                return;
+            }
+        });
+        this.batteryThread.start();
     }
 
     /**
@@ -119,6 +131,26 @@ public class WatchConnector implements Closeable {
                 case REPLY:
                     throw new IllegalStateException("PING or REPLY leaked out of WrappedConnection");
             }
+        }
+    }
+
+    /**
+     * Temp loop for battery fetching, later this should be a sensor and code is
+     * already written for that.
+     */
+    private void batteryLoop() throws InterruptedException, IOException {
+        while (!this.connection.isClosed()) {
+            this.connection.getValues("system.battery").thenAccept(params -> {
+                var percentage = params[0].asInteger().getValue();
+                System.out.printf("got battery value of %d\n", percentage);
+                watch.getWatchData().setBatteryPercentage(percentage);
+
+                for (var observer : this.dataObservers) {
+                    observer.run();
+                }
+            });
+
+            Thread.sleep(10 * 1000);
         }
     }
 
