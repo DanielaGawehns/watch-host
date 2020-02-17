@@ -20,14 +20,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
+import nl.liacs.watch.protocol.types.*;
 import org.jetbrains.annotations.NotNull;
 
-import nl.liacs.watch.protocol.types.Message;
-import nl.liacs.watch.protocol.types.MessageParameter;
-import nl.liacs.watch.protocol.types.MessageParameterBinary;
-import nl.liacs.watch.protocol.types.MessageParameterDouble;
-import nl.liacs.watch.protocol.types.MessageParameterString;
-import nl.liacs.watch.protocol.types.MessageType;
 import nl.liacs.watch.protocol.types.exceptions.ReplyException;
 import nl.liacs.watch.protocol.types.exceptions.UnknownProtocolException;
 
@@ -56,6 +51,14 @@ public class WrappedConnection implements Closeable {
         this.pool = Executors.newFixedThreadPool(2);
         this.connection = connection;
         this.receiveQueue = new LinkedBlockingQueue<>();
+
+        try {
+            list("sensor");
+            setValues("sensor.HRM.active",new byte[]{0,0,0,1});
+            setValues("sensor.GYROSCOPE.active",new byte[]{0,0,0,1});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Consumer<Callable<Boolean>> doWork = (fn) -> {
             boolean mustClose = false;
@@ -126,8 +129,10 @@ public class WrappedConnection implements Closeable {
         if (connection.isClosed()) {
             throw new IllegalStateException("connection is closed");
         }
-
+        long d = System.currentTimeMillis();
+        System.out.println("Starting  send "+d);
         this.connection.send(message);
+        System.out.println("Done with send "+d);
     }
 
     /**
@@ -226,6 +231,15 @@ public class WrappedConnection implements Closeable {
         }
 
         this.receiveQueue.add(msg);
+    }
+
+    public void list(String path) throws IOException {
+        getValues(path+".list").thenAccept((p)->{
+            for(MessageParameter _p : p){
+                String name = _p.asString().getValue();
+                System.out.println(name);
+            }
+        });
     }
 
     /**

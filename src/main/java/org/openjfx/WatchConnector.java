@@ -85,7 +85,7 @@ public class WatchConnector implements Closeable {
                         .map((param) -> param.asDouble().getValue())
                         .collect(Collectors.toList());
                     var dataPoint = new DataPoint(sensor, LocalDateTime.now(), values);
-
+                    System.out.println("Data point: "+Arrays.toString(values.toArray()));
                     var list = Collections.singletonList(dataPoint);
                     watch.addData(list);
 
