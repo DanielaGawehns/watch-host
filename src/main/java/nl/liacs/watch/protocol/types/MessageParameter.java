@@ -83,6 +83,7 @@ public class MessageParameter {
 
         switch (type) {
         case INTEGER:
+        case LONG:
         case DOUBLE:
         case STRING:
             sb.append('(');
